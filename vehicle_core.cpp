@@ -76,8 +76,6 @@ int main(int argc, char* argv[]) {
     vehicle.InitializePowertrain(powertrain);
 
     //create and initialize the tires
-    //params
-    //std::string rigidtire_file("HMMWV/tire/HMMWV_RigidTire.json");
     {int naxle = 0;
      int ntire_file = inp.Get_ntire_JSON();
         for (std::shared_ptr< ChAxle > axle : vehicle.GetAxles()) {
@@ -157,7 +155,6 @@ int main(int argc, char* argv[]) {
 
     // Initialize simulation frame counter and simulation time
     int sim_frame = 0;
-    int render_frame = 0;
 
     ChRealtimeStepTimer realtime_timer;
     while (app.GetDevice()->run()) {
@@ -175,7 +172,6 @@ int main(int argc, char* argv[]) {
 
 
         // Update sentinel and target location markers for the path-follower controller.
-        // Note that we do this whether or not we are currently using the path-follower driver.
         const ChVector<>& pS = driver_follower.GetSteeringController().GetSentinelLocation();
         const ChVector<>& pT = driver_follower.GetSteeringController().GetTargetLocation();
         ballS->setPosition(irr::core::vector3df((irr::f32)pS.x(), (irr::f32)pS.y(), (irr::f32)pS.z()));
