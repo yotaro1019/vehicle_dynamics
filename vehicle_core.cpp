@@ -44,6 +44,8 @@ using namespace chrono::vehicle;
 
 std::shared_ptr<Input_data> inp;
 std::shared_ptr<WheeledVehicle> veh;
+std::shared_ptr<RigidTerrain> terrain;
+
 
 int main(int argc, char* argv[]) {
     inp.reset(new Input_data("vehicle_params.inp") );
@@ -72,7 +74,7 @@ int main(int argc, char* argv[]) {
     veh->SetWheelVisualizationType(inp->Get_wheel_viz_type());
 
     // Create the ground
-    RigidTerrain terrain(veh->GetSystem(), vehicle::GetDataFile(inp->Get_terrain_JSON_fname()));
+    terrain.reset(new RigidTerrain(veh->GetSystem(), vehicle::GetDataFile(inp->Get_terrain_JSON_fname())) );
     // Create and initialize the powertrain system
     std::shared_ptr<ChPowertrain> powertrain = ReadPowertrainJSON( vehicle::GetDataFile(inp->Get_powertrain_JSON_fname()) ); 
     veh->InitializePowertrain(powertrain);
@@ -185,14 +187,14 @@ int main(int argc, char* argv[]) {
 
         // Update modules (process inputs from other modules)
         driver_follower.Synchronize(time);
-        terrain.Synchronize(time);
-        veh->Synchronize(time, driver_inputs, terrain);
+        terrain->Synchronize(time);
+        veh->Synchronize(time, driver_inputs, *terrain);
         std::string msg = "Follower driver";
         app.Synchronize(msg, driver_inputs);
 
         // Advance simulation for one timestep for all modules
         driver_follower.Advance(step_size);
-        terrain.Advance(step_size);
+        terrain->Advance(step_size);
         veh->Advance(step_size);
         app.Advance(step_size);
 
