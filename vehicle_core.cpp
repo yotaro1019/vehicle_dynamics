@@ -42,62 +42,62 @@ using namespace chrono;
 using namespace chrono::geometry;
 using namespace chrono::vehicle;
 
-
+std::shared_ptr<Input_data> inp;
 
 int main(int argc, char* argv[]) {
-    Input_data inp("vehicle_params.inp");
+    inp.reset(new Input_data("vehicle_params.inp") );
     filesystem::path current_dir(filesystem::path().getcwd());
     const std::string current_dir_path = current_dir.str();
     GetLog() << "Copyright (c) 2017 projectchrono.org\nChrono version: " << CHRONO_VERSION << "\n\n";
     
     chrono::SetChronoDataPath(CHRONO_DATA_DIR);
-    chrono::vehicle::SetDataPath(current_dir_path + "/" + inp.Get_inp_dir_name() + "/");
+    chrono::vehicle::SetDataPath(current_dir_path + "/" + inp->Get_inp_dir_name() + "/");
 
     //==========================================
     //setup params
-    double step_size = inp.Get_coupling_dt();
-    double tire_step_size = inp.Get_tire_step_size();
+    double step_size = inp->Get_coupling_dt();
+    double tire_step_size = inp->Get_tire_step_size();
     // ------------------------------
     // Create the vehicle and terrain
     // ------------------------------
     // Create the vehicle system
-    WheeledVehicle vehicle(vehicle::GetDataFile(inp.Get_vehicle_JSON_fname()), ChMaterialSurface::NSC);
-    vehicle.Initialize(ChCoordsys<>(inp.Get_vehicle_init_loc(), inp.Get_vehicle_init_rot()));
+    WheeledVehicle vehicle(vehicle::GetDataFile(inp->Get_vehicle_JSON_fname()), ChMaterialSurface::NSC);
+    vehicle.Initialize(ChCoordsys<>(inp->Get_vehicle_init_loc(), inp->Get_vehicle_init_rot()));
     ////vehicle.GetChassis()->SetFixed(true);
-    vehicle.SetChassisVisualizationType(inp.Get_chassis_viz_type());
-    vehicle.SetSuspensionVisualizationType(inp.Get_parts_viz_type());
-    vehicle.SetSteeringVisualizationType(inp.Get_parts_viz_type());
-    vehicle.SetWheelVisualizationType(inp.Get_wheel_viz_type());
+    vehicle.SetChassisVisualizationType(inp->Get_chassis_viz_type());
+    vehicle.SetSuspensionVisualizationType(inp->Get_parts_viz_type());
+    vehicle.SetSteeringVisualizationType(inp->Get_parts_viz_type());
+    vehicle.SetWheelVisualizationType(inp->Get_wheel_viz_type());
 
     // Create the ground
-    RigidTerrain terrain(vehicle.GetSystem(), vehicle::GetDataFile(inp.Get_terrain_JSON_fname()));
+    RigidTerrain terrain(vehicle.GetSystem(), vehicle::GetDataFile(inp->Get_terrain_JSON_fname()));
     // Create and initialize the powertrain system
-    std::shared_ptr<ChPowertrain> powertrain = ReadPowertrainJSON( vehicle::GetDataFile(inp.Get_powertrain_JSON_fname()) ); 
+    std::shared_ptr<ChPowertrain> powertrain = ReadPowertrainJSON( vehicle::GetDataFile(inp->Get_powertrain_JSON_fname()) ); 
     vehicle.InitializePowertrain(powertrain);
 
     //create and initialize the tires
     {int naxle = 0;
-     int ntire_file = inp.Get_ntire_JSON();
+     int ntire_file = inp->Get_ntire_JSON();
         for (std::shared_ptr< ChAxle > axle : vehicle.GetAxles()) {
             std::string tire_fname;
             if(ntire_file == 1){
-                tire_fname = inp.Get_tire_JSON_fnames(0);
+                tire_fname = inp->Get_tire_JSON_fnames(0);
             }else if(ntire_file == 2){
                 if(naxle ==0){
-                    tire_fname = inp.Get_tire_JSON_fnames(0);
+                    tire_fname = inp->Get_tire_JSON_fnames(0);
                 }else{
-                    tire_fname = inp.Get_tire_JSON_fnames(1);
+                    tire_fname = inp->Get_tire_JSON_fnames(1);
                 }
             }else{
                 if(vehicle.GetNumberAxles() > naxle){
-                    tire_fname = inp.Get_tire_JSON_fnames(naxle);
+                    tire_fname = inp->Get_tire_JSON_fnames(naxle);
                 }
             }
             GetLog() << "naxle = " << naxle << "\t" << tire_fname << "\n";
             std::shared_ptr<ChTire> tireL = ReadTireJSON( vehicle::GetDataFile(tire_fname) );
             std::shared_ptr<ChTire> tireR = ReadTireJSON( vehicle::GetDataFile(tire_fname) );
-            vehicle.InitializeTire(tireL, axle->m_wheels[0], inp.Get_tire_viz_type());
-            vehicle.InitializeTire(tireR, axle->m_wheels[1], inp.Get_tire_viz_type());
+            vehicle.InitializeTire(tireL, axle->m_wheels[0], inp->Get_tire_viz_type());
+            vehicle.InitializeTire(tireR, axle->m_wheels[1], inp->Get_tire_viz_type());
             naxle++;
         }
     }
@@ -107,7 +107,7 @@ int main(int argc, char* argv[]) {
     // ----------------------
 
     // From data file
-    std::shared_ptr<ChBezierCurve> path = ChBezierCurve::read(vehicle::GetDataFile(inp.Get_path_txt_fname()));
+    std::shared_ptr<ChBezierCurve> path = ChBezierCurve::read(vehicle::GetDataFile(inp->Get_path_txt_fname()));
 
 
     ChWheeledVehicleIrrApp app(&vehicle, L"Steering PID Controller Demo",
@@ -121,7 +121,7 @@ int main(int argc, char* argv[]) {
     app.AddTypicalLights(irr::core::vector3df(150.f, -150.f, 200.f), irr::core::vector3df(150.0f, 150.f, 200.f), 100,
                          100);
     app.EnableGrid(false);
-    app.SetChaseCamera(inp.Get_cam_trackPoint(), 6.0, 0.5);
+    app.SetChaseCamera(inp->Get_cam_trackPoint(), 6.0, 0.5);
 
     app.SetTimestep(step_size);
 
@@ -134,7 +134,7 @@ int main(int argc, char* argv[]) {
     // -------------------------
     // Create the driver systems
     // -------------------------
-    ChPathFollowerDriver driver_follower(vehicle, path, "my_path", inp.Get_target_speed());
+    ChPathFollowerDriver driver_follower(vehicle, path, "my_path", inp->Get_target_speed());
     driver_follower.GetSteeringController().SetLookAheadDistance(5);
     driver_follower.GetSteeringController().SetGains(0.8, 0, 0);
     driver_follower.GetSpeedController().SetGains(0.4, 0, 0);
@@ -164,7 +164,7 @@ int main(int argc, char* argv[]) {
         ChVector<> acc_driver = vehicle.GetVehicleAcceleration(driver_pos);
 
         // End simulation
-        if (time >= inp.Get_calc_t_end())
+        if (time >= inp->Get_calc_t_end())
             break;
 
         // Driver inputs
