@@ -43,6 +43,7 @@ using namespace chrono::geometry;
 using namespace chrono::vehicle;
 
 std::shared_ptr<Input_data> inp;
+std::shared_ptr<WheeledVehicle> veh;
 
 int main(int argc, char* argv[]) {
     inp.reset(new Input_data("vehicle_params.inp") );
@@ -61,24 +62,25 @@ int main(int argc, char* argv[]) {
     // Create the vehicle and terrain
     // ------------------------------
     // Create the vehicle system
-    WheeledVehicle vehicle(vehicle::GetDataFile(inp->Get_vehicle_JSON_fname()), ChMaterialSurface::NSC);
-    vehicle.Initialize(ChCoordsys<>(inp->Get_vehicle_init_loc(), inp->Get_vehicle_init_rot()));
-    ////vehicle.GetChassis()->SetFixed(true);
-    vehicle.SetChassisVisualizationType(inp->Get_chassis_viz_type());
-    vehicle.SetSuspensionVisualizationType(inp->Get_parts_viz_type());
-    vehicle.SetSteeringVisualizationType(inp->Get_parts_viz_type());
-    vehicle.SetWheelVisualizationType(inp->Get_wheel_viz_type());
+    veh.reset(new WheeledVehicle (vehicle::GetDataFile(inp->Get_vehicle_JSON_fname()), ChMaterialSurface::NSC));
+    //WheeledVehicle vehicle(vehicle::GetDataFile(inp->Get_vehicle_JSON_fname()), ChMaterialSurface::NSC);
+    veh->Initialize(ChCoordsys<>(inp->Get_vehicle_init_loc(), inp->Get_vehicle_init_rot()));
+    ////veh->GetChassis()->SetFixed(true);
+    veh->SetChassisVisualizationType(inp->Get_chassis_viz_type());
+    veh->SetSuspensionVisualizationType(inp->Get_parts_viz_type());
+    veh->SetSteeringVisualizationType(inp->Get_parts_viz_type());
+    veh->SetWheelVisualizationType(inp->Get_wheel_viz_type());
 
     // Create the ground
-    RigidTerrain terrain(vehicle.GetSystem(), vehicle::GetDataFile(inp->Get_terrain_JSON_fname()));
+    RigidTerrain terrain(veh->GetSystem(), vehicle::GetDataFile(inp->Get_terrain_JSON_fname()));
     // Create and initialize the powertrain system
     std::shared_ptr<ChPowertrain> powertrain = ReadPowertrainJSON( vehicle::GetDataFile(inp->Get_powertrain_JSON_fname()) ); 
-    vehicle.InitializePowertrain(powertrain);
+    veh->InitializePowertrain(powertrain);
 
     //create and initialize the tires
     {int naxle = 0;
      int ntire_file = inp->Get_ntire_JSON();
-        for (std::shared_ptr< ChAxle > axle : vehicle.GetAxles()) {
+        for (std::shared_ptr< ChAxle > axle : veh->GetAxles()) {
             std::string tire_fname;
             if(ntire_file == 1){
                 tire_fname = inp->Get_tire_JSON_fnames(0);
@@ -89,15 +91,15 @@ int main(int argc, char* argv[]) {
                     tire_fname = inp->Get_tire_JSON_fnames(1);
                 }
             }else{
-                if(vehicle.GetNumberAxles() > naxle){
+                if(veh->GetNumberAxles() > naxle){
                     tire_fname = inp->Get_tire_JSON_fnames(naxle);
                 }
             }
             GetLog() << "naxle = " << naxle << "\t" << tire_fname << "\n";
             std::shared_ptr<ChTire> tireL = ReadTireJSON( vehicle::GetDataFile(tire_fname) );
             std::shared_ptr<ChTire> tireR = ReadTireJSON( vehicle::GetDataFile(tire_fname) );
-            vehicle.InitializeTire(tireL, axle->m_wheels[0], inp->Get_tire_viz_type());
-            vehicle.InitializeTire(tireR, axle->m_wheels[1], inp->Get_tire_viz_type());
+            veh->InitializeTire(tireL, axle->m_wheels[0], inp->Get_tire_viz_type());
+            veh->InitializeTire(tireR, axle->m_wheels[1], inp->Get_tire_viz_type());
             naxle++;
         }
     }
@@ -110,8 +112,7 @@ int main(int argc, char* argv[]) {
     std::shared_ptr<ChBezierCurve> path = ChBezierCurve::read(vehicle::GetDataFile(inp->Get_path_txt_fname()));
 
 
-    ChWheeledVehicleIrrApp app(&vehicle, L"Steering PID Controller Demo",
-                               irr::core::dimension2d<irr::u32>(800, 640));
+    ChWheeledVehicleIrrApp app(veh.get(), L"Steering PID Controller Demo", irr::core::dimension2d<irr::u32>(800, 640));
 
     app.SetHUDLocation(500, 20);
     app.SetSkyBox();
@@ -134,7 +135,7 @@ int main(int argc, char* argv[]) {
     // -------------------------
     // Create the driver systems
     // -------------------------
-    ChPathFollowerDriver driver_follower(vehicle, path, "my_path", inp->Get_target_speed());
+    ChPathFollowerDriver driver_follower(*veh, path, "my_path", inp->Get_target_speed());
     driver_follower.GetSteeringController().SetLookAheadDistance(5);
     driver_follower.GetSteeringController().SetGains(0.8, 0, 0);
     driver_follower.GetSpeedController().SetGains(0.4, 0, 0);
@@ -150,7 +151,7 @@ int main(int argc, char* argv[]) {
     // ---------------
 
     // Driver location in vehicle local frame
-    ChVector<> driver_pos = vehicle.GetChassis()->GetLocalDriverCoordsys().pos;
+    ChVector<> driver_pos = veh->GetChassis()->GetLocalDriverCoordsys().pos;
 
 
     // Initialize simulation frame counter and simulation time
@@ -159,9 +160,9 @@ int main(int argc, char* argv[]) {
     ChRealtimeStepTimer realtime_timer;
     while (app.GetDevice()->run()) {
         // Extract system state
-        double time = vehicle.GetSystem()->GetChTime();
-        ChVector<> acc_CG = vehicle.GetChassisBody()->GetPos_dtdt();
-        ChVector<> acc_driver = vehicle.GetVehicleAcceleration(driver_pos);
+        double time = veh->GetSystem()->GetChTime();
+        ChVector<> acc_CG = veh->GetChassisBody()->GetPos_dtdt();
+        ChVector<> acc_driver = veh->GetVehicleAcceleration(driver_pos);
 
         // End simulation
         if (time >= inp->Get_calc_t_end())
@@ -185,14 +186,14 @@ int main(int argc, char* argv[]) {
         // Update modules (process inputs from other modules)
         driver_follower.Synchronize(time);
         terrain.Synchronize(time);
-        vehicle.Synchronize(time, driver_inputs, terrain);
+        veh->Synchronize(time, driver_inputs, terrain);
         std::string msg = "Follower driver";
         app.Synchronize(msg, driver_inputs);
 
         // Advance simulation for one timestep for all modules
         driver_follower.Advance(step_size);
         terrain.Advance(step_size);
-        vehicle.Advance(step_size);
+        veh->Advance(step_size);
         app.Advance(step_size);
 
         // Increment simulation frame number
