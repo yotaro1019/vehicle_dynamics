@@ -42,13 +42,22 @@ using namespace chrono;
 using namespace chrono::geometry;
 using namespace chrono::vehicle;
 
+
+//shared_ptr
 std::shared_ptr<Input_data> inp;
 std::shared_ptr<WheeledVehicle> veh;
 std::shared_ptr<RigidTerrain> terrain;
 std::shared_ptr<ChPathFollowerDriver> driver_follower;
 std::shared_ptr<ChWheeledVehicleIrrApp> app;
 
-int main(int argc, char* argv[]) {
+irr::scene::IMeshSceneNode* ballS;  //sentinel point(driver)
+irr::scene::IMeshSceneNode* ballT;  // target point(driver)
+
+//params
+double step_size, tire_step_size;
+
+//function
+void initialize(){
     inp.reset(new Input_data("vehicle_params.inp") );
     filesystem::path current_dir(filesystem::path().getcwd());
     const std::string current_dir_path = current_dir.str();
@@ -59,8 +68,8 @@ int main(int argc, char* argv[]) {
 
     //==========================================
     //setup params
-    double step_size = inp->Get_coupling_dt();
-    double tire_step_size = inp->Get_tire_step_size();
+    step_size = inp->Get_coupling_dt();
+    tire_step_size = inp->Get_tire_step_size();
     // ------------------------------
     // Create the vehicle and terrain
     // ------------------------------
@@ -130,8 +139,8 @@ int main(int argc, char* argv[]) {
     app->SetTimestep(step_size);
 
     // Visualization of controller points (sentinel & target)
-    irr::scene::IMeshSceneNode* ballS = app->GetSceneManager()->addSphereSceneNode(0.1f);
-    irr::scene::IMeshSceneNode* ballT = app->GetSceneManager()->addSphereSceneNode(0.1f);
+    ballS = app->GetSceneManager()->addSphereSceneNode(0.1f);
+    ballT = app->GetSceneManager()->addSphereSceneNode(0.1f);
     ballS->getMaterial(0).EmissiveColor = irr::video::SColor(0, 255, 0, 0);
     ballT->getMaterial(0).EmissiveColor = irr::video::SColor(0, 0, 255, 0);
 
@@ -147,8 +156,12 @@ int main(int argc, char* argv[]) {
     // Finalize construction of visualization assets
     app->AssetBindAll();
     app->AssetUpdateAll();
+   
+}
 
 
+int main(int argc, char* argv[]) {
+    initialize();
     // ---------------
     // Simulation loop
     // ---------------
