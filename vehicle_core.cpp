@@ -45,7 +45,7 @@ using namespace chrono::vehicle;
 std::shared_ptr<Input_data> inp;
 std::shared_ptr<WheeledVehicle> veh;
 std::shared_ptr<RigidTerrain> terrain;
-
+std::shared_ptr<ChPathFollowerDriver> driver_follower;
 
 int main(int argc, char* argv[]) {
     inp.reset(new Input_data("vehicle_params.inp") );
@@ -137,11 +137,11 @@ int main(int argc, char* argv[]) {
     // -------------------------
     // Create the driver systems
     // -------------------------
-    ChPathFollowerDriver driver_follower(*veh, path, "my_path", inp->Get_target_speed());
-    driver_follower.GetSteeringController().SetLookAheadDistance(5);
-    driver_follower.GetSteeringController().SetGains(0.8, 0, 0);
-    driver_follower.GetSpeedController().SetGains(0.4, 0, 0);
-    driver_follower.Initialize();
+    driver_follower.reset(new ChPathFollowerDriver (*veh, path, "my_path", inp->Get_target_speed()) );
+    driver_follower->GetSteeringController().SetLookAheadDistance(5);
+    driver_follower->GetSteeringController().SetGains(0.8, 0, 0);
+    driver_follower->GetSpeedController().SetGains(0.4, 0, 0);
+    driver_follower->Initialize();
 
     // Finalize construction of visualization assets
     app.AssetBindAll();
@@ -171,12 +171,12 @@ int main(int argc, char* argv[]) {
             break;
 
         // Driver inputs
-        ChDriver::Inputs driver_inputs = driver_follower.GetInputs();
+        ChDriver::Inputs driver_inputs = driver_follower->GetInputs();
 
 
         // Update sentinel and target location markers for the path-follower controller.
-        const ChVector<>& pS = driver_follower.GetSteeringController().GetSentinelLocation();
-        const ChVector<>& pT = driver_follower.GetSteeringController().GetTargetLocation();
+        const ChVector<>& pS = driver_follower->GetSteeringController().GetSentinelLocation();
+        const ChVector<>& pT = driver_follower->GetSteeringController().GetTargetLocation();
         ballS->setPosition(irr::core::vector3df((irr::f32)pS.x(), (irr::f32)pS.y(), (irr::f32)pS.z()));
         ballT->setPosition(irr::core::vector3df((irr::f32)pT.x(), (irr::f32)pT.y(), (irr::f32)pT.z()));
 
@@ -186,14 +186,14 @@ int main(int argc, char* argv[]) {
 
 
         // Update modules (process inputs from other modules)
-        driver_follower.Synchronize(time);
+        driver_follower->Synchronize(time);
         terrain->Synchronize(time);
         veh->Synchronize(time, driver_inputs, *terrain);
         std::string msg = "Follower driver";
         app.Synchronize(msg, driver_inputs);
 
         // Advance simulation for one timestep for all modules
-        driver_follower.Advance(step_size);
+        driver_follower->Advance(step_size);
         terrain->Advance(step_size);
         veh->Advance(step_size);
         app.Advance(step_size);
