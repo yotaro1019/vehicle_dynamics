@@ -46,6 +46,7 @@ std::shared_ptr<Input_data> inp;
 std::shared_ptr<WheeledVehicle> veh;
 std::shared_ptr<RigidTerrain> terrain;
 std::shared_ptr<ChPathFollowerDriver> driver_follower;
+std::shared_ptr<ChWheeledVehicleIrrApp> app;
 
 int main(int argc, char* argv[]) {
     inp.reset(new Input_data("vehicle_params.inp") );
@@ -114,23 +115,23 @@ int main(int argc, char* argv[]) {
     std::shared_ptr<ChBezierCurve> path = ChBezierCurve::read(vehicle::GetDataFile(inp->Get_path_txt_fname()));
 
 
-    ChWheeledVehicleIrrApp app(veh.get(), L"Steering PID Controller Demo", irr::core::dimension2d<irr::u32>(800, 640));
-
-    app.SetHUDLocation(500, 20);
-    app.SetSkyBox();
-    app.AddTypicalLogo();
-    app.AddTypicalLights(irr::core::vector3df(-150.f, -150.f, 200.f), irr::core::vector3df(-150.f, 150.f, 200.f), 100,
+    app.reset(new ChWheeledVehicleIrrApp(veh.get(), L"Steering PID Controller Demo", irr::core::dimension2d<irr::u32>(800, 640)) );
+    
+    app->SetHUDLocation(500, 20);
+    app->SetSkyBox();
+    app->AddTypicalLogo();
+    app->AddTypicalLights(irr::core::vector3df(-150.f, -150.f, 200.f), irr::core::vector3df(-150.f, 150.f, 200.f), 100,
                          100);
-    app.AddTypicalLights(irr::core::vector3df(150.f, -150.f, 200.f), irr::core::vector3df(150.0f, 150.f, 200.f), 100,
+    app->AddTypicalLights(irr::core::vector3df(150.f, -150.f, 200.f), irr::core::vector3df(150.0f, 150.f, 200.f), 100,
                          100);
-    app.EnableGrid(false);
-    app.SetChaseCamera(inp->Get_cam_trackPoint(), 6.0, 0.5);
+    app->EnableGrid(false);
+    app->SetChaseCamera(inp->Get_cam_trackPoint(), 6.0, 0.5);
 
-    app.SetTimestep(step_size);
+    app->SetTimestep(step_size);
 
     // Visualization of controller points (sentinel & target)
-    irr::scene::IMeshSceneNode* ballS = app.GetSceneManager()->addSphereSceneNode(0.1f);
-    irr::scene::IMeshSceneNode* ballT = app.GetSceneManager()->addSphereSceneNode(0.1f);
+    irr::scene::IMeshSceneNode* ballS = app->GetSceneManager()->addSphereSceneNode(0.1f);
+    irr::scene::IMeshSceneNode* ballT = app->GetSceneManager()->addSphereSceneNode(0.1f);
     ballS->getMaterial(0).EmissiveColor = irr::video::SColor(0, 255, 0, 0);
     ballT->getMaterial(0).EmissiveColor = irr::video::SColor(0, 0, 255, 0);
 
@@ -144,8 +145,8 @@ int main(int argc, char* argv[]) {
     driver_follower->Initialize();
 
     // Finalize construction of visualization assets
-    app.AssetBindAll();
-    app.AssetUpdateAll();
+    app->AssetBindAll();
+    app->AssetUpdateAll();
 
 
     // ---------------
@@ -160,7 +161,7 @@ int main(int argc, char* argv[]) {
     int sim_frame = 0;
 
     ChRealtimeStepTimer realtime_timer;
-    while (app.GetDevice()->run()) {
+    while (app->GetDevice()->run()) {
         // Extract system state
         double time = veh->GetSystem()->GetChTime();
         ChVector<> acc_CG = veh->GetChassisBody()->GetPos_dtdt();
@@ -180,9 +181,9 @@ int main(int argc, char* argv[]) {
         ballS->setPosition(irr::core::vector3df((irr::f32)pS.x(), (irr::f32)pS.y(), (irr::f32)pS.z()));
         ballT->setPosition(irr::core::vector3df((irr::f32)pT.x(), (irr::f32)pT.y(), (irr::f32)pT.z()));
 
-        app.BeginScene(true, true, irr::video::SColor(255, 140, 161, 192));
-        app.DrawAll();
-        app.EndScene();
+        app->BeginScene(true, true, irr::video::SColor(255, 140, 161, 192));
+        app->DrawAll();
+        app->EndScene();
 
 
         // Update modules (process inputs from other modules)
@@ -190,13 +191,13 @@ int main(int argc, char* argv[]) {
         terrain->Synchronize(time);
         veh->Synchronize(time, driver_inputs, *terrain);
         std::string msg = "Follower driver";
-        app.Synchronize(msg, driver_inputs);
+        app->Synchronize(msg, driver_inputs);
 
         // Advance simulation for one timestep for all modules
         driver_follower->Advance(step_size);
         terrain->Advance(step_size);
         veh->Advance(step_size);
-        app.Advance(step_size);
+        app->Advance(step_size);
 
         // Increment simulation frame number
         sim_frame++;
