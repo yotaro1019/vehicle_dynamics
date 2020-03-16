@@ -53,6 +53,7 @@ std::shared_ptr<ChWheeledVehicleIrrApp> app;
 irr::scene::IMeshSceneNode* ballS;  //sentinel point(driver)
 irr::scene::IMeshSceneNode* ballT;  // target point(driver)
 
+ChVector<> driver_pos;
 //params
 double step_size, tire_step_size;
 
@@ -69,7 +70,6 @@ void initialize(){
     //==========================================
     //setup params
     step_size = inp->Get_coupling_dt();
-    tire_step_size = inp->Get_tire_step_size();
     // ------------------------------
     // Create the vehicle and terrain
     // ------------------------------
@@ -123,7 +123,7 @@ void initialize(){
     // From data file
     std::shared_ptr<ChBezierCurve> path = ChBezierCurve::read(vehicle::GetDataFile(inp->Get_path_txt_fname()));
 
-
+    driver_pos = veh->GetChassis()->GetLocalDriverCoordsys().pos;
     app.reset(new ChWheeledVehicleIrrApp(veh.get(), L"Steering PID Controller Demo", irr::core::dimension2d<irr::u32>(800, 640)) );
     
     app->SetHUDLocation(500, 20);
@@ -159,34 +159,14 @@ void initialize(){
    
 }
 
-
-int main(int argc, char* argv[]) {
-    initialize();
-    // ---------------
-    // Simulation loop
-    // ---------------
-
-    // Driver location in vehicle local frame
-    ChVector<> driver_pos = veh->GetChassis()->GetLocalDriverCoordsys().pos;
-
-
-    // Initialize simulation frame counter and simulation time
-    int sim_frame = 0;
-
-    ChRealtimeStepTimer realtime_timer;
-    while (app->GetDevice()->run()) {
+void advance(){
         // Extract system state
         double time = veh->GetSystem()->GetChTime();
         ChVector<> acc_CG = veh->GetChassisBody()->GetPos_dtdt();
         ChVector<> acc_driver = veh->GetVehicleAcceleration(driver_pos);
 
-        // End simulation
-        if (time >= inp->Get_calc_t_end())
-            break;
-
         // Driver inputs
         ChDriver::Inputs driver_inputs = driver_follower->GetInputs();
-
 
         // Update sentinel and target location markers for the path-follower controller.
         const ChVector<>& pS = driver_follower->GetSteeringController().GetSentinelLocation();
@@ -212,11 +192,18 @@ int main(int argc, char* argv[]) {
         veh->Advance(step_size);
         app->Advance(step_size);
 
-        // Increment simulation frame number
-        sim_frame++;
+        time += step_size;
+}
 
-        // Spin in place for real time to catch up
-        realtime_timer.Spin(step_size);
+int main(int argc, char* argv[]) {
+    initialize();
+
+    // Initialize simulation frame counter and simulation time
+    double time = inp->Get_calc_t_begin();
+
+    while (time <= inp->Get_calc_t_end()) {
+        advance();
+        time += step_size;
     }
 
     return 0;
