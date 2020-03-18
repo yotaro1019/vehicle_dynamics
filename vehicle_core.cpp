@@ -175,7 +175,11 @@ void Vehicle_model::advance(double adv_step_size){
 void Vehicle_model::vehicle_initialize(){
     initialize();
 }
-void Vehicle_model::vehicle_advance(){
+void Vehicle_model::vehicle_advance(double fforce[6]){
+    for(int i = 0; i<6; i++){
+        GetLog() << fforce[i] << "  ";
+    }
+    GetLog() << "\n";
     double avd_step_size = this->step_size;
     advance(avd_step_size);
 }

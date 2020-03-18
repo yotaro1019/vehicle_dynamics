@@ -42,7 +42,7 @@ void advance(double adv_step_size);
 
 public:
 void vehicle_initialize();
-void vehicle_advance();
+void vehicle_advance(double fforce[6]);
 };
 
 #endif
