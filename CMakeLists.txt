@@ -125,7 +125,7 @@ endif()
 # files in your project. 
 #--------------------------------------------------------------
 
-add_executable(main.exe inp_init_data.cpp vehicle_core.cpp)
+add_executable(main.exe inp_init_data.cpp vehicle_core.cpp main.cpp)
 
 #--------------------------------------------------------------
 # Set properties for your executable target

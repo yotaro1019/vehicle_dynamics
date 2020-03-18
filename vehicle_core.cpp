@@ -20,6 +20,7 @@
 // =============================================================================
 
 #include "inp_init_data.h"
+#include "vehicle_core.h"
 
 #include "chrono/core/ChRealtimeStep.h"
 #include "chrono/utils/ChFilters.h"
@@ -42,182 +43,140 @@ using namespace chrono;
 using namespace chrono::geometry;
 using namespace chrono::vehicle;
 
-class Vehicle_model{
-    //shared_ptr
-    std::shared_ptr<Input_data> inp;
-    std::shared_ptr<WheeledVehicle> veh;
-    std::shared_ptr<RigidTerrain> terrain;
-    std::shared_ptr<ChPathFollowerDriver> driver_follower;
-    std::shared_ptr<ChWheeledVehicleIrrApp> app;
+void Vehicle_model::initialize(){
+     inp.reset(new Input_data("vehicle_params.inp") );
+     filesystem::path current_dir(filesystem::path().getcwd());
+     const std::string current_dir_path = current_dir.str();
+     GetLog() << "Copyright (c) 2017 projectchrono.org\nChrono version: " << CHRONO_VERSION << "\n\n";
+     
+     chrono::SetChronoDataPath(CHRONO_DATA_DIR);
+     chrono::vehicle::SetDataPath(current_dir_path + "/" + inp->Get_inp_dir_name() + "/");
 
-    irr::scene::IMeshSceneNode* ballS;  //sentinel point(driver)
-    irr::scene::IMeshSceneNode* ballT;  // target point(driver)
+     //==========================================
+     //setup params
+     step_size = inp->Get_coupling_dt();
+     // ------------------------------
+     // Create the vehicle and terrain
+     // ------------------------------
+     // Create the vehicle system
+     veh.reset(new WheeledVehicle (vehicle::GetDataFile(inp->Get_vehicle_JSON_fname()), ChMaterialSurface::NSC));
+     //WheeledVehicle vehicle(vehicle::GetDataFile(inp->Get_vehicle_JSON_fname()), ChMaterialSurface::NSC);
+     veh->Initialize(ChCoordsys<>(inp->Get_vehicle_init_loc(), inp->Get_vehicle_init_rot()));
+     ////veh->GetChassis()->SetFixed(true);
+     veh->SetChassisVisualizationType(inp->Get_chassis_viz_type());
+     veh->SetSuspensionVisualizationType(inp->Get_parts_viz_type());
+     veh->SetSteeringVisualizationType(inp->Get_parts_viz_type());
+     veh->SetWheelVisualizationType(inp->Get_wheel_viz_type());
 
-    ChVector<> driver_pos;
-    //params
-    double step_size, tire_step_size;
+     // Create the ground
+     terrain.reset(new RigidTerrain(veh->GetSystem(), vehicle::GetDataFile(inp->Get_terrain_JSON_fname())) );
+     // Create and initialize the powertrain system
+     std::shared_ptr<ChPowertrain> powertrain = ReadPowertrainJSON( vehicle::GetDataFile(inp->Get_powertrain_JSON_fname()) ); 
+     veh->InitializePowertrain(powertrain);
 
-    //function
-    void initialize(){
-        inp.reset(new Input_data("vehicle_params.inp") );
-        filesystem::path current_dir(filesystem::path().getcwd());
-        const std::string current_dir_path = current_dir.str();
-        GetLog() << "Copyright (c) 2017 projectchrono.org\nChrono version: " << CHRONO_VERSION << "\n\n";
-        
-        chrono::SetChronoDataPath(CHRONO_DATA_DIR);
-        chrono::vehicle::SetDataPath(current_dir_path + "/" + inp->Get_inp_dir_name() + "/");
+     //create and initialize the tires
+     {int naxle = 0;
+     int ntire_file = inp->Get_ntire_JSON();
+         for (std::shared_ptr< ChAxle > axle : veh->GetAxles()) {
+             std::string tire_fname;
+             if(ntire_file == 1){
+                 tire_fname = inp->Get_tire_JSON_fnames(0);
+             }else if(ntire_file == 2){
+                 if(naxle ==0){
+                     tire_fname = inp->Get_tire_JSON_fnames(0);
+                 }else{
+                     tire_fname = inp->Get_tire_JSON_fnames(1);
+                 }
+             }else{
+                 if(veh->GetNumberAxles() > naxle){
+                     tire_fname = inp->Get_tire_JSON_fnames(naxle);
+                 }
+             }
+             GetLog() << "naxle = " << naxle << "\t" << tire_fname << "\n";
+             std::shared_ptr<ChTire> tireL = ReadTireJSON( vehicle::GetDataFile(tire_fname) );
+             std::shared_ptr<ChTire> tireR = ReadTireJSON( vehicle::GetDataFile(tire_fname) );
+             veh->InitializeTire(tireL, axle->m_wheels[0], inp->Get_tire_viz_type());
+             veh->InitializeTire(tireR, axle->m_wheels[1], inp->Get_tire_viz_type());
+             naxle++;
+         }
+     }
 
-        //==========================================
-        //setup params
-        step_size = inp->Get_coupling_dt();
-        // ------------------------------
-        // Create the vehicle and terrain
-        // ------------------------------
-        // Create the vehicle system
-        veh.reset(new WheeledVehicle (vehicle::GetDataFile(inp->Get_vehicle_JSON_fname()), ChMaterialSurface::NSC));
-        //WheeledVehicle vehicle(vehicle::GetDataFile(inp->Get_vehicle_JSON_fname()), ChMaterialSurface::NSC);
-        veh->Initialize(ChCoordsys<>(inp->Get_vehicle_init_loc(), inp->Get_vehicle_init_rot()));
-        ////veh->GetChassis()->SetFixed(true);
-        veh->SetChassisVisualizationType(inp->Get_chassis_viz_type());
-        veh->SetSuspensionVisualizationType(inp->Get_parts_viz_type());
-        veh->SetSteeringVisualizationType(inp->Get_parts_viz_type());
-        veh->SetWheelVisualizationType(inp->Get_wheel_viz_type());
+     // ----------------------
+     // Create the Bezier path
+     // ----------------------
 
-        // Create the ground
-        terrain.reset(new RigidTerrain(veh->GetSystem(), vehicle::GetDataFile(inp->Get_terrain_JSON_fname())) );
-        // Create and initialize the powertrain system
-        std::shared_ptr<ChPowertrain> powertrain = ReadPowertrainJSON( vehicle::GetDataFile(inp->Get_powertrain_JSON_fname()) ); 
-        veh->InitializePowertrain(powertrain);
+     // From data file
+     std::shared_ptr<ChBezierCurve> path = ChBezierCurve::read(vehicle::GetDataFile(inp->Get_path_txt_fname()));
 
-        //create and initialize the tires
-        {int naxle = 0;
-        int ntire_file = inp->Get_ntire_JSON();
-            for (std::shared_ptr< ChAxle > axle : veh->GetAxles()) {
-                std::string tire_fname;
-                if(ntire_file == 1){
-                    tire_fname = inp->Get_tire_JSON_fnames(0);
-                }else if(ntire_file == 2){
-                    if(naxle ==0){
-                        tire_fname = inp->Get_tire_JSON_fnames(0);
-                    }else{
-                        tire_fname = inp->Get_tire_JSON_fnames(1);
-                    }
-                }else{
-                    if(veh->GetNumberAxles() > naxle){
-                        tire_fname = inp->Get_tire_JSON_fnames(naxle);
-                    }
-                }
-                GetLog() << "naxle = " << naxle << "\t" << tire_fname << "\n";
-                std::shared_ptr<ChTire> tireL = ReadTireJSON( vehicle::GetDataFile(tire_fname) );
-                std::shared_ptr<ChTire> tireR = ReadTireJSON( vehicle::GetDataFile(tire_fname) );
-                veh->InitializeTire(tireL, axle->m_wheels[0], inp->Get_tire_viz_type());
-                veh->InitializeTire(tireR, axle->m_wheels[1], inp->Get_tire_viz_type());
-                naxle++;
-            }
-        }
+     driver_pos = veh->GetChassis()->GetLocalDriverCoordsys().pos;
+     app.reset(new ChWheeledVehicleIrrApp(veh.get(), L"Steering PID Controller Demo", irr::core::dimension2d<irr::u32>(800, 640)) );
+     
+     app->SetHUDLocation(500, 20);
+     app->SetSkyBox();
+     app->AddTypicalLogo();
+     app->AddTypicalLights(irr::core::vector3df(-150.f, -150.f, 200.f), irr::core::vector3df(-150.f, 150.f, 200.f), 100,
+                         100);
+     app->AddTypicalLights(irr::core::vector3df(150.f, -150.f, 200.f), irr::core::vector3df(150.0f, 150.f, 200.f), 100,
+                         100);
+     app->EnableGrid(false);
+     app->SetChaseCamera(inp->Get_cam_trackPoint(), 6.0, 0.5);
 
-        // ----------------------
-        // Create the Bezier path
-        // ----------------------
+     app->SetTimestep(step_size);
 
-        // From data file
-        std::shared_ptr<ChBezierCurve> path = ChBezierCurve::read(vehicle::GetDataFile(inp->Get_path_txt_fname()));
+     // Visualization of controller points (sentinel & target)
+     ballS = app->GetSceneManager()->addSphereSceneNode(0.1f);
+     ballT = app->GetSceneManager()->addSphereSceneNode(0.1f);
+     ballS->getMaterial(0).EmissiveColor = irr::video::SColor(0, 255, 0, 0);
+     ballT->getMaterial(0).EmissiveColor = irr::video::SColor(0, 0, 255, 0);
 
-        driver_pos = veh->GetChassis()->GetLocalDriverCoordsys().pos;
-        app.reset(new ChWheeledVehicleIrrApp(veh.get(), L"Steering PID Controller Demo", irr::core::dimension2d<irr::u32>(800, 640)) );
-        
-        app->SetHUDLocation(500, 20);
-        app->SetSkyBox();
-        app->AddTypicalLogo();
-        app->AddTypicalLights(irr::core::vector3df(-150.f, -150.f, 200.f), irr::core::vector3df(-150.f, 150.f, 200.f), 100,
-                            100);
-        app->AddTypicalLights(irr::core::vector3df(150.f, -150.f, 200.f), irr::core::vector3df(150.0f, 150.f, 200.f), 100,
-                            100);
-        app->EnableGrid(false);
-        app->SetChaseCamera(inp->Get_cam_trackPoint(), 6.0, 0.5);
+     // -------------------------
+     // Create the driver systems
+     // -------------------------
+     driver_follower.reset(new ChPathFollowerDriver (*veh, path, "my_path", inp->Get_target_speed()) );
+     driver_follower->GetSteeringController().SetLookAheadDistance(5);
+     driver_follower->GetSteeringController().SetGains(0.8, 0, 0);
+     driver_follower->GetSpeedController().SetGains(0.4, 0, 0);
+     driver_follower->Initialize();
 
-        app->SetTimestep(step_size);
-
-        // Visualization of controller points (sentinel & target)
-        ballS = app->GetSceneManager()->addSphereSceneNode(0.1f);
-        ballT = app->GetSceneManager()->addSphereSceneNode(0.1f);
-        ballS->getMaterial(0).EmissiveColor = irr::video::SColor(0, 255, 0, 0);
-        ballT->getMaterial(0).EmissiveColor = irr::video::SColor(0, 0, 255, 0);
-
-        // -------------------------
-        // Create the driver systems
-        // -------------------------
-        driver_follower.reset(new ChPathFollowerDriver (*veh, path, "my_path", inp->Get_target_speed()) );
-        driver_follower->GetSteeringController().SetLookAheadDistance(5);
-        driver_follower->GetSteeringController().SetGains(0.8, 0, 0);
-        driver_follower->GetSpeedController().SetGains(0.4, 0, 0);
-        driver_follower->Initialize();
-
-        // Finalize construction of visualization assets
-        app->AssetBindAll();
-        app->AssetUpdateAll();
-
-    
+     // Finalize construction of visualization assets
+     app->AssetBindAll();
+     app->AssetUpdateAll();
     }
 
-    void advance(){
-            // Extract system state
-            double time = veh->GetSystem()->GetChTime();
-            ChVector<> acc_CG = veh->GetChassisBody()->GetPos_dtdt();
-            ChVector<> acc_driver = veh->GetVehicleAcceleration(driver_pos);
-
-            // Driver inputs
-            ChDriver::Inputs driver_inputs = driver_follower->GetInputs();
-
-            // Update sentinel and target location markers for the path-follower controller.
-            const ChVector<>& pS = driver_follower->GetSteeringController().GetSentinelLocation();
-            const ChVector<>& pT = driver_follower->GetSteeringController().GetTargetLocation();
-            ballS->setPosition(irr::core::vector3df((irr::f32)pS.x(), (irr::f32)pS.y(), (irr::f32)pS.z()));
-            ballT->setPosition(irr::core::vector3df((irr::f32)pT.x(), (irr::f32)pT.y(), (irr::f32)pT.z()));
-
-            app->BeginScene(true, true, irr::video::SColor(255, 140, 161, 192));
-            app->DrawAll();
-            app->EndScene();
-
-
-            // Update modules (process inputs from other modules)
-            driver_follower->Synchronize(time);
-            terrain->Synchronize(time);
-            veh->Synchronize(time, driver_inputs, *terrain);
-            std::string msg = "Follower driver";
-            app->Synchronize(msg, driver_inputs);
-
-            // Advance simulation for one timestep for all modules
-            driver_follower->Advance(step_size);
-            terrain->Advance(step_size);
-            veh->Advance(step_size);
-            app->Advance(step_size);
-
-            time += step_size;
-    }
-
-    public:
-    void vehicle_initialize(){
-        initialize();
-    }
-    void vehicle_advance(){
-        advance();
-    }
-};
-
-int main(int argc, char* argv[]) {
-    Vehicle_model vehicle;
-    vehicle.vehicle_initialize();
-
-    // Initialize simulation frame counter and simulation time
-    double time = 0.0;
-    double t_end = 2.0;
-    double step_size = 0.001;
-
-    while (time <= t_end) {
-        vehicle.vehicle_advance();
-        time += step_size;
-    }
-
-    return 0;
+void Vehicle_model::advance(double adv_step_size){
+    // Extract system state
+    double time = veh->GetSystem()->GetChTime();
+    ChVector<> acc_CG = veh->GetChassisBody()->GetPos_dtdt();
+    ChVector<> acc_driver = veh->GetVehicleAcceleration(driver_pos);
+    // Driver inputs
+    ChDriver::Inputs driver_inputs = driver_follower->GetInputs();
+    // Update sentinel and target location markers for the path-follower controller.
+    const ChVector<>& pS = driver_follower->GetSteeringController().GetSentinelLocation();
+    const ChVector<>& pT = driver_follower->GetSteeringController().GetTargetLocation();
+    ballS->setPosition(irr::core::vector3df((irr::f32)pS.x(), (irr::f32)pS.y(), (irr::f32)pS.z()));
+    ballT->setPosition(irr::core::vector3df((irr::f32)pT.x(), (irr::f32)pT.y(), (irr::f32)pT.z()));
+    app->BeginScene(true, true, irr::video::SColor(255, 140, 161, 192));
+    app->DrawAll();
+    app->EndScene();
+    // Update modules (process inputs from other modules)
+    driver_follower->Synchronize(time);
+    terrain->Synchronize(time);
+    veh->Synchronize(time, driver_inputs, *terrain);
+    std::string msg = "Follower driver";
+    app->Synchronize(msg, driver_inputs);
+    // Advance simulation for one timestep for all modules
+    driver_follower->Advance(adv_step_size);
+    terrain->Advance(adv_step_size);
+    veh->Advance(adv_step_size);
+    app->Advance(adv_step_size);
+    time += adv_step_size;
 }
+
+void Vehicle_model::vehicle_initialize(){
+    initialize();
+}
+void Vehicle_model::vehicle_advance(){
+    double avd_step_size = this->step_size;
+    advance(avd_step_size);
+}
+
