@@ -211,7 +211,7 @@ void  Vehicle_model::conv_axis(double array[6]){
 //public
 void Vehicle_model::vehicle_initialize(){
     inp.reset(new Input_data("vehicle_params.inp") ); //read params
-    out.reset(new Output());
+    out.reset(new Output(*inp));
     initialize();
     current_time = 0.0;
 }

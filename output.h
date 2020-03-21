@@ -22,7 +22,7 @@ using namespace chrono;
 using namespace chrono::vehicle;
 class  CH_VEHICLE_API  Output{    
   public:
-    //Output(Input_data inp, WheeledVehicle &veh);
+    Output(Input_data &inp);
     void write(double time, WheeledVehicle &veh);  
 };
 
