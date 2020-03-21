@@ -108,26 +108,7 @@ void Vehicle_model::initialize(){
      std::shared_ptr<ChBezierCurve> path = ChBezierCurve::read(vehicle::GetDataFile(inp->Get_path_txt_fname()));
 
      driver_pos = veh->GetChassis()->GetLocalDriverCoordsys().pos;
-     app.reset(new ChWheeledVehicleIrrApp(veh.get(), L"Steering PID Controller Demo", irr::core::dimension2d<irr::u32>(800, 640)) );
-     
-     app->SetHUDLocation(500, 20);
-     app->SetSkyBox();
-     app->AddTypicalLogo();
-     app->AddTypicalLights(irr::core::vector3df(-150.f, -150.f, 200.f), irr::core::vector3df(-150.f, 150.f, 200.f), 100,
-                         100);
-     app->AddTypicalLights(irr::core::vector3df(150.f, -150.f, 200.f), irr::core::vector3df(150.0f, 150.f, 200.f), 100,
-                         100);
-     app->EnableGrid(false);
-     app->SetChaseCamera(inp->Get_cam_trackPoint(), 6.0, 0.5);
-
-     app->SetTimestep(step_size);
-
-     // Visualization of controller points (sentinel & target)
-     ballS = app->GetSceneManager()->addSphereSceneNode(0.1f);
-     ballT = app->GetSceneManager()->addSphereSceneNode(0.1f);
-     ballS->getMaterial(0).EmissiveColor = irr::video::SColor(0, 255, 0, 0);
-     ballT->getMaterial(0).EmissiveColor = irr::video::SColor(0, 0, 255, 0);
-
+     irricht_initialize(step_size);
      // -------------------------
      // Create the driver systems
      // -------------------------
@@ -178,6 +159,29 @@ void Vehicle_model::advance(double adv_step_size, double fforce[6]){
     veh->Advance(adv_step_size);
     app->Advance(adv_step_size);
     time += adv_step_size;
+}
+
+void Vehicle_model::irricht_initialize(double step_size){
+     app.reset(new ChWheeledVehicleIrrApp(veh.get(), L"Steering PID Controller Demo", irr::core::dimension2d<irr::u32>(800, 640)) );
+     
+     app->SetHUDLocation(500, 20);
+     app->SetSkyBox();
+     app->AddTypicalLogo();
+     app->AddTypicalLights(irr::core::vector3df(-150.f, -150.f, 200.f), irr::core::vector3df(-150.f, 150.f, 200.f), 100,
+                         100);
+     app->AddTypicalLights(irr::core::vector3df(150.f, -150.f, 200.f), irr::core::vector3df(150.0f, 150.f, 200.f), 100,
+                         100);
+     app->EnableGrid(false);
+     app->SetChaseCamera(inp->Get_cam_trackPoint(), 6.0, 0.5);
+
+     app->SetTimestep(step_size);
+
+     // Visualization of controller points (sentinel & target)
+     ballS = app->GetSceneManager()->addSphereSceneNode(0.1f);
+     ballT = app->GetSceneManager()->addSphereSceneNode(0.1f);
+     ballS->getMaterial(0).EmissiveColor = irr::video::SColor(0, 255, 0, 0);
+     ballT->getMaterial(0).EmissiveColor = irr::video::SColor(0, 0, 255, 0);
+
 }
 
 

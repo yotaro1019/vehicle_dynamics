@@ -40,6 +40,8 @@ double step_size, tire_step_size;
 void initialize();      //initialize vehicle system
 void advance(double adv_step_size, double fforce[6] = {0}); //advance vehicle step(adv_step_size : current time step )
 
+void irricht_initialize(double step_size); //initialize irricht
+
 void conv_axis(double array[6]);   //coordinate transformation fo rotation and translatiion direction
 
 public:
