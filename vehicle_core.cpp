@@ -139,25 +139,17 @@ void Vehicle_model::advance(double adv_step_size, double fforce[6]){
     ChVector<> acc_driver = veh->GetVehicleAcceleration(driver_pos);
     // Driver inputs
     ChDriver::Inputs driver_inputs = driver_follower->GetInputs();
-    // Update sentinel and target location markers for the path-follower controller.
-    const ChVector<>& pS = driver_follower->GetSteeringController().GetSentinelLocation();
-    const ChVector<>& pT = driver_follower->GetSteeringController().GetTargetLocation();
-    ballS->setPosition(irr::core::vector3df((irr::f32)pS.x(), (irr::f32)pS.y(), (irr::f32)pS.z()));
-    ballT->setPosition(irr::core::vector3df((irr::f32)pT.x(), (irr::f32)pT.y(), (irr::f32)pT.z()));
-    app->BeginScene(true, true, irr::video::SColor(255, 140, 161, 192));
-    app->DrawAll();
-    app->EndScene();
+
     // Update modules (process inputs from other modules)
     driver_follower->Synchronize(time);
     terrain->Synchronize(time);
     veh->Synchronize(time, driver_inputs, *terrain, act_fforce, act_fmoment);
-    std::string msg = "Follower driver";
-    app->Synchronize(msg, driver_inputs);
+
     // Advance simulation for one timestep for all modules
     driver_follower->Advance(adv_step_size);
     terrain->Advance(adv_step_size);
     veh->Advance(adv_step_size);
-    app->Advance(adv_step_size);
+    irricht_advance(adv_step_size, driver_inputs);
     time += adv_step_size;
 }
 
@@ -182,6 +174,21 @@ void Vehicle_model::irricht_initialize(double step_size){
      ballS->getMaterial(0).EmissiveColor = irr::video::SColor(0, 255, 0, 0);
      ballT->getMaterial(0).EmissiveColor = irr::video::SColor(0, 0, 255, 0);
 
+}
+
+void Vehicle_model::irricht_advance(double step_size, ChDriver::Inputs driver_inputs){
+    //irricht advance
+    // Update sentinel and target location markers for the path-follower controller.
+    const ChVector<>& pS = driver_follower->GetSteeringController().GetSentinelLocation();
+    const ChVector<>& pT = driver_follower->GetSteeringController().GetTargetLocation();
+    ballS->setPosition(irr::core::vector3df((irr::f32)pS.x(), (irr::f32)pS.y(), (irr::f32)pS.z()));
+    ballT->setPosition(irr::core::vector3df((irr::f32)pT.x(), (irr::f32)pT.y(), (irr::f32)pT.z()));
+    app->BeginScene(true, true, irr::video::SColor(255, 140, 161, 192));
+    app->DrawAll();
+    app->EndScene();
+    std::string msg = "Follower driver";
+    app->Synchronize(msg, driver_inputs);
+    app->Advance(step_size);
 }
 
 
