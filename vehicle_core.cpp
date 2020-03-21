@@ -151,6 +151,7 @@ void Vehicle_model::advance(double adv_step_size, double fforce[6]){
     veh->Advance(adv_step_size);
     irricht_advance(adv_step_size, driver_inputs);
     time += adv_step_size;
+    current_time += adv_step_size;
 }
 
 void Vehicle_model::irricht_initialize(double step_size){
@@ -210,7 +211,9 @@ void  Vehicle_model::conv_axis(double array[6]){
 //public
 void Vehicle_model::vehicle_initialize(){
     inp.reset(new Input_data("vehicle_params.inp") ); //read params
+    out.reset(new Output());
     initialize();
+    current_time = 0.0;
 }
 void Vehicle_model::vehicle_advance(double fforce[6]){
 
@@ -218,5 +221,7 @@ void Vehicle_model::vehicle_advance(double fforce[6]){
   
     double avd_step_size = this->step_size;
     advance(avd_step_size, fforce);
+
+    out->write(current_time, *veh);
 }
 

@@ -19,6 +19,8 @@
 #include "chrono_vehicle/ChConfigVehicle.h"
 #include "chrono_thirdparty/filesystem/path.h"
 
+#include"output.h"
+
 using namespace chrono;
 using namespace chrono::geometry;
 using namespace chrono::vehicle;
@@ -26,16 +28,27 @@ using namespace chrono::vehicle;
 class Vehicle_model{
 private:
 //shared_ptr
-std::shared_ptr<Input_data> inp;
-std::shared_ptr<WheeledVehicle> veh;
-std::shared_ptr<RigidTerrain> terrain;
-std::shared_ptr<ChPathFollowerDriver> driver_follower;
-std::shared_ptr<ChWheeledVehicleIrrApp> app;
+std::shared_ptr<Input_data> inp;    //object of input params
+std::shared_ptr<WheeledVehicle> veh;    //object of WheeledVehicle
+std::shared_ptr<RigidTerrain> terrain;  //object of RigidTerrain
+
+std::shared_ptr<ChPathFollowerDriver> driver_follower;  //object of PathFollower
 irr::scene::IMeshSceneNode* ballS;  //sentinel point(driver)
 irr::scene::IMeshSceneNode* ballT;  // target point(driver)
 ChVector<> driver_pos;
+
+std::shared_ptr<ChWheeledVehicleIrrApp> app;    //object of Irricht
+
+std::shared_ptr<Output> out;
+
+
+
 //params
 double step_size, tire_step_size;
+
+//statud
+double current_time;
+
 //function
 void initialize();      //initialize vehicle system
 void advance(double adv_step_size, double fforce[6] = {0}); //advance vehicle step(adv_step_size : current time step )
