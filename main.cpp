@@ -8,7 +8,7 @@ int main(){
 
     double time = 0.0;
     double dt = 0.001;
-    double t_end = 3.0;
+    double t_end = 10.0;
     double fforce[6];
     int step= 0;
     while(time <= t_end){

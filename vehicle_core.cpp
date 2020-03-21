@@ -143,7 +143,16 @@ void Vehicle_model::initialize(){
      app->AssetUpdateAll();
     }
 
-void Vehicle_model::advance(double adv_step_size){
+void Vehicle_model::advance(double adv_step_size, double fforce[6]){
+   
+    //aerodynaimics 
+    for(int i = 0; i<6; i++){
+        GetLog() << fforce[i] << " ";
+    }
+    GetLog() << "\n";
+    ChVector<> act_fforce(fforce[0], fforce[1], fforce[2]); 
+    ChVector<> act_fmoment(fforce[3], fforce[4], fforce[5]);
+   
     // Extract system state
     double time = veh->GetSystem()->GetChTime();
     ChVector<> acc_CG = veh->GetChassisBody()->GetPos_dtdt();
@@ -161,7 +170,7 @@ void Vehicle_model::advance(double adv_step_size){
     // Update modules (process inputs from other modules)
     driver_follower->Synchronize(time);
     terrain->Synchronize(time);
-    veh->Synchronize(time, driver_inputs, *terrain);
+    veh->Synchronize(time, driver_inputs, *terrain, act_fforce, act_fmoment);
     std::string msg = "Follower driver";
     app->Synchronize(msg, driver_inputs);
     // Advance simulation for one timestep for all modules
@@ -195,9 +204,8 @@ void Vehicle_model::vehicle_initialize(){
 void Vehicle_model::vehicle_advance(double fforce[6]){
 
     conv_axis(fforce);  //convert cordinate from CFD to Vehicle_dynamics
-
-    GetLog() << "\n\n";   
+  
     double avd_step_size = this->step_size;
-    advance(avd_step_size);
+    advance(avd_step_size, fforce);
 }
 
