@@ -37,12 +37,14 @@ ChVector<> driver_pos;
 //params
 double step_size, tire_step_size;
 //function
-void initialize();
-void advance(double adv_step_size);
+void initialize();      //initialize vehicle system
+void advance(double adv_step_size); //advance vehicle step(adv_step_size : current time step )
+
+void conv_axis(double array[6]);   //coordinate transformation fo rotation and translatiion direction
 
 public:
 void vehicle_initialize();
-void vehicle_advance(double fforce[6]);
+void vehicle_advance(double fforce[6]); //fforce(fx,fy,fz,mx,my,mz)
 };
 
 #endif

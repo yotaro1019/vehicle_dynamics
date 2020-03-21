@@ -172,14 +172,31 @@ void Vehicle_model::advance(double adv_step_size){
     time += adv_step_size;
 }
 
+
+void  Vehicle_model::conv_axis(double array[6]){
+    if(inp->Get_direc_Xaxis() == false)
+        array[0] *=-1.0;
+    if(inp->Get_rot_Xaxis() == false)
+        array[1] *= -1.0;
+    if(inp->Get_direc_Yaxis() == false)
+        array[2] *= -1.0;
+    if(inp->Get_rot_Yaxis() == false)
+        array[3] *= -1.0;
+    if(inp->Get_direc_Zaxis() == false)
+        array[4] *= -1.0;
+    if(inp->Get_rot_Zaxis() == false)
+        array[5] *= -1.0;
+}
+
+//public
 void Vehicle_model::vehicle_initialize(){
     initialize();
 }
 void Vehicle_model::vehicle_advance(double fforce[6]){
-    for(int i = 0; i<6; i++){
-        GetLog() << fforce[i] << "  ";
-    }
-    GetLog() << "\n";
+
+    conv_axis(fforce);  //convert cordinate from CFD to Vehicle_dynamics
+
+    GetLog() << "\n\n";   
     double avd_step_size = this->step_size;
     advance(avd_step_size);
 }
