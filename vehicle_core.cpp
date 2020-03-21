@@ -44,7 +44,6 @@ using namespace chrono::geometry;
 using namespace chrono::vehicle;
 
 void Vehicle_model::initialize(){
-     inp.reset(new Input_data("vehicle_params.inp") );
      filesystem::path current_dir(filesystem::path().getcwd());
      const std::string current_dir_path = current_dir.str();
      GetLog() << "Copyright (c) 2017 projectchrono.org\nChrono version: " << CHRONO_VERSION << "\n\n";
@@ -199,6 +198,7 @@ void  Vehicle_model::conv_axis(double array[6]){
 
 //public
 void Vehicle_model::vehicle_initialize(){
+    inp.reset(new Input_data("vehicle_params.inp") ); //read params
     initialize();
 }
 void Vehicle_model::vehicle_advance(double fforce[6]){
