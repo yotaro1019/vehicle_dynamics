@@ -50,6 +50,7 @@ double step_size, tire_step_size;
 double current_time;
 
 //function
+void setup_system();
 void initialize();      //initialize vehicle system
 void advance(double adv_step_size, double fforce[6] = {0}); //advance vehicle step(adv_step_size : current time step )
 

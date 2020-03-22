@@ -43,14 +43,21 @@ using namespace chrono;
 using namespace chrono::geometry;
 using namespace chrono::vehicle;
 
-void Vehicle_model::initialize(){
-     filesystem::path current_dir(filesystem::path().getcwd());
-     const std::string current_dir_path = current_dir.str();
-     GetLog() << "Copyright (c) 2017 projectchrono.org\nChrono version: " << CHRONO_VERSION << "\n\n";
-     
-     chrono::SetChronoDataPath(CHRONO_DATA_DIR);
-     chrono::vehicle::SetDataPath(current_dir_path + "/" + inp->Get_inp_dir_name() + "/");
+void Vehicle_model::setup_system(){
+    inp.reset(new Input_data("vehicle_params.inp") ); //read params
 
+    filesystem::path current_dir(filesystem::path().getcwd());
+    const std::string current_dir_path = current_dir.str();
+    GetLog() << "Copyright (c) 2017 projectchrono.org\nChrono version: " << CHRONO_VERSION << "\n\n";
+    
+    chrono::SetChronoDataPath(CHRONO_DATA_DIR);
+    chrono::vehicle::SetDataPath(current_dir_path + "/" + inp->Get_inp_dir_name() + "/");    
+    SetChronoOutputPath("./" + inp->Get_out_dir_name() + "/");
+
+    out.reset(new Output(*inp));
+}
+
+void Vehicle_model::initialize(){
      //==========================================
      //setup params
      step_size = inp->Get_coupling_dt();
@@ -210,8 +217,7 @@ void  Vehicle_model::conv_axis(double array[6]){
 
 //public
 void Vehicle_model::vehicle_initialize(){
-    inp.reset(new Input_data("vehicle_params.inp") ); //read params
-    out.reset(new Output(*inp));
+    setup_system();
     initialize();
     current_time = 0.0;
 }
