@@ -7,6 +7,8 @@
 #include "chrono/core/ChQuaternion.h"
 #include"baseout.h"
 #include "chrono_vehicle/ChDriver.h"
+#include "chrono_vehicle/driver/ChPathFollowerDriver.h"
+
 
 #include "chrono_vehicle/powertrain/ShaftsPowertrain.h"
 #include "chrono_vehicle/powertrain/SimpleCVTPowertrain.h"
@@ -28,5 +30,11 @@ class Chassis_vel_fout : public Baseout{
     void write(double time, WheeledVehicle &veh);  
 };
 
+class Driver_fout : public Baseout{
+  public:
+    Driver_fout() { Baseout(); };
+    void initialize(bool c_switch, const std::string fname);
+    void write(double time, ChPathFollowerDriver &dvr);
+};
 
 #endif

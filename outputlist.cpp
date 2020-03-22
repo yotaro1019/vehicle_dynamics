@@ -46,3 +46,25 @@ void Chassis_vel_fout::write(double time, WheeledVehicle &veh){
     vel, vel_axis.x(), vel_axis.y(), vel_axis.z(), angle_euler.x(), angle_euler.y(), angle_euler.z(), yaw_2D );
     *fout << output_value << "\n";
 }
+
+void Driver_fout::initialize(bool c_switch, const std::string fname)
+{
+    this->c_switch = c_switch;
+    
+    if(!c_switch)
+        return;
+    
+
+
+    fout.reset(new std::ofstream(fname.c_str()) );
+    check_file_status(fout, fname);
+    GetLog() << "!\n";
+    char header[500];
+    sprintf(header, "%12s%12s%12s%12s", "time", "steering", "throttle", "brake");
+    *fout << header << "\n";
+
+}
+
+void Driver_fout::write(double time, ChPathFollowerDriver &dvr){
+    GetLog() << "!!!\n!";
+}

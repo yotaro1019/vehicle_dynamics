@@ -9,7 +9,7 @@
 Chassis_vel_fout chassis_log;
 
 Output::Output(Input_data &inp){
-
+    chassis_log.initialize(inp.Get_chassis_com_bool(), GetChronoOutputPath() + inp.Get_chassis_COM_fname());
 }
 void Output::write(double time, WheeledVehicle &veh, ChPathFollowerDriver &dvr){
 
