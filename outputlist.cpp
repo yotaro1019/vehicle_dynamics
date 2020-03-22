@@ -54,8 +54,6 @@ void Driver_fout::initialize(bool c_switch, const std::string fname)
     if(!c_switch)
         return;
     
-
-
     fout.reset(new std::ofstream(fname.c_str()) );
     check_file_status(fout, fname);
     GetLog() << "!\n";
@@ -66,5 +64,11 @@ void Driver_fout::initialize(bool c_switch, const std::string fname)
 }
 
 void Driver_fout::write(double time, ChPathFollowerDriver &dvr){
-    GetLog() << "!!!\n!";
+    if(!c_switch)
+        return;
+
+    char output_value[500];
+    sprintf(output_value,"%12.5f%12.5f%12.5f%12.5f",  time, dvr.GetSteering(), dvr.GetThrottle(), dvr.GetBraking() );
+    *fout << output_value << "\n";
+
 }
