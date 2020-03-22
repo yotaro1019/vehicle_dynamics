@@ -10,10 +10,10 @@ Chassis_vel_fout chassis_log;
 
 Output::Output(Input_data &inp){
     GetLog() << "call output constructor\n";
-    chassis_log.initialize(inp.Get_chassis_com_bool(), inp.Get_chassis_COM_fname());
+    chassis_log.initialize(inp.Get_chassis_com_bool(), "./" + inp.Get_chassis_COM_fname());
 }
 void Output::write(double time, WheeledVehicle &veh){
 
-    GetLog() << "time = " << time << "\n";
-
+    GetLog() << " Output::write time = " << time << "\n";
+    chassis_log.write(time);
 }
