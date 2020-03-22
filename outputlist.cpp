@@ -72,3 +72,29 @@ void Driver_fout::write(double time, ChPathFollowerDriver &dvr){
     *fout << output_value << "\n";
 
 }
+
+void Powertrain_fout::initialize(bool c_switch, const std::string fname)
+{
+    this->c_switch = c_switch;
+    
+    if(!c_switch)
+        return;
+    
+    fout.reset(new std::ofstream(fname.c_str()) );
+    check_file_status(fout, fname);
+    GetLog() << "!\n";
+    char header[500];
+    sprintf(header, "%12s%12s%12s%12s%12s%12s%12s%12s", "time", "engine_spd", "engine_trq", "TC_slipage", "TC_in_trq", "TC_out_trq", "TM_gear", "out_trq");
+    *fout << header << "\n";
+
+}
+
+void Powertrain_fout::write(double time, ChPowertrain &pt){
+    if(!c_switch)
+        return;   
+    char output_value[500];
+
+    sprintf(output_value,"%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12d%12.5f",  time, pt.GetMotorSpeed(), pt.GetMotorTorque(), pt.GetTorqueConverterSlippage(), pt.GetTorqueConverterInputTorque(), pt.GetTorqueConverterOutputTorque(), pt.GetCurrentTransmissionGear(), pt.GetOutputTorque() );
+
+    *fout << output_value << "\n";    
+}

@@ -37,4 +37,11 @@ class Driver_fout : public Baseout{
     void write(double time, ChPathFollowerDriver &dvr);
 };
 
+class Powertrain_fout : public Baseout{
+  public:
+    Powertrain_fout() { Baseout(); };
+    void initialize(bool c_switch, const std::string fname);
+    void write(double time, ChPowertrain &pt);
+};
+
 #endif
