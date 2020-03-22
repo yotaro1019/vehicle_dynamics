@@ -7,6 +7,7 @@
 #include "chrono/core/ChQuaternion.h"
 #include"baseout.h"
 #include "chrono_vehicle/ChDriver.h"
+
 #include "chrono_vehicle/powertrain/ShaftsPowertrain.h"
 #include "chrono_vehicle/powertrain/SimpleCVTPowertrain.h"
 #include "chrono_vehicle/powertrain/SimpleMapPowertrain.h"
@@ -15,6 +16,7 @@
 #include "chrono_vehicle/wheeled_vehicle/tire/PacejkaTire.h"
 #include "chrono_vehicle/wheeled_vehicle/tire/Pac89Tire.h"
 #include "chrono_vehicle/wheeled_vehicle/ChTire.h"
+#include "chrono_vehicle/wheeled_vehicle/vehicle/WheeledVehicle.h"
 using namespace chrono;
 using namespace chrono::vehicle;
 
@@ -23,7 +25,7 @@ class Chassis_vel_fout : public Baseout{
   public:
     Chassis_vel_fout() { Baseout(); };
     void initialize(bool c_switch, const std::string fname);
-    void write(double time);  
+    void write(double time, WheeledVehicle &veh);  
 };
 
 

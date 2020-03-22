@@ -15,5 +15,5 @@ Output::Output(Input_data &inp){
 void Output::write(double time, WheeledVehicle &veh){
 
     GetLog() << " Output::write time = " << time << "\n";
-    chassis_log.write(time);
+    chassis_log.write(time, veh);
 }
