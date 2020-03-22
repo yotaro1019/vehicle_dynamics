@@ -228,6 +228,6 @@ void Vehicle_model::vehicle_advance(double fforce[6]){
     double avd_step_size = this->step_size;
     advance(avd_step_size, fforce);
 
-    out->write(current_time, *veh);
+    out->write(current_time, *veh, *driver_follower);
 }
 

@@ -11,7 +11,7 @@ Chassis_vel_fout chassis_log;
 Output::Output(Input_data &inp){
 
 }
-void Output::write(double time, WheeledVehicle &veh){
+void Output::write(double time, WheeledVehicle &veh, ChPathFollowerDriver &dvr){
 
     chassis_log.write(time, veh);
 }

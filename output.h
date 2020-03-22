@@ -7,6 +7,7 @@
 #include "chrono_vehicle/ChApiVehicle.h"
 #include "chrono_vehicle/ChVehicleModelData.h"
 #include "chrono_vehicle/ChDriver.h"
+#include "chrono_vehicle/driver/ChPathFollowerDriver.h"
 #include "chrono_vehicle/powertrain/ShaftsPowertrain.h"
 #include "chrono_vehicle/powertrain/SimpleCVTPowertrain.h"
 #include "chrono_vehicle/powertrain/SimpleMapPowertrain.h"
@@ -24,7 +25,7 @@ class  CH_VEHICLE_API  Output{
   
   public:
     Output(Input_data &inp);
-    void write(double time, WheeledVehicle &veh);  
+    void write(double time, WheeledVehicle &veh, ChPathFollowerDriver &dvr);  
 };
 
 #endif
