@@ -541,22 +541,6 @@ void Input_data::refine_tire_fname(){
 }
 
 //output data
-bool Input_data::Get_chassis_com_bool(){
-    return this->chassis_com_bool;
-}
-
-std::string Input_data::Get_chassis_COM_fname(){
-    return this->chassis_COM_fname;
-}
-
-bool Input_data::Get_driver_input_bool(){
-    return this->driver_inp_bool;
-}
-
-std::string Input_data::Get_driver_input_fname(){
-    return this->driver_inp_fname;
-}
-
 
 bool Input_data::Get_tire_force_bool(){
     return this->tire_force_bool;

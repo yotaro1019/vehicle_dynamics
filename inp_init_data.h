@@ -156,11 +156,11 @@ public:
     bool Get_chassis_ref_bool();
     std::string Get_chassis_ref_fname();
 
-    bool Get_chassis_com_bool();
-    std::string Get_chassis_COM_fname();
+    bool Get_chassis_com_bool(){ return this->chassis_com_bool; }
+    std::string Get_chassis_COM_fname(){ return this->chassis_COM_fname; }
 
-    bool Get_driver_input_bool();
-    std::string Get_driver_input_fname();  
+    bool Get_driver_input_bool(){ return this->driver_inp_bool; }
+    std::string Get_driver_input_fname(){ return this->driver_inp_fname; }
 
     bool Get_powertrain_status_bool(){ return this->powertrain_status_bool; }
     std::string Get_powertrain_status_fname(){ return this->powertrain_status_fname; }

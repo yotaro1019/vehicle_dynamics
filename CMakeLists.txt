@@ -141,7 +141,6 @@ target_link_libraries(${LIB_NAME}  ${CHRONO_LIBRARIES})
 set(SAMPLE_EXE "example_coupling.f90")
 add_executable(example_coupling.exe   example_coupling.f90)
 
-
 #--------------------------------------------------------------
 # Set properties for your executable target
 # 
