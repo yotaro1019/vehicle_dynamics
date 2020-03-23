@@ -118,13 +118,29 @@ else()
     set(EXTRA_COMPILE_FLAGS "")
 endif()
 
-#--------------------------------------------------------------
-# === 3 ===
-# Add the executable from your project and specify all C++ 
-# files in your project. 
-#--------------------------------------------------------------
 
-add_executable(main.exe inp_init_data.cpp vehicle_core.cpp c_vehicle_core.cpp vehicle_operation.f90 main.cpp)
+#--------------------------------------------------------------
+# === *** ===
+# Create static lib for vehicle dynamics 
+#--------------------------------------------------------------
+set(LIB_NAME "vehicle_system")
+set(LIB_TYPE "STATIC")
+set(LIB_SRC "inp_init_data.cpp" "vehicle_core.cpp" "c_vehicle_core.cpp" "vehicle_operation.f90" )
+
+add_library(${LIB_NAME} ${LIB_TYPE} ${LIB_SRC})
+set_target_properties(${LIB_NAME} PROPERTIES 
+        COMPILE_FLAGS "${CHRONO_CXX_FLAGS} ${EXTRA_COMPILE_FLAGS}"
+        COMPILE_DEFINITIONS "CHRONO_DATA_DIR=\"${CHRONO_DATA_DIR}\";CHRONO_VEHICLE_DATA_DIR=\"${CHRONO_VEHICLE_DATA_DIR}\""
+        LINK_FLAGS "${CHRONO_LINKER_FLAGS}")
+target_link_libraries(${LIB_NAME}  ${CHRONO_LIBRARIES})
+
+
+#--------------------------------------------------------------
+#create executable file (example for coupling simulation)
+#--------------------------------------------------------------
+set(SAMPLE_EXE "example_coupling.f90")
+add_executable(example_coupling.exe   example_coupling.f90)
+
 
 #--------------------------------------------------------------
 # Set properties for your executable target
@@ -135,16 +151,17 @@ add_executable(main.exe inp_init_data.cpp vehicle_core.cpp c_vehicle_core.cpp ve
 # install tree (if using an installed version of Chrono).
 #--------------------------------------------------------------
 
-set_target_properties(main.exe PROPERTIES 
-	    COMPILE_FLAGS "${CHRONO_CXX_FLAGS} ${EXTRA_COMPILE_FLAGS}"
-	    COMPILE_DEFINITIONS "CHRONO_DATA_DIR=\"${CHRONO_DATA_DIR}\";CHRONO_VEHICLE_DATA_DIR=\"${CHRONO_VEHICLE_DATA_DIR}\""
-	    LINK_FLAGS "${CHRONO_LINKER_FLAGS}")
+set_target_properties(example_coupling.exe PROPERTIES 
+        COMPILE_FLAGS "${CHRONO_CXX_FLAGS} ${EXTRA_COMPILE_FLAGS}"
+        COMPILE_DEFINITIONS "CHRONO_DATA_DIR=\"${CHRONO_DATA_DIR}\";CHRONO_VEHICLE_DATA_DIR=\"${CHRONO_VEHICLE_DATA_DIR}\""
+        LINK_FLAGS "${CHRONO_LINKER_FLAGS}")
 
 #--------------------------------------------------------------
 # Link to Chrono libraries and dependency libraries
 #--------------------------------------------------------------
 
-target_link_libraries(main.exe ${CHRONO_LIBRARIES})
+target_link_libraries(example_coupling.exe ${CHRONO_LIBRARIES} ${LIB_NAME})
+
 
 #--------------------------------------------------------------
 # === 4 (OPTIONAL) ===
