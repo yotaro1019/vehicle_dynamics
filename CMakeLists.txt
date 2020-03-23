@@ -8,7 +8,6 @@
 # 
 #--------------------------------------------------------------
  
-
 cmake_minimum_required(VERSION 2.8)
 
 #--------------------------------------------------------------
@@ -16,7 +15,7 @@ cmake_minimum_required(VERSION 2.8)
 # Modify the project name if you want: 
 #--------------------------------------------------------------
 
-project(my_project)
+project(my_project CXX C Fortran)
 
 #--------------------------------------------------------------
 # === 2 ===
@@ -125,7 +124,7 @@ endif()
 # files in your project. 
 #--------------------------------------------------------------
 
-add_executable(main.exe inp_init_data.cpp vehicle_core.cpp c_vehicle_core.cpp main.cpp)
+add_executable(main.exe inp_init_data.cpp vehicle_core.cpp c_vehicle_core.cpp vehicle_operation.f90 main.cpp)
 
 #--------------------------------------------------------------
 # Set properties for your executable target
