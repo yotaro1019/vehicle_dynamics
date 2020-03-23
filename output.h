@@ -24,7 +24,7 @@ using namespace chrono::vehicle;
 class  CH_VEHICLE_API  Output{    
   
   public:
-    Output(Input_data &inp);
+    Output(Input_data &inp, WheeledVehicle &veh);
     void write(double time, WheeledVehicle &veh, ChPathFollowerDriver &dvr);  
 };
 

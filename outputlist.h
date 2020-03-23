@@ -44,4 +44,10 @@ class Powertrain_fout : public Baseout{
     void write(double time, ChPowertrain &pt);
 };
 
+class Tire_fout : public Baseout{
+  public:
+    Tire_fout() { Baseout(); };
+    void initialize(bool c_switch, const std::string fname);
+    //void write(double time, ChPowertrain &pt);
+};
 #endif

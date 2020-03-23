@@ -54,7 +54,6 @@ void Vehicle_model::setup_system(){
     chrono::vehicle::SetDataPath(current_dir_path + "/" + inp->Get_inp_dir_name() + "/");    
     SetChronoOutputPath("./" + inp->Get_out_dir_name() + "/");
 
-    out.reset(new Output(*inp));
 }
 
 void Vehicle_model::initialize(){
@@ -219,6 +218,7 @@ void  Vehicle_model::conv_axis(double array[6]){
 void Vehicle_model::vehicle_initialize(){
     setup_system();
     initialize();
+    out.reset(new Output(*inp, *veh));
     current_time = 0.0;
 }
 void Vehicle_model::vehicle_advance(double fforce[6]){
