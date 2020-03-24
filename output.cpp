@@ -25,9 +25,17 @@ Output::Output(Input_data &inp, WheeledVehicle &veh){
         //LEFT
         fname = fname_base + "_LEFT.txt";
         GetLog() << fname << "\n";
+        Tire_fout tire_log_LEFT;
+        tire_log_LEFT.initialize(inp.Get_tire_force_bool(), GetChronoOutputPath() + fname);
+        tire_log.push_back(tire_log_LEFT);
+
         //RIGHT
         fname = fname_base + "_RIGHT.txt";
         GetLog() << fname << "\n";
+        Tire_fout tire_log_RIGHT;
+        tire_log_RIGHT.initialize(inp.Get_tire_force_bool(), GetChronoOutputPath() + fname);
+        tire_log.push_back(tire_log_RIGHT);
+        //add tire log(RIGHT)
         
         naxle++;
     }
