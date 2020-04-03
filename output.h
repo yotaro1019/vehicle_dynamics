@@ -25,7 +25,7 @@ class  CH_VEHICLE_API  Output{
   
   public:
     Output(Input_data &inp, WheeledVehicle &veh);
-    void write(double time, WheeledVehicle &veh, ChPathFollowerDriver &dvr);  
+    void write(double time, WheeledVehicle &veh, ChPathFollowerDriver &dvr, RigidTerrain &ter);  
 };
 
 #endif

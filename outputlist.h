@@ -14,6 +14,9 @@
 #include "chrono_vehicle/powertrain/SimpleCVTPowertrain.h"
 #include "chrono_vehicle/powertrain/SimpleMapPowertrain.h"
 #include "chrono_vehicle/powertrain/SimplePowertrain.h"
+
+#include "chrono_vehicle/terrain/RigidTerrain.h"
+
 #include "chrono_vehicle/wheeled_vehicle/tire/RigidTire.h"
 #include "chrono_vehicle/wheeled_vehicle/tire/PacejkaTire.h"
 #include "chrono_vehicle/wheeled_vehicle/tire/Pac89Tire.h"
@@ -48,6 +51,6 @@ class Tire_fout : public Baseout{
   public:
     Tire_fout() { Baseout(); };
     void initialize(bool c_switch, const std::string fname);
-    //void write(double time, ChPowertrain &pt);
+    void write(double time, ChWheel &wheel , RigidTerrain &terrain);
 };
 #endif
