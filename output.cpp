@@ -36,24 +36,59 @@ Output::Output(Input_data &inp, WheeledVehicle &veh){
         //Only for single tires.
         //Multiple wheels on one side will be implemented in the future
         Tire_fout tire_log_base;
-                
-        //LEFT
-        fname = fname_base + "_LEFT.txt";
-        GetLog() << fname << "\n";
+        if(nire_list[naxle] == 2){
+            //LEFT
+            fname = fname_base + "_LEFT.txt";
+            GetLog() << fname << "\n";
 
-        tire_log.push_back(tire_log_base);
-        tire_log[ntire].initialize(inp.Get_tire_force_bool(), GetChronoOutputPath() + fname);
-        GetLog() << ntire << "\n";
-        ntire++;
+            tire_log.push_back(tire_log_base);
+            tire_log[ntire].initialize(inp.Get_tire_force_bool(), GetChronoOutputPath() + fname);
+            GetLog() << ntire << "\n";
+            ntire++;
 
-        //RIGHT
-        fname = fname_base + "_RIGHT.txt";
-        GetLog() << fname << "\n";
-        tire_log.push_back(tire_log_base);
-        tire_log[ntire].initialize(inp.Get_tire_force_bool(), GetChronoOutputPath() + fname);
-        GetLog() << ntire << "\n";
-        ntire++;
-        
+            //RIGHT
+            fname = fname_base + "_RIGHT.txt";
+            GetLog() << fname << "\n";
+            tire_log.push_back(tire_log_base);
+            tire_log[ntire].initialize(inp.Get_tire_force_bool(), GetChronoOutputPath() + fname);
+            GetLog() << ntire << "\n";
+            ntire++;
+        }else if(nire_list[naxle] == 4){
+            //LEFT inside          
+            fname = fname_base + "_LEFT_inside.txt";
+            GetLog() << fname << "\n";
+
+            tire_log.push_back(tire_log_base);
+            tire_log[ntire].initialize(inp.Get_tire_force_bool(), GetChronoOutputPath() + fname);
+            GetLog() << ntire << "\n";
+            ntire++;
+            //LEFT outside
+            fname = fname_base + "_LEFT_outside.txt";
+            GetLog() << fname << "\n";
+
+            tire_log.push_back(tire_log_base);
+            tire_log[ntire].initialize(inp.Get_tire_force_bool(), GetChronoOutputPath() + fname);
+            GetLog() << ntire << "\n";
+            ntire++;
+
+            //RIGHT inside          
+            fname = fname_base + "_RIGHT_inside.txt";
+            GetLog() << fname << "\n";
+
+            tire_log.push_back(tire_log_base);
+            tire_log[ntire].initialize(inp.Get_tire_force_bool(), GetChronoOutputPath() + fname);
+            GetLog() << ntire << "\n";
+            ntire++;
+            //RIGHT outside
+            fname = fname_base + "_RIGHT_outside.txt";
+            GetLog() << fname << "\n";
+
+            tire_log.push_back(tire_log_base);
+            tire_log[ntire].initialize(inp.Get_tire_force_bool(), GetChronoOutputPath() + fname);
+            GetLog() << ntire << "\n";
+            ntire++;
+
+        }        
         naxle++;    
     }
 
@@ -65,23 +100,54 @@ void Output::write(double time, WheeledVehicle &veh, ChPathFollowerDriver &dvr, 
     ptr_log.write(time, *veh.GetPowertrain() );
 
     int tire_id = 0;
+    int naxle = 0;
     GetLog() << "----------------------------\n";
     GetLog() << " tire_log.size() = " << tire_log.size() << "\n";
 
     for (std::shared_ptr< ChAxle > axle : veh.GetAxles()){
         //Only for single tires.
         //Multiple wheels on one side will be implemented in the future
-        //LEFT
-        std::shared_ptr<ChWheel> wheel_L = axle->GetWheel(LEFT, SINGLE);    //ChWheel
-        GetLog() << "tire_id = \t" << tire_id << "\n";
-        tire_log[tire_id].write(time, *wheel_L , ter);
-        
-        tire_id++;
-        //RIGHT
-        std::shared_ptr<ChWheel> wheel_R = axle->GetWheel(RIGHT, SINGLE);    //ChWheel
-        GetLog() << "tire_id = \t" << tire_id << "\n";
-        tire_log[tire_id].write(time, *wheel_R , ter);   //ChWheel
-        
-        tire_id++;
+
+        if(nire_list[naxle] == 2){
+            //LEFT
+            std::shared_ptr<ChWheel> wheel_L = axle->GetWheel(LEFT, SINGLE);    //ChWheel
+            GetLog() << "tire_id = \t" << tire_id << "\n";
+            tire_log[tire_id].write(time, *wheel_L , ter);
+            
+            tire_id++;
+            //RIGHT
+            std::shared_ptr<ChWheel> wheel_R = axle->GetWheel(RIGHT, SINGLE);    //ChWheel
+            GetLog() << "tire_id = \t" << tire_id << "\n";
+            tire_log[tire_id].write(time, *wheel_R , ter);   //ChWheel
+            
+            tire_id++;
+        }else if(nire_list[naxle] == 4){
+            //LEFT inside
+            std::shared_ptr<ChWheel> wheel_LIN = axle->GetWheel(LEFT, INNER);    //ChWheel
+            GetLog() << "tire_id = \t" << tire_id << "\n";
+            tire_log[tire_id].write(time, *wheel_LIN , ter);           
+            tire_id++;
+
+            //LEFT outside
+            std::shared_ptr<ChWheel> wheel_LOUT = axle->GetWheel(LEFT, OUTER);    //ChWheel
+            GetLog() << "tire_id = \t" << tire_id << "\n";
+            tire_log[tire_id].write(time, *wheel_LOUT , ter);           
+            tire_id++;
+
+
+            //RIGHT inside
+            std::shared_ptr<ChWheel> wheel_RIN = axle->GetWheel(RIGHT, INNER);    //ChWheel
+            GetLog() << "tire_id = \t" << tire_id << "\n";
+            tire_log[tire_id].write(time, *wheel_RIN , ter);   //ChWheel
+            tire_id++;
+
+            //RIGHT outside
+            std::shared_ptr<ChWheel> wheel_ROUT = axle->GetWheel(RIGHT, OUTER);    //ChWheel
+            GetLog() << "tire_id = \t" << tire_id << "\n";
+            tire_log[tire_id].write(time, *wheel_ROUT , ter);   //ChWheel
+            tire_id++;
+    
+        }
+        naxle++;
     }
 }
