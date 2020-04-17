@@ -20,6 +20,7 @@
 #include "chrono_thirdparty/filesystem/path.h"
 
 #include"output.h"
+#include"restart.h"
 
 using namespace chrono;
 using namespace chrono::geometry;
@@ -40,7 +41,7 @@ ChVector<> driver_pos;
 std::shared_ptr<ChWheeledVehicleIrrApp> app;    //object of Irricht
 
 std::shared_ptr<Output> out;
-
+std::shared_ptr<Restart> restart;
 
 
 //params

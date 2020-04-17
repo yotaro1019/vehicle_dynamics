@@ -219,6 +219,7 @@ void Vehicle_model::vehicle_initialize(){
     setup_system();
     initialize();
     out.reset(new Output(*inp, *veh));
+    restart.reset(new Restart() );
     current_time = 0.0;
 }
 void Vehicle_model::vehicle_advance(double fforce[6]){
