@@ -100,8 +100,18 @@ void Vehicle_model::initialize(){
              GetLog() << "naxle = " << naxle << "\t" << tire_fname << "\n";
              std::shared_ptr<ChTire> tireL = ReadTireJSON( vehicle::GetDataFile(tire_fname) );
              std::shared_ptr<ChTire> tireR = ReadTireJSON( vehicle::GetDataFile(tire_fname) );
-             veh->InitializeTire(tireL, axle->m_wheels[0], inp->Get_tire_viz_type());
-             veh->InitializeTire(tireR, axle->m_wheels[1], inp->Get_tire_viz_type());
+
+             //each side has single tire
+             if(axle->GetWheels().size() == 2){
+                veh->InitializeTire(tireL, axle->m_wheels[0], inp->Get_tire_viz_type());
+                veh->InitializeTire(tireR, axle->m_wheels[1], inp->Get_tire_viz_type());
+             }else if(axle->GetWheels().size() == 4){
+                veh->InitializeTire(tireL, axle->m_wheels[0], inp->Get_tire_viz_type());
+                veh->InitializeTire(tireL, axle->m_wheels[1], inp->Get_tire_viz_type());
+                veh->InitializeTire(tireR, axle->m_wheels[2], inp->Get_tire_viz_type());
+                veh->InitializeTire(tireR, axle->m_wheels[3], inp->Get_tire_viz_type());
+             }
+             //each side has dual tire
              naxle++;
          }
      }
@@ -217,7 +227,10 @@ void  Vehicle_model::conv_axis(double array[6]){
 //public
 void Vehicle_model::vehicle_initialize(){
     setup_system();
+    GetLog() << "system setup completed\n";
+
     initialize();
+    GetLog() << "Initialization of vehicle system completed\n";
     out.reset(new Output(*inp, *veh));
     current_time = 0.0;
 }
