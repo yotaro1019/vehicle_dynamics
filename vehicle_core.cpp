@@ -98,18 +98,24 @@ void Vehicle_model::initialize(){
                  }
              }
              GetLog() << "naxle = " << naxle << "\t" << tire_fname << "\n";
-             std::shared_ptr<ChTire> tireL = ReadTireJSON( vehicle::GetDataFile(tire_fname) );
-             std::shared_ptr<ChTire> tireR = ReadTireJSON( vehicle::GetDataFile(tire_fname) );
+             
 
              //each side has single tire
              if(axle->GetWheels().size() == 2){
+                std::shared_ptr<ChTire> tireL = ReadTireJSON( vehicle::GetDataFile(tire_fname) );
+                std::shared_ptr<ChTire> tireR = ReadTireJSON( vehicle::GetDataFile(tire_fname) ); 
                 veh->InitializeTire(tireL, axle->m_wheels[0], inp->Get_tire_viz_type());
                 veh->InitializeTire(tireR, axle->m_wheels[1], inp->Get_tire_viz_type());
              }else if(axle->GetWheels().size() == 4){
-                veh->InitializeTire(tireL, axle->m_wheels[0], inp->Get_tire_viz_type());
-                veh->InitializeTire(tireL, axle->m_wheels[1], inp->Get_tire_viz_type());
-                veh->InitializeTire(tireR, axle->m_wheels[2], inp->Get_tire_viz_type());
-                veh->InitializeTire(tireR, axle->m_wheels[3], inp->Get_tire_viz_type());
+                std::shared_ptr<ChTire> tireLIN = ReadTireJSON( vehicle::GetDataFile(tire_fname) );
+                std::shared_ptr<ChTire> tireLOUT = ReadTireJSON( vehicle::GetDataFile(tire_fname) );
+                std::shared_ptr<ChTire> tireRIN = ReadTireJSON( vehicle::GetDataFile(tire_fname) ); 
+                std::shared_ptr<ChTire> tireROUT = ReadTireJSON( vehicle::GetDataFile(tire_fname) );
+
+                veh->InitializeTire(tireLOUT, axle->m_wheels[0], inp->Get_tire_viz_type());
+                veh->InitializeTire(tireLIN, axle->m_wheels[1], inp->Get_tire_viz_type());
+                veh->InitializeTire(tireRIN, axle->m_wheels[2], inp->Get_tire_viz_type());
+                veh->InitializeTire(tireROUT, axle->m_wheels[3], inp->Get_tire_viz_type());
              }
              //each side has dual tire
              naxle++;
