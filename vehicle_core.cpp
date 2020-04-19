@@ -64,7 +64,7 @@ void Vehicle_model::initialize(){
      // Create the vehicle and terrain
      // ------------------------------
      // Create the vehicle system
-     veh.reset(new WheeledVehicle (vehicle::GetDataFile(inp->Get_vehicle_JSON_fname()), ChMaterialSurface::NSC));
+     veh.reset(new WheeledVehicle (vehicle::GetDataFile(inp->Get_vehicle_JSON_fname()) ));
      //WheeledVehicle vehicle(vehicle::GetDataFile(inp->Get_vehicle_JSON_fname()), ChMaterialSurface::NSC);
      veh->Initialize(ChCoordsys<>(inp->Get_vehicle_init_loc(), inp->Get_vehicle_init_rot()));
      ////veh->GetChassis()->SetFixed(true);
@@ -186,7 +186,7 @@ void Vehicle_model::irricht_initialize(double step_size){
                          100);
      app->AddTypicalLights(irr::core::vector3df(150.f, -150.f, 200.f), irr::core::vector3df(150.0f, 150.f, 200.f), 100,
                          100);
-     app->EnableGrid(false);
+     //app->EnableGrid(false);
      app->SetChaseCamera(inp->Get_cam_trackPoint(), 6.0, 0.5);
 
      app->SetTimestep(step_size);
