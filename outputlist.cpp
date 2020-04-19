@@ -120,7 +120,7 @@ void Tire_fout::write(double time, ChWheel &wheel , RigidTerrain &terrain){
     TerrainForce terrain_force = tire->ReportTireForce(&terrain);
     ChVector<> force_global = terrain_force.force;  //force @global frame
     ChVector<> moment_global = terrain_force.moment;//moment @global frame
-    
+
     //convert force and moment (form grobal to wheel local)
     ChQuaternion<> rot_q = wheel.GetState().rot;
     ChVector<> force_loc, moment_loc;
@@ -136,7 +136,7 @@ void Tire_fout::write(double time, ChWheel &wheel , RigidTerrain &terrain){
     double mx_loc = moment_global.x()*cos(theta) + moment_global.y()*sin(theta);
     double my_loc = -moment_global.x()*cos(theta) + moment_global.y()*cos(theta);
     moment_loc.Set(mx_loc, my_loc, moment_global.z());
-    
+
 
     double slip = tire->GetSlipAngle();
     double lng_slip = tire->GetLongitudinalSlip();
