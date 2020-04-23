@@ -31,7 +31,7 @@ void Exchange_data::conv_rot(double data[3]){
     }
 }
 //packing datas from vehicle instance to Vehicle2Cfd
-void Exchange_data::data_packing(WheeledVehicle &veh){
+void Exchange_data::data_packing(WheeledVehicle &veh,  Vehicle2Cfd output_data){
     
     ChVector<> com_pos = veh.GetVehicleCOMPos();
     ChVector<> vel_axis = veh.GetVehiclePointVelocity(com_pos);
@@ -51,5 +51,6 @@ void Exchange_data::data_packing(WheeledVehicle &veh){
 
 
     GetLog() << "data_packing\n";
+    output_data = this->veh2cfd;
 
 }
