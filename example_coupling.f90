@@ -13,6 +13,7 @@ program example_coupling
     real(8) :: pi
     integer :: output_id
     integer :: loop_begin, loop_end, loop
+    type(vehicle2cfd) :: veh2cfd
 
     pi = 4.0 * atan(1.0)
 
@@ -37,7 +38,7 @@ program example_coupling
     end if
 
     if(cube_time < t_end)then
-        call  vehicle_advence_rapper(cube_fforce)
+        call  vehicle_advence_rapper(cube_fforce, veh2cfd)
     end if
 
     loop_begin = 1 + int(t_begin/cube_dt)
@@ -65,7 +66,7 @@ program example_coupling
             write(10,'(i10,7f15.5)') cube_step, cube_time, cube_fforce(1), cube_fforce(2), cube_fforce(3), &
             &cube_fforce(4), cube_fforce(5), cube_fforce(6)
 
-            call  vehicle_advence_rapper(cube_fforce)
+            call  vehicle_advence_rapper(cube_fforce, veh2cfd)
             
             !call file_write(cube_time,  mesh_vel_acc, chassis_vel_cube, str_vel_cube, wheel_rot_cube )
 
