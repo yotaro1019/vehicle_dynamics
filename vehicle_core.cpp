@@ -21,6 +21,7 @@
 
 #include "inp_init_data.h"
 #include "vehicle_core.h"
+#include"exchange_data.h"
 
 #include "chrono/core/ChRealtimeStep.h"
 #include "chrono/utils/ChFilters.h"
@@ -242,12 +243,15 @@ void Vehicle_model::vehicle_initialize(){
     current_time = 0.0;
 }
 void Vehicle_model::vehicle_advance(double fforce[6]){
-
+    Exchange_data exc_data(*inp);
     conv_axis(fforce);  //convert cordinate from CFD to Vehicle_dynamics
   
     double avd_step_size = this->step_size;
     advance(avd_step_size, fforce);
 
     out->write(current_time, *veh, *driver_follower, *terrain);
+    exc_data.data_packing(*veh);
+    GetLog() << exc_data.veh2cfd.mesh_vel << "\n" << exc_data.veh2cfd.mesh_vel << "\n";
+    exit(1);    
 }
 

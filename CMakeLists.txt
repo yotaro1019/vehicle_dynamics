@@ -125,7 +125,7 @@ endif()
 #--------------------------------------------------------------
 set(LIB_NAME "vehicle_system")
 set(LIB_TYPE "STATIC")
-set(LIB_SRC "baseout.cpp" "outputlist.cpp" "output.cpp" "inp_init_data.cpp" "restart.cpp" "vehicle_core.cpp" "c_vehicle_core.cpp" "vehicle_operation.f90" )
+set(LIB_SRC "baseout.cpp" "outputlist.cpp" "output.cpp" "inp_init_data.cpp" "restart.cpp" "exchange_data.cpp" "vehicle_core.cpp" "c_vehicle_core.cpp" "vehicle_operation.f90" )
 
 add_library(${LIB_NAME} ${LIB_TYPE} ${LIB_SRC})
 set_target_properties(${LIB_NAME} PROPERTIES 
