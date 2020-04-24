@@ -147,7 +147,6 @@ void Tire_fout::write(double time, ChWheel &wheel , RigidTerrain &terrain){
     char output_value[500];
     sprintf(output_value,"%12.5f%17.5f%17.5f%17.5f%17.5f%17.5f%17.5f%17.5f%17.5f%17.5f%17.5f%17.5f%17.5f%17.5f",  time, force_loc.x(), force_loc.y(), force_loc.z(),
     moment_loc.x(), moment_loc.y(), moment_loc.z(), slip, lng_slip, cmb_angle, pos.x(), pos.y(), pos.z(), deflection );    
-    GetLog() << output_value << "\n";    
     *fout << output_value << "\n";
     
 }

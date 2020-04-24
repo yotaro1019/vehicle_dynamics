@@ -86,56 +86,44 @@ void Output::write(double time, WheeledVehicle &veh, ChPathFollowerDriver &dvr, 
     
     int tire_id = 0;
     int naxle = 0;
-    GetLog() << "----------------------------\n";
-    GetLog() << " tire_log.size() = " << tire_log.size() << "\n";
     for (std::shared_ptr< ChAxle > axle : veh.GetAxles()){
         
-        GetLog() << naxle << " axle\n";
+
         if(ntire_list[naxle] == 2){
-            GetLog() << "single tire\n";
             //LEFT
             std::shared_ptr<ChWheel> wheel_L = axle->GetWheel(LEFT, SINGLE);    //ChWheel
-            GetLog() << "tire_id = \t" << tire_id << "\n";
             tire_log[tire_id].write(time, *wheel_L , ter);
-            GetLog() << "LEFT\n";
-
             tire_id++;
+
             //RIGHT
             std::shared_ptr<ChWheel> wheel_R = axle->GetWheel(RIGHT, SINGLE);    //ChWheel
-            GetLog() << "tire_id = \t" << tire_id << "\n";
             tire_log[tire_id].write(time, *wheel_R , ter);   //ChWheel
-            GetLog() << "RIGHT\n";
             tire_id++;
+
         }else if(ntire_list[naxle] == 4){
-            GetLog() << "dual tire\n";
             //LEFT inside
             std::shared_ptr<ChWheel> wheel_LIN = axle->GetWheel(LEFT, INNER);    //ChWheel
-            GetLog() << "tire_id = \t" << tire_id << "\n";
             tire_log[tire_id].write(time, *wheel_LIN , ter);           
             tire_id++;
-            GetLog() << "LEFT INNER\n";
-//
+
             //LEFT outside
             std::shared_ptr<ChWheel> wheel_LOUT = axle->GetWheel(LEFT, OUTER);    //ChWheel
-            GetLog() << "tire_id = \t" << tire_id << "\n";
             tire_log[tire_id].write(time, *wheel_LOUT , ter);           
             tire_id++;
-            GetLog() << "LEFT OUTER\n";
+
 //
 //
             //RIGHT inside
             std::shared_ptr<ChWheel> wheel_RIN = axle->GetWheel(RIGHT, INNER);    //ChWheel
-            GetLog() << "tire_id = \t" << tire_id << "\n";
             tire_log[tire_id].write(time, *wheel_RIN , ter);   //ChWheel
             tire_id++;
-            GetLog() << "RIGHT INNER\n";
+
 //
             //RIGHT outside
             std::shared_ptr<ChWheel> wheel_ROUT = axle->GetWheel(RIGHT, OUTER);    //ChWheel
-            GetLog() << "tire_id = \t" << tire_id << "\n";
             tire_log[tire_id].write(time, *wheel_ROUT , ter);   //ChWheel
             tire_id++;
-            GetLog() << "RIGHT OUTER\n";
+
         }
         naxle++;
     }

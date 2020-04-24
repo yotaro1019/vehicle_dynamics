@@ -22,31 +22,32 @@ contains
         return
     end subroutine vehicle_initialize_rapper 
 
-    subroutine vehicle_advence_rapper( f_fforce, veh2cfd )
+    subroutine vehicle_advence_rapper( fforce, veh2cfd )
         implicit none
         interface
-            subroutine vehicle_advance(c_fforce, veh2cfd) bind(c)
+            subroutine vehicle_advance(fforce, veh2cfd) bind(c)
                 import
-                real(c_double),intent(in) :: c_fforce(6)
+                real(c_double),intent(in) :: fforce(6)
                 type(vehicle2cfd),intent(out) :: veh2cfd
             end subroutine vehicle_advance
         end interface
         integer :: i,j
-        real(8),intent(in) :: f_fforce(6)
-        real(c_double) :: c_fforce(6)
+        real(c_double),intent(in) :: fforce(6)
         type(vehicle2cfd) :: veh2cfd
 
-        do i =1, 6
-            c_fforce(i) = f_fforce(i)
-        end do
+
         
         !====================================================
         !if fforce matrix is two dimensions 
         !please create matrix converter Fortran to C
         !====================================================
-
-        call vehicle_advance(c_fforce,veh2cfd)
-
+        write(*,*) "veh2cfd%mesh_vel--3    ", veh2cfd%mesh_vel(1), veh2cfd%mesh_vel(2), veh2cfd%mesh_vel(3)
+        write(*,*) "veh2cfd%mesh_acc--3    ", veh2cfd%mesh_acc(1), veh2cfd%mesh_acc(2), veh2cfd%mesh_acc(3)
+        write(*,*)
+        call vehicle_advance(fforce,veh2cfd)
+        write(*,*) "veh2cfd%mesh_vel--4    ", veh2cfd%mesh_vel(1), veh2cfd%mesh_vel(2), veh2cfd%mesh_vel(3)
+        write(*,*) "veh2cfd%mesh_acc--4    ", veh2cfd%mesh_acc(1), veh2cfd%mesh_acc(2), veh2cfd%mesh_acc(3)
+        write(*,*)
 
 
         return

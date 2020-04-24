@@ -242,7 +242,7 @@ void Vehicle_model::vehicle_initialize(){
     restart.reset(new Restart() );
     current_time = 0.0;
 }
-void Vehicle_model::vehicle_advance(double fforce[6], Vehicle2Cfd veh2cfd_data ){
+void Vehicle_model::vehicle_advance(double fforce[6], Vehicle2Cfd &veh2cfd_data ){
     Exchange_data exc_data(*inp);
     conv_axis(fforce);  //convert cordinate from CFD to Vehicle_dynamics
   
@@ -250,8 +250,14 @@ void Vehicle_model::vehicle_advance(double fforce[6], Vehicle2Cfd veh2cfd_data )
     advance(avd_step_size, fforce);
 
     out->write(current_time, *veh, *driver_follower, *terrain);
-    exc_data.data_packing(*veh, veh2cfd_data);
-    GetLog() << exc_data.veh2cfd.mesh_vel << "\n" << exc_data.veh2cfd.mesh_vel << "\n";
     
+    GetLog() << "~~~~~\n";
+    GetLog() << veh2cfd_data.mesh_vel[0] << "\t" << veh2cfd_data.mesh_vel[1] << "\t" << veh2cfd_data.mesh_vel[2] << "\n";    
+    exc_data.data_packing(*veh, veh2cfd_data);
+    
+    GetLog() << "vehicle_core.cpp\n";
+    GetLog() << exc_data.veh2cfd.mesh_vel[0] << "\t" << exc_data.veh2cfd.mesh_vel[1] << "\t"<< exc_data.veh2cfd.mesh_vel[2] << "\t"<< "\n";
+    GetLog() << veh2cfd_data.mesh_vel[0] << "\t" << veh2cfd_data.mesh_vel[1] << "\t" << veh2cfd_data.mesh_vel[2] << "\n";
+    GetLog() << "~~~~~\n";
 }
 

@@ -26,7 +26,7 @@ private:
 public:
     Vehicle2Cfd veh2cfd;    //exchange data structure from chrono to cube
     Exchange_data(Input_data &inp);
-    void data_packing(WheeledVehicle &veh,  Vehicle2Cfd output_data);
+    void data_packing(WheeledVehicle &veh,  Vehicle2Cfd &output_data);
 };
 
 #endif
