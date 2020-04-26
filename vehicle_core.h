@@ -56,8 +56,14 @@ void setup_system();
 void initialize();      //initialize vehicle system
 void advance(double adv_step_size, double fforce[6] = {0}); //advance vehicle step(adv_step_size : current time step )
 
-void irricht_initialize(double step_size); //initialize irricht
-void irricht_advance(double step_size, ChDriver::Inputs driver_inputs);
+//use realtime rendering (Irrlicht)
+void irricht_initialize(double step_size); //Must be called once before real-time visualization to initialize the Irrlicht system
+void irricht_advance(double step_size, ChDriver::Inputs driver_inputs);//Calling this function once will update the visualization of Irricht by one step 
+
+//use Povray rendering(PovRay)
+std::string pov_dir;
+void initialize_pov();
+void output_pov(int render_frame);
 
 void disp_current_status(); //Display time and other current data as text
 

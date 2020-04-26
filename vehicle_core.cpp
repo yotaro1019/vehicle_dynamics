@@ -173,6 +173,9 @@ void Vehicle_model::advance(double adv_step_size, double fforce[6]){
     
 }
 
+
+//use realtime rendering (Irrlicht)
+//Must be called once before real-time visualization to initialize the Irrlicht system
 void Vehicle_model::irricht_initialize(double step_size){
      app.reset(new ChWheeledVehicleIrrApp(veh.get(), L"Steering PID Controller Demo", irr::core::dimension2d<irr::u32>(800, 640)) );
      
@@ -196,6 +199,8 @@ void Vehicle_model::irricht_initialize(double step_size){
 
 }
 
+
+//Calling this function once will update the visualization of Irricht by one step 
 void Vehicle_model::irricht_advance(double step_size, ChDriver::Inputs driver_inputs){
     //irricht advance
     // Update sentinel and target location markers for the path-follower controller.
@@ -210,6 +215,27 @@ void Vehicle_model::irricht_advance(double step_size, ChDriver::Inputs driver_in
     app->Synchronize(msg, driver_inputs);
     app->Advance(step_size);
 }
+
+
+//use Povray rendering(PovRay)
+void Vehicle_model::initialize_pov(){
+    if(!inp->Get_status_povray())
+        return;
+
+    pov_dir =  GetChronoOutputPath() + "/POVRAY";
+}
+
+void Vehicle_model::output_pov(int render_frame){
+    if(!inp->Get_status_povray())
+        return;
+
+    char filename[100];
+    sprintf(filename, "data_%03d.dat",render_frame);
+    GetLog() << filename << "\n";
+    exit(1);
+}
+
+
 
 //Display time and other current data as texts
 void Vehicle_model::disp_current_status(){
