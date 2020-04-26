@@ -169,8 +169,8 @@ void Vehicle_model::advance(double adv_step_size, double fforce[6]){
     terrain->Advance(adv_step_size);
     veh->Advance(adv_step_size);
     irricht_advance(adv_step_size, driver_inputs);
-    time += adv_step_size;
     current_time += adv_step_size;
+    
 }
 
 void Vehicle_model::irricht_initialize(double step_size){
@@ -211,6 +211,13 @@ void Vehicle_model::irricht_advance(double step_size, ChDriver::Inputs driver_in
     app->Advance(step_size);
 }
 
+//Display time and other current data as texts
+void Vehicle_model::disp_current_status(){
+
+    GetLog() << "time = " << current_time << "[s]" << "  vel = " << veh->GetVehicleSpeedCOM() << "\n";
+
+}
+
 
 void  Vehicle_model::conv_axis(double array[6]){
     if(inp->Get_direc_Xaxis() == false)
@@ -244,7 +251,7 @@ void Vehicle_model::vehicle_advance(double fforce[6], Vehicle2Cfd *veh2cfd_data 
   
     double avd_step_size = this->step_size;
     advance(avd_step_size, fforce);
-
+    disp_current_status();
     out->write(current_time, *veh, *driver_follower, *terrain);  
     exc_data.data_packing(*veh, veh2cfd_data);
 

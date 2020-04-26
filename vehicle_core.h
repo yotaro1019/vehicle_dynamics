@@ -59,6 +59,8 @@ void advance(double adv_step_size, double fforce[6] = {0}); //advance vehicle st
 void irricht_initialize(double step_size); //initialize irricht
 void irricht_advance(double step_size, ChDriver::Inputs driver_inputs);
 
+void disp_current_status(); //Display time and other current data as text
+
 void conv_axis(double array[6]);   //coordinate transformation fo rotation and translatiion direction
 
 public:
