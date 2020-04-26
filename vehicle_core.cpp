@@ -141,9 +141,6 @@ void Vehicle_model::initialize(){
      driver_follower->GetSpeedController().SetGains(0.4, 0, 0);
      driver_follower->Initialize();
 
-     // Finalize construction of visualization assets
-     app->AssetBindAll();
-     app->AssetUpdateAll();
     }
 
 void Vehicle_model::advance(double adv_step_size, double fforce[6]){
@@ -177,6 +174,9 @@ void Vehicle_model::advance(double adv_step_size, double fforce[6]){
 //use realtime rendering (Irrlicht)
 //Must be called once before real-time visualization to initialize the Irrlicht system
 void Vehicle_model::irricht_initialize(double step_size){
+    if(!inp->Get_use_irricht())
+        return;
+
      app.reset(new ChWheeledVehicleIrrApp(veh.get(), L"Steering PID Controller Demo", irr::core::dimension2d<irr::u32>(800, 640)) );
      
      app->SetHUDLocation(500, 20);
@@ -196,12 +196,18 @@ void Vehicle_model::irricht_initialize(double step_size){
      ballT = app->GetSceneManager()->addSphereSceneNode(0.1f);
      ballS->getMaterial(0).EmissiveColor = irr::video::SColor(0, 255, 0, 0);
      ballT->getMaterial(0).EmissiveColor = irr::video::SColor(0, 0, 255, 0);
-
+         
+     // Finalize construction of visualization assets
+     app->AssetBindAll();
+     app->AssetUpdateAll();
 }
 
 
 //Calling this function once will update the visualization of Irricht by one step 
 void Vehicle_model::irricht_advance(double step_size, ChDriver::Inputs driver_inputs){
+    if(!inp->Get_use_irricht())
+        return;
+
     //irricht advance
     // Update sentinel and target location markers for the path-follower controller.
     const ChVector<>& pS = driver_follower->GetSteeringController().GetSentinelLocation();

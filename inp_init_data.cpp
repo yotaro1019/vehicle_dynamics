@@ -119,9 +119,13 @@ void Input_data::default_param(){
     wheel_viz_type = VisualizationType::PRIMITIVES;
     tire_viz_type = VisualizationType::PRIMITIVES;
     parts_vis_type = VisualizationType::PRIMITIVES;
+    //povray
     povray_output = false;
     out_pov_itvl = 0;
     export_pov_mesh = false;
+    //irricht
+    use_irricht = false;
+
 
     //coupling simulation param
     stabi_dt = 0.002;
@@ -396,7 +400,7 @@ void Input_data::read_param(std::string input_fname){
                 }               
             }
             
-
+            //povray
             if(name == "output_POV-Ray"){
                 this->povray_output = Set_bool_value(ss);
             }
@@ -406,6 +410,12 @@ void Input_data::read_param(std::string input_fname){
             if(name == "POV-Ray_output_itvl"){
                 this->out_pov_itvl = Set_int_value(ss);
             }
+
+            //irricht
+            if(name == "use_irrlicht"){
+                this->use_irricht = Set_bool_value(ss);
+            }
+            
 
 //output data
 

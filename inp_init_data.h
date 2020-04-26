@@ -55,9 +55,12 @@ private:
     //visualization
     std::string visualization_type;
     VisualizationType chassis_viz_type, wheel_viz_type, tire_viz_type, parts_vis_type;
+    //povray
     bool povray_output;
     bool export_pov_mesh;
     int out_pov_itvl;
+    //irricht
+    bool use_irricht;
 
 
     //output data
@@ -138,14 +141,18 @@ public:
     int Get_restart_cube_step(){ return this->restart_cube_step; }
     bool Get_restart_bool(){ return this->restart_bool; }
     std::string Get_restart_inp_fname(){  return this->restart_inp_fname; }
-    
+
+    //visualization  
     VisualizationType Get_chassis_viz_type(){ return this->chassis_viz_type; }
     VisualizationType Get_wheel_viz_type(){ return this->wheel_viz_type; }
     VisualizationType Get_tire_viz_type(){ return this->tire_viz_type; }
     VisualizationType Get_parts_viz_type(){ return this->parts_vis_type; }
+    //povray
     bool Get_status_povray(){ return this->povray_output; }
     bool Get_export_pov_mesh(){ return this->export_pov_mesh; }
     int Get_itvl_povray(){ return this->out_pov_itvl; }
+    //irricht
+    bool Get_use_irricht(){ return this->use_irricht; }
 
     //parameters for vehicle motion analysis alone
     double Get_calc_t_begin(){ return this->calc_t_begin; }
