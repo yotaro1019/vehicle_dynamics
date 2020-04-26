@@ -13,7 +13,7 @@ program example_coupling
     real(8) :: pi
     integer :: output_id
     integer :: loop_begin, loop_end, loop
-    type(Cfd2Vehicle),target :: cfd2vehicle
+    type(Cfd2Vehicle),target :: cfd2veh
     type(vehicle2cfd),target :: veh2cfd
 
     pi = 4.0 * atan(1.0)
@@ -35,11 +35,12 @@ program example_coupling
     cube_step  = begin_step
     !call file_open()
     if(cube_time == 0.0)then
-        cube_fforce(:) = 0.0
+        cfd2veh%chassis_fforce(:) = 0.0
+        cfd2veh%chassis_fmoment(:) = 0.0
     end if
 
     if(cube_time < t_end)then
-        call  vehicle_advence_rapper(cube_fforce, veh2cfd)
+        call  vehicle_advence_rapper(cfd2veh, veh2cfd)
     end if
 
     loop_begin = 1 + int(t_begin/cube_dt)
@@ -55,10 +56,9 @@ program example_coupling
         !end if
 
         fforce = 100*sin(pi * cube_step/15000)
-        do i = 1,6
-            cfd2vehicle%chassis_fforce(i) = 0.0d0 !i * fforce
-        end do
-
+        
+        cfd2veh%chassis_fforce(:) = 10000.0
+        cfd2veh%chassis_fmoment(:) = 500.0
         
 
         !write(*,'(a10,i10,a15,f10.5)') "cube_step", cube_step, "cube_time", cube_time
@@ -67,7 +67,7 @@ program example_coupling
             
             
             
-            call  vehicle_advence_rapper(cfd2vehicle, veh2cfd)
+            call  vehicle_advence_rapper(cfd2veh, veh2cfd)
 
             !call file_write(cube_time,  mesh_vel_acc, chassis_vel_cube, str_vel_cube, wheel_rot_cube )
 

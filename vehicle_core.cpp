@@ -148,12 +148,13 @@ void Vehicle_model::initialize(){
      initialize_pov();
     }
 
-void Vehicle_model::advance(double adv_step_size, double fforce[6]){
+void Vehicle_model::advance(double adv_step_size, Cfd2Vehicle *cfd2veh_data){
    
 
-    ChVector<> act_fforce(fforce[0], fforce[1], fforce[2]); 
-    ChVector<> act_fmoment(fforce[3], fforce[4], fforce[5]);
-   
+    ChVector<> act_fforce(cfd2veh_data->chassis_fforce[0], cfd2veh_data->chassis_fforce[1], cfd2veh_data->chassis_fforce[2]); 
+    ChVector<> act_fmoment(cfd2veh_data->chassis_fmoment[0], cfd2veh_data->chassis_fmoment[1], cfd2veh_data->chassis_fmoment[2]); 
+    GetLog() << act_fforce.x() << " " << act_fforce.y() << " " << act_fforce.z() << "\n";
+    GetLog() << act_fmoment.x() << " " << act_fmoment.y() << " " << act_fmoment.z() << "\n\n";
     // Extract system state
     double time = veh->GetSystem()->GetChTime();
     ChVector<> acc_CG = veh->GetChassisBody()->GetPos_dtdt();
@@ -298,12 +299,12 @@ void Vehicle_model::vehicle_initialize(){
     restart.reset(new Restart() );
     current_time = 0.0;
 }
-void Vehicle_model::vehicle_advance(double fforce[6], Vehicle2Cfd *veh2cfd_data ){
+void Vehicle_model::vehicle_advance(Cfd2Vehicle *cfd2veh_data, Vehicle2Cfd *veh2cfd_data ){
     Exchange_data exc_data(*inp);
-    conv_axis(fforce);  //convert cordinate from CFD to Vehicle_dynamics
-  
+
+    exc_data.data_unpacking(cfd2veh_data);
     double avd_step_size = this->step_size;
-    advance(avd_step_size, fforce);
+    advance(avd_step_size, cfd2veh_data);
     disp_current_status();
     out->write(current_time, *veh, *driver_follower, *terrain);  
     exc_data.data_packing(*veh, veh2cfd_data);

@@ -3,15 +3,15 @@
 
 Exchange_data::Exchange_data(Input_data &inp){
     if(inp.Get_direc_Xaxis() == false)
-        direction_axis[0] =-1.0;
-    if(inp.Get_rot_Xaxis() == false)
-        direction_axis[1] = -1.0;
+        direction_axis[0] = -1.0;
     if(inp.Get_direc_Yaxis() == false)
+        direction_axis[1] = -1.0;
+    if(inp.Get_direc_Zaxis() == false)
         direction_axis[2] = -1.0;
 
-    if(inp.Get_rot_Yaxis() == false)
+    if(inp.Get_rot_Xaxis() == false)
         direction_rot[0] = -1.0;
-    if(inp.Get_direc_Zaxis() == false)
+    if(inp.Get_rot_Yaxis() == false)
         direction_rot[1] = -1.0;
     if(inp.Get_rot_Zaxis() == false)
         direction_rot[2] = -1.0;  
@@ -21,6 +21,7 @@ Exchange_data::Exchange_data(Input_data &inp){
 
 void Exchange_data::conv_dir(double data[3]){
     for(int i=0; i<3; i++){
+        GetLog() << "i = " <<  i << "\t" << direction_axis[i] << "\n";
         data[i] *= direction_axis[i];
     }
 }
@@ -30,6 +31,15 @@ void Exchange_data::conv_rot(double data[3]){
         data[i] *= direction_rot[i];
     }
 }
+
+void Exchange_data::data_unpacking(Cfd2Vehicle *input_data){
+    //convert direction
+    conv_dir(input_data->chassis_fforce);
+    conv_rot(input_data->chassis_fmoment);
+
+}
+
+
 //packing datas from vehicle instance to Vehicle2Cfd
 void Exchange_data::data_packing(WheeledVehicle &veh,  Vehicle2Cfd *output_data){
     

@@ -8,8 +8,8 @@ void vehicle_initialize(){
     veh.vehicle_initialize();
 }
 
-void vehicle_advance( double cube_fforce[6] , Vehicle2Cfd *veh2cfd_data){
-    veh.vehicle_advance( cube_fforce , veh2cfd_data);     //vehicle advance package  
+void vehicle_advance( Cfd2Vehicle *cfd2veh_data , Vehicle2Cfd *veh2cfd_data){
+    veh.vehicle_advance( cfd2veh_data , veh2cfd_data);     //vehicle advance package  
 }
 
 

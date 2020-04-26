@@ -8,18 +8,25 @@
 
 using namespace chrono;
 using namespace chrono::vehicle;
-//exchange data structure from chrono to cube
+//exchange data structure from vehicle to cfd
 struct Vehicle2Cfd{
 
     //Using translational movement of mesh by non-inertial system
-    double mesh_vel[3];
-    double mesh_acc[3];
+    double mesh_vel[3] = {0};
+    double mesh_acc[3] = {0};
+};
+
+//exchange data structure from CFD to vehicle
+struct Cfd2Vehicle{
+    //Representation in absolute coordinate system
+    double chassis_fforce[3] = {0.0, 0.0, 0.0};
+    double chassis_fmoment[3] = {0.0, 0.0, 0.0};
 };
 
 class Exchange_data{
 private:
-    double direction_axis[3] = {0}; //convert direction of each axis
-    double direction_rot[3] = {0};  //convert direction of each rotation
+    double direction_axis[3] = {1.0, 1.0, 1.0}; //convert direction of each axis0
+    double direction_rot[3] = {1.0, 1.0, 1.0};  //convert direction of each rotation
 
     void conv_dir(double data[3]);
     void conv_rot(double data[3]);
@@ -28,6 +35,7 @@ private:
 public:
     Vehicle2Cfd veh2cfd;    //exchange data structure from chrono to cube
     Exchange_data(Input_data &inp);
+    void data_unpacking(Cfd2Vehicle *input_data);    
     void data_packing(WheeledVehicle &veh,  Vehicle2Cfd *output_data);
 };
 

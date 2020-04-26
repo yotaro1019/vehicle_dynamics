@@ -55,7 +55,7 @@ int current_step = 0;
 //function
 void setup_system();
 void initialize();      //initialize vehicle system
-void advance(double adv_step_size, double fforce[6] = {0}); //advance vehicle step(adv_step_size : current time step )
+void advance(double adv_step_size, Cfd2Vehicle *cfd2veh_data); //advance vehicle step(adv_step_size : current time step )
 
 //use realtime rendering (Irrlicht)
 void irricht_initialize(double step_size); //Must be called once before real-time visualization to initialize the Irrlicht system
@@ -72,7 +72,7 @@ void conv_axis(double array[6]);   //coordinate transformation fo rotation and t
 
 public:
 void vehicle_initialize();
-void vehicle_advance(double fforce[6], Vehicle2Cfd *veh2cfd_data); //fforce(fx,fy,fz,mx,my,mz)
+void vehicle_advance(Cfd2Vehicle *cfd2veh_data, Vehicle2Cfd *veh2cfd_data); //fforce(fx,fy,fz,mx,my,mz)
 };
 
 #endif
