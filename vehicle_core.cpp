@@ -131,16 +131,21 @@ void Vehicle_model::initialize(){
      std::shared_ptr<ChBezierCurve> path = ChBezierCurve::read(vehicle::GetDataFile(inp->Get_path_txt_fname()));
 
      driver_pos = veh->GetChassis()->GetLocalDriverCoordsys().pos;
-     irricht_initialize(step_size);
+
+
      // -------------------------
      // Create the driver systems
      // -------------------------
-     driver_follower.reset(new ChPathFollowerDriver (*veh, path, "my_path", inp->Get_target_speed()) );
+     driver_follower.reset(new ChPathFollowerDriver (*veh, path, "follow_path", inp->Get_target_speed()) );
      driver_follower->GetSteeringController().SetLookAheadDistance(5);
      driver_follower->GetSteeringController().SetGains(0.8, 0, 0);
      driver_follower->GetSpeedController().SetGains(0.4, 0, 0);
      driver_follower->Initialize();
-
+     
+     //initialize irricht
+     irricht_initialize(step_size);
+     //initialize povray
+     initialize_pov();
     }
 
 void Vehicle_model::advance(double adv_step_size, double fforce[6]){
@@ -165,8 +170,14 @@ void Vehicle_model::advance(double adv_step_size, double fforce[6]){
     driver_follower->Advance(adv_step_size);
     terrain->Advance(adv_step_size);
     veh->Advance(adv_step_size);
+
+    //visualization
     irricht_advance(adv_step_size, driver_inputs);
+    if(current_step%inp->Get_itvl_povray() == 0)
+        output_pov(current_step/inp->Get_itvl_povray());
+
     current_time += adv_step_size;
+    current_step ++;
     
 }
 
@@ -229,6 +240,15 @@ void Vehicle_model::initialize_pov(){
         return;
 
     pov_dir =  GetChronoOutputPath() + "/POVRAY";
+    
+    if (!filesystem::create_directory(filesystem::path(pov_dir))) {
+        std::cout << "Error creating directory " << pov_dir << std::endl;
+        return;
+    }
+    GetLog() << pov_dir << "\n";
+    terrain->ExportMeshPovray(pov_dir);
+    driver_follower->ExportPathPovray(GetChronoOutputPath());
+
 }
 
 void Vehicle_model::output_pov(int render_frame){
@@ -236,9 +256,10 @@ void Vehicle_model::output_pov(int render_frame){
         return;
 
     char filename[100];
-    sprintf(filename, "data_%03d.dat",render_frame);
-    GetLog() << filename << "\n";
-    exit(1);
+    sprintf(filename, "data_%03d.dat",render_frame+1);
+    utils::WriteShapesPovray(veh->GetSystem(), pov_dir + "/" + filename);
+    GetLog() << pov_dir + "/" + filename << "\n";
+    //exit(1);
 }
 
 

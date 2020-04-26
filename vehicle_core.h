@@ -48,8 +48,9 @@ std::shared_ptr<Restart> restart;
 //params
 double step_size, tire_step_size;
 
-//statud
+//status
 double current_time;
+int current_step = 0;
 
 //function
 void setup_system();
