@@ -1,11 +1,10 @@
 module vehicle_operations
     use iso_c_binding
     implicit none
-
-    type,bind(c) :: vehicle2cfd
-        real(c_float) :: mesh_vel(3)
-        real(c_float) :: mesh_acc(3)
-    end type vehicle2cfd
+    type,bind(c) :: Vehicle2Cfd
+        real(c_double) :: mesh_vel(3)
+        real(c_double) :: mesh_acc(3)
+    end type Vehicle2Cfd
 
 contains
 
@@ -33,22 +32,9 @@ contains
         end interface
         integer :: i,j
         real(c_double),intent(in) :: fforce(6)
-        type(vehicle2cfd) :: veh2cfd
+        type(vehicle2cfd),intent(out) :: veh2cfd
 
-
-        
-        !====================================================
-        !if fforce matrix is two dimensions 
-        !please create matrix converter Fortran to C
-        !====================================================
-        write(*,*) "veh2cfd%mesh_vel--3    ", veh2cfd%mesh_vel(1), veh2cfd%mesh_vel(2), veh2cfd%mesh_vel(3)
-        write(*,*) "veh2cfd%mesh_acc--3    ", veh2cfd%mesh_acc(1), veh2cfd%mesh_acc(2), veh2cfd%mesh_acc(3)
-        write(*,*)
         call vehicle_advance(fforce,veh2cfd)
-        write(*,*) "veh2cfd%mesh_vel--4    ", veh2cfd%mesh_vel(1), veh2cfd%mesh_vel(2), veh2cfd%mesh_vel(3)
-        write(*,*) "veh2cfd%mesh_acc--4    ", veh2cfd%mesh_acc(1), veh2cfd%mesh_acc(2), veh2cfd%mesh_acc(3)
-        write(*,*)
-
 
         return
     end subroutine vehicle_advence_rapper

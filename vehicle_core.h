@@ -63,7 +63,7 @@ void conv_axis(double array[6]);   //coordinate transformation fo rotation and t
 
 public:
 void vehicle_initialize();
-void vehicle_advance(double fforce[6], Vehicle2Cfd &veh2cfd_data); //fforce(fx,fy,fz,mx,my,mz)
+void vehicle_advance(double fforce[6], Vehicle2Cfd *veh2cfd_data); //fforce(fx,fy,fz,mx,my,mz)
 };
 
 #endif

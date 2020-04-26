@@ -31,26 +31,22 @@ void Exchange_data::conv_rot(double data[3]){
     }
 }
 //packing datas from vehicle instance to Vehicle2Cfd
-void Exchange_data::data_packing(WheeledVehicle &veh,  Vehicle2Cfd &output_data){
+void Exchange_data::data_packing(WheeledVehicle &veh,  Vehicle2Cfd *output_data){
     
     ChVector<> com_pos = veh.GetVehicleCOMPos();
     ChVector<> vel_axis = veh.GetVehiclePointVelocity(com_pos);
     ChVector<> acc_axis = veh.	GetVehicleAcceleration(com_pos);
     //mesh velocity
-    veh2cfd.mesh_vel[0] = vel_axis.x();
-    veh2cfd.mesh_vel[1] = vel_axis.y();
-    veh2cfd.mesh_vel[2] = 0.0;
-    conv_dir(veh2cfd.mesh_vel);
+    output_data->mesh_vel[0] = vel_axis.x();
+    output_data->mesh_vel[1] = vel_axis.y();
+    output_data->mesh_vel[2] = 0.0;
+    conv_dir(output_data->mesh_vel);
 
     //mesh acceleration
-    veh2cfd.mesh_acc[0] = acc_axis.x();
-    veh2cfd.mesh_acc[1] = acc_axis.y();
-    veh2cfd.mesh_acc[2] = 0.0;   
-    conv_dir(veh2cfd.mesh_acc);
+    output_data->mesh_acc[0] = acc_axis.x();
+    output_data->mesh_acc[1] = acc_axis.y();
+    output_data->mesh_acc[2] = 0.0;   
+    conv_dir(output_data->mesh_acc);
 
-
-
-    GetLog() << "data_packing\n";
-    output_data = this->veh2cfd;
 
 }

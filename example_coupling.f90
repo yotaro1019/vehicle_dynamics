@@ -65,22 +65,10 @@ program example_coupling
         if(mod(cube_step,call_itvl) == 0)then
             write(10,'(i10,7f15.5)') cube_step, cube_time, cube_fforce(1), cube_fforce(2), cube_fforce(3), &
             &cube_fforce(4), cube_fforce(5), cube_fforce(6)
-            veh2cfd%mesh_vel(1) = 1
-            veh2cfd%mesh_vel(2) = 2
-            veh2cfd%mesh_vel(3) = 3
-            veh2cfd%mesh_acc(1) = 11
-            veh2cfd%mesh_acc(2) = 22
-            veh2cfd%mesh_acc(3) = 33
-            write(*,*)
-            write(*,*) "====================================="
-            write(*,*) "veh2cfd%mesh_vel--1    ", veh2cfd%mesh_vel(1), veh2cfd%mesh_vel(2), veh2cfd%mesh_vel(3)
-            write(*,*) "veh2cfd%mesh_acc--1    ", veh2cfd%mesh_acc(1), veh2cfd%mesh_acc(2), veh2cfd%mesh_acc(3)
-            write(*,*)
+            
+            
             call  vehicle_advence_rapper(cube_fforce, veh2cfd)
-            write(*,*) "veh2cfd%mesh_vel--2    ", veh2cfd%mesh_vel(1), veh2cfd%mesh_vel(2), veh2cfd%mesh_vel(3)
-            write(*,*) "veh2cfd%mesh_acc--2    ", veh2cfd%mesh_acc(1), veh2cfd%mesh_acc(2), veh2cfd%mesh_acc(3)
-            write(*,*) "====================================="
-            write(*,*)
+
             !call file_write(cube_time,  mesh_vel_acc, chassis_vel_cube, str_vel_cube, wheel_rot_cube )
 
         end if   

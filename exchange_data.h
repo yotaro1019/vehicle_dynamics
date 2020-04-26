@@ -10,6 +10,8 @@ using namespace chrono;
 using namespace chrono::vehicle;
 //exchange data structure from chrono to cube
 struct Vehicle2Cfd{
+
+    //Using translational movement of mesh by non-inertial system
     double mesh_vel[3];
     double mesh_acc[3];
 };
@@ -26,7 +28,7 @@ private:
 public:
     Vehicle2Cfd veh2cfd;    //exchange data structure from chrono to cube
     Exchange_data(Input_data &inp);
-    void data_packing(WheeledVehicle &veh,  Vehicle2Cfd &output_data);
+    void data_packing(WheeledVehicle &veh,  Vehicle2Cfd *output_data);
 };
 
 #endif
