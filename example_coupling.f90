@@ -13,6 +13,7 @@ program example_coupling
     real(8) :: pi
     integer :: output_id
     integer :: loop_begin, loop_end, loop
+    type(Cfd2Vehicle),target :: cfd2vehicle
     type(vehicle2cfd),target :: veh2cfd
 
     pi = 4.0 * atan(1.0)
@@ -32,7 +33,7 @@ program example_coupling
     
     cube_time = t_begin    
     cube_step  = begin_step
-    call file_open()
+    !call file_open()
     if(cube_time == 0.0)then
         cube_fforce(:) = 0.0
     end if
@@ -55,7 +56,7 @@ program example_coupling
 
         fforce = 100*sin(pi * cube_step/15000)
         do i = 1,6
-            cube_fforce(i) = 0.0d0 !i * fforce
+            cfd2vehicle%chassis_fforce(i) = 0.0d0 !i * fforce
         end do
 
         
@@ -63,11 +64,10 @@ program example_coupling
         !write(*,'(a10,i10,a15,f10.5)') "cube_step", cube_step, "cube_time", cube_time
         !--------------------------------------------------------
         if(mod(cube_step,call_itvl) == 0)then
-            write(10,'(i10,7f15.5)') cube_step, cube_time, cube_fforce(1), cube_fforce(2), cube_fforce(3), &
-            &cube_fforce(4), cube_fforce(5), cube_fforce(6)
             
             
-            call  vehicle_advence_rapper(cube_fforce, veh2cfd)
+            
+            call  vehicle_advence_rapper(cfd2vehicle, veh2cfd)
 
             !call file_write(cube_time,  mesh_vel_acc, chassis_vel_cube, str_vel_cube, wheel_rot_cube )
 
@@ -77,7 +77,7 @@ program example_coupling
 
     end do
 
-    call file_close()
+    !call file_close()
 
 
 
