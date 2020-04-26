@@ -52,6 +52,16 @@ double step_size, tire_step_size;
 double current_time;
 int current_step = 0;
 
+//culculation_mode
+enum culculation_mode{
+    stabilize,
+    coupling,
+    stand_alone_initialize,
+    stand_alone
+};
+
+enum culculation_mode culc_mode;
+
 //function
 void setup_system();
 void initialize();      //initialize vehicle system
@@ -71,8 +81,12 @@ void disp_current_status(); //Display time and other current data as text
 void conv_axis(double array[6]);   //coordinate transformation fo rotation and translatiion direction
 
 public:
+//coupling
 void vehicle_initialize();
 void vehicle_advance(Cfd2Vehicle *cfd2veh_data, Vehicle2Cfd *veh2cfd_data); //fforce(fx,fy,fz,mx,my,mz)
+
+//stand_alone
+void vehicle_initialize_stand_alone();
 };
 
 #endif
