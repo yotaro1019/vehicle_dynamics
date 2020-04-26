@@ -21,7 +21,6 @@ Exchange_data::Exchange_data(Input_data &inp){
 
 void Exchange_data::conv_dir(double data[3]){
     for(int i=0; i<3; i++){
-        GetLog() << "i = " <<  i << "\t" << direction_axis[i] << "\n";
         data[i] *= direction_axis[i];
     }
 }

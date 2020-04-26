@@ -1,6 +1,7 @@
 #ifndef _vehicle_core_
 #define _vehicle_core_
 #include "inp_init_data.h"
+#include"fforce_map.h"
 
 #include "chrono/core/ChRealtimeStep.h"
 #include "chrono/utils/ChFilters.h"
@@ -44,7 +45,7 @@ std::shared_ptr<ChWheeledVehicleIrrApp> app;    //object of Irricht
 std::shared_ptr<Output> out;
 std::shared_ptr<Restart> restart;
 
-
+std::shared_ptr<FForce_map> fmap;       //culc fforce from aero-coef map
 //params
 double step_size, tire_step_size;
 
@@ -54,13 +55,16 @@ int current_step = 0;
 
 //culculation_mode
 enum culculation_mode{
-    stabilize,
     coupling,
-    stand_alone_initialize,
     stand_alone
+};
+enum culculation_section{
+    preparation,
+    production
 };
 
 enum culculation_mode culc_mode;
+enum culculation_section culc_sec;
 
 //function
 void setup_system();
@@ -87,6 +91,7 @@ void vehicle_advance(Cfd2Vehicle *cfd2veh_data, Vehicle2Cfd *veh2cfd_data); //ff
 
 //stand_alone
 void vehicle_initialize_stand_alone();
+void vehicle_advance_stand_alone();
 };
 
 #endif

@@ -289,7 +289,10 @@ void  Vehicle_model::conv_axis(double array[6]){
 }
 
 //public
+//coupling
 void Vehicle_model::vehicle_initialize(){
+    culc_mode = coupling;
+    culc_sec = preparation;
     setup_system();
     GetLog() << "system setup completed\n";
 
@@ -308,6 +311,32 @@ void Vehicle_model::vehicle_advance(Cfd2Vehicle *cfd2veh_data, Vehicle2Cfd *veh2
     disp_current_status();
     out->write(current_time, *veh, *driver_follower, *terrain);  
     exc_data.data_packing(*veh, veh2cfd_data);
+
+}
+
+//stand-alone
+void Vehicle_model::vehicle_initialize_stand_alone(){
+    culc_mode = stand_alone;
+    culc_sec = preparation;
+    setup_system();
+    GetLog() << "system setup completed\n";
+
+    initialize();       //initialize vehicle system
+    fmap.reset(new FForce_map(*inp) ); //initialize flow force sytem from aero-coef map
+
+    GetLog() << "Initialization of vehicle system and aerodynamic-coef map completed\n";
+    out.reset(new Output(*inp, *veh));
+    restart.reset(new Restart() );
+    current_time = 0.0;
+}
+
+void Vehicle_model::vehicle_advance_stand_alone(){
+    Cfd2Vehicle *fmap2veh_data;
+    fmap->Get_fforce_from_map(*veh, current_time, fmap2veh_data);
+    double avd_step_size = this->step_size;
+    advance(avd_step_size, fmap2veh_data);
+    disp_current_status();
+    out->write(current_time, *veh, *driver_follower, *terrain);  
 
 }
 
