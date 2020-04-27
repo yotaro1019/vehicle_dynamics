@@ -135,10 +135,9 @@ double FForce_map::polynomial_approximation(std::vector<double> coef, double x){
 }
 
 void FForce_map::Get_fforce_from_map(WheeledVehicle &veh, double time, Cfd2Vehicle *input_data){
-    //if(stand_alone_mode == false){
-    //    return;
-    //}
-    GetLog() << "!!calculate fforce from fmap!!\n";
+    if(!this->map_switch)
+            return;
+
     ChVector<> aspd_vel(0.0, 0.0, 0.0);
     get_airspeed(time, aspd_vel);
 
@@ -147,36 +146,37 @@ void FForce_map::Get_fforce_from_map(WheeledVehicle &veh, double time, Cfd2Vehic
     ChQuaternion<> chassis_COM_rot = veh.GetChassis()->GetCOMRot();
     ChVector<> chassis_COM_Xaxis = chassis_COM_rot.GetXaxis();
     double chassis_grobal_yaw = atan( chassis_COM_Xaxis.y() / chassis_COM_Xaxis.x() );
+     if(std::isnan(chassis_grobal_yaw))
+        chassis_grobal_yaw = 0.0;   
     double chassis_vel_yaw = atan( chassis_COM_vel.y() / chassis_COM_vel.x());
     double slip = (chassis_vel_yaw - chassis_grobal_yaw) * 180/M_PI;
+    if(std::isnan(slip))
+        slip = 0.00001;
     //double vel = veh.GetChassis()->GetSpeed();
     double vel =  chassis_COM_vel.Length(); 
-
     double fx = Get_Cdmap(slip)*(0.5*rho*pow(vel,2)*vpja);       //Fx
     double fy = Get_Csmap(slip)*(0.5*rho*pow(vel,2)*vpja);       //Fy
     double fz = Get_Clmap(slip)*(0.5*rho*pow(vel,2)*vpja);       //Fx
     double mx = Get_Crmmap(slip)*(0.5*rho*pow(vel,2)*vpja);     //Mx
     double my = Get_Cpmmap(slip)*(0.5*rho*pow(vel,2)*vpja*wb);  //My
     double mz = Get_Cymmap(slip)*(0.5*rho*pow(vel,2)*vpja);     //Mz
-
     if(!x_direc_Xaxis)
-        fx *= -1;
+        fx *= -1.0;
 
     if(!y_direc_Xaxis)
-        fy *= -1;
+        fy *= -1.0;
 
     if(!z_direc_Xaxis)
-        fz *= -1;
+        fz *= -1.0;
 
     if(!x_rot_Xaxis)
-        mx *= -1;
+        mx *= -1.0;
 
     if(!y_rot_Xaxis)
-        my *= -1;
+        my *= -1.0;
 
     if(!z_rot_Xaxis)
-        mz *= -1;
-
+        mz *= -1.0;
     //convert L-RF => G-RF
     input_data->chassis_fforce[0] = fx*cos(chassis_grobal_yaw)-fy*sin(chassis_grobal_yaw);
     input_data->chassis_fforce[1] = fx*sin(chassis_grobal_yaw)+fy*cos(chassis_grobal_yaw);
@@ -195,7 +195,7 @@ double FForce_map::Get_Cdmap(double deg){
     }else if(this->ang[this->ang.size()-2] <  fabs(deg)){
         Cd = this->linear_interpolation(this->ang[this->ang.size()-2], this->ang[this->ang.size()-1], this->cd[this->ang.size()-2], this->cd[this->ang.size()-1], fabs(deg) );
     }else{
-        GetLog() << "input deg = " << deg << "\ncannot calculate Fx from fmap\n";
+        GetLog() << "input deg = " << deg << "\ncannot calculate Cd from fmap\n";
     }
     return Cd;
 }
@@ -210,7 +210,7 @@ double FForce_map::Get_Csmap(double deg){
     }else if(this->ang[this->ang.size()-2] <  fabs(deg)){
         Cs = this->linear_interpolation(this->ang[this->ang.size()-2], this->ang[this->ang.size()-1], this->cs[this->ang.size()-2], this->cs[this->ang.size()-1], fabs(deg) );
     }else{
-        GetLog() << "input deg = " << deg << "\ncannot calculate Fy from fmap\n";
+        GetLog() << "input deg = " << deg << "\ncannot calculate Cs from fmap\n";
     }
     
     if(deg < 0.0){
@@ -228,7 +228,7 @@ double FForce_map::Get_Clmap(double deg){
     }else if(this->ang[this->ang.size()-2] <  fabs(deg)){
         Cl = this->linear_interpolation(this->ang[this->ang.size()-2], this->ang[this->ang.size()-1], this->cl[this->ang.size()-2], this->cl[this->ang.size()-1], fabs(deg) );
     }else{
-        GetLog() << "input deg = " << deg << "\ncannot calculate Fx from fmap\n";
+        GetLog() << "input deg = " << deg << "\ncannot calculate Cl from fmap\n";
     }
     return Cl;
 }
@@ -243,7 +243,7 @@ double FForce_map::Get_Crmmap(double deg){
     }else if(this->ang[this->ang.size()-2] <  fabs(deg)){
         Crm = this->linear_interpolation(this->ang[this->ang.size()-2], this->ang[this->ang.size()-1], this->crm[this->ang.size()-2], this->crm[this->ang.size()-1], fabs(deg) );
     }else{
-        GetLog() << "input deg = " << deg << "\ncannot calculate Fy from fmap\n";
+        GetLog() << "input deg = " << deg << "\ncannot calculate Crm from fmap\n";
     }
     
     if(deg < 0.0){
@@ -262,7 +262,7 @@ double FForce_map::Get_Cpmmap(double deg){
     }else if(this->ang[this->ang.size()-2] <  fabs(deg)){
         Cpm = this->linear_interpolation(this->ang[this->ang.size()-2], this->ang[this->ang.size()-1], this->cpm[this->ang.size()-2], this->cpm[this->ang.size()-1], fabs(deg) );
     }else{
-        GetLog() << "input deg = " << deg << "\ncannot calculate Fy from fmap\n";
+        GetLog() << "input deg = " << deg << "\ncannot calculate Cpm from fmap\n";
     }
 
     return Cpm;
@@ -278,7 +278,7 @@ double FForce_map::Get_Cymmap(double deg){
     }else if(this->ang[this->ang.size()-2] <  fabs(deg)){
         Cym = this->linear_interpolation(this->ang[this->ang.size()-2], this->ang[this->ang.size()-1], this->cym[this->ang.size()-2], this->cym[this->ang.size()-1], fabs(deg) );
     }else{
-        GetLog() << "input deg = " << deg << "\ncannot calculate Fy from fmap\n";
+        GetLog() << "input deg = " << deg << "\ncannot calculate Cym from fmap\n";
     }
 
     if(deg < 0.0){

@@ -153,8 +153,8 @@ void Vehicle_model::advance(double adv_step_size, Cfd2Vehicle *cfd2veh_data){
 
     ChVector<> act_fforce(cfd2veh_data->chassis_fforce[0], cfd2veh_data->chassis_fforce[1], cfd2veh_data->chassis_fforce[2]); 
     ChVector<> act_fmoment(cfd2veh_data->chassis_fmoment[0], cfd2veh_data->chassis_fmoment[1], cfd2veh_data->chassis_fmoment[2]); 
-    GetLog() << act_fforce.x() << " " << act_fforce.y() << " " << act_fforce.z() << "\n";
-    GetLog() << act_fmoment.x() << " " << act_fmoment.y() << " " << act_fmoment.z() << "\n\n";
+    GetLog() << "act_fforce = " << act_fforce.x() << " " << act_fforce.y() << " " << act_fforce.z() << "\n";
+    GetLog() << "act_fmoment = " << act_fmoment.x() << " " << act_fmoment.y() << " " << act_fmoment.z() << "\n\n";
     // Extract system state
     double time = veh->GetSystem()->GetChTime();
     ChVector<> acc_CG = veh->GetChassisBody()->GetPos_dtdt();
@@ -331,10 +331,10 @@ void Vehicle_model::vehicle_initialize_stand_alone(){
 }
 
 void Vehicle_model::vehicle_advance_stand_alone(){
-    Cfd2Vehicle *fmap2veh_data;
-    fmap->Get_fforce_from_map(*veh, current_time, fmap2veh_data);
+    Cfd2Vehicle fmap2veh_data;
+    fmap->Get_fforce_from_map(*veh, current_time, &fmap2veh_data);
     double avd_step_size = this->step_size;
-    advance(avd_step_size, fmap2veh_data);
+    advance(avd_step_size, &fmap2veh_data);
     disp_current_status();
     out->write(current_time, *veh, *driver_follower, *terrain);  
 

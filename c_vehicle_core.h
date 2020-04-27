@@ -7,9 +7,12 @@ extern "C" {
 #endif
 
 
-void vehicle_initialize();  //initialize vehicle system
+void vehicle_initialize();  //initialize vehicle system(coupling)
 
-void vehicle_advance( Cfd2Vehicle *cfd2veh_data, Vehicle2Cfd *veh2cfd_data );  //advance vehicle system
+void vehicle_advance( Cfd2Vehicle *cfd2veh_data, Vehicle2Cfd *veh2cfd_data );  //advance vehicle system(coupling)
+
+void vehicle_initialize_stand_alone();
+void vehicle_advance_stand_alone();
 
 
 #ifdef __cplusplus
