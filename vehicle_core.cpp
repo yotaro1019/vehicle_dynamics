@@ -66,7 +66,6 @@ void Vehicle_model::initialize(){
      // ------------------------------
      // Create the vehicle system
      veh.reset(new WheeledVehicle (vehicle::GetDataFile(inp->Get_vehicle_JSON_fname()) ));
-     //WheeledVehicle vehicle(vehicle::GetDataFile(inp->Get_vehicle_JSON_fname()), ChMaterialSurface::NSC);
      veh->Initialize(ChCoordsys<>(inp->Get_vehicle_init_loc(), inp->Get_vehicle_init_rot()));
      ////veh->GetChassis()->SetFixed(true);
      veh->SetChassisVisualizationType(inp->Get_chassis_viz_type());
