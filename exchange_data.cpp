@@ -44,7 +44,7 @@ void Exchange_data::data_packing(WheeledVehicle &veh,  Vehicle2Cfd *output_data)
     
     ChVector<> com_pos = veh.GetVehicleCOMPos();
     ChVector<> vel_axis = veh.GetVehiclePointVelocity(com_pos);
-    ChVector<> acc_axis = veh.	GetVehicleAcceleration(com_pos);
+    ChVector<> acc_axis = veh.GetVehicleAcceleration(com_pos);
     //mesh velocity
     output_data->mesh_vel[0] = vel_axis.x();
     output_data->mesh_vel[1] = vel_axis.y();
@@ -57,5 +57,38 @@ void Exchange_data::data_packing(WheeledVehicle &veh,  Vehicle2Cfd *output_data)
     output_data->mesh_acc[2] = 0.0;   
     conv_dir(output_data->mesh_acc);
 
+    //for (std::shared_ptr< ChAxle > axle : veh->GetAxles()) {
+//
+    //         //each side has single tire
+    //         if(axle->GetWheels().size() == 2){
+    //             //task of 2 tires on the axle
+//
+//
+    //         }else if(axle->GetWheels().size() == 4){
+    //             //task of 4 tires on the axle
+//
+    //         }
+    //         //each side has dual tire
+    //         naxle++;
+    //     }
+
+    //-------------------------------------------------
+    //step1　グローバル座標系でのボデーのヨー角を計算(x-y)
+    //output_list.cppの36行目を参考にしてボデーのクオータニオンを取得
+    //クオータニオンから，(x-y)平面上でのヨー角を取得
+
+    //-------------------------------------------------
+    for (std::shared_ptr< ChAxle > axle : veh->GetAxles()) {
+        for (std::shared_ptr< Chwheel > wheel : axle->GetWheels()){
+            //step2　各wheelのグローバル座標系でのヨー角(x-y)
+            //output_list.cppの125行目を参考にしてwheelのクオータニオンを取得
+            //クオータニオンから，(x-y)平面上でのヨー角を取得
+
+
+
+            //step3
+            //ボデーから見たwheelの相対的な運動を計算
+        }
+    }
 
 }

@@ -1,7 +1,7 @@
 #ifndef _vehicle_core_
 #define _vehicle_core_
 #include "inp_init_data.h"
-#include"fforce_map.h"
+#include "fforce_map.h"
 
 #include "chrono/core/ChRealtimeStep.h"
 #include "chrono/utils/ChFilters.h"

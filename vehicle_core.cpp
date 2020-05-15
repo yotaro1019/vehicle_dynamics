@@ -301,6 +301,7 @@ void Vehicle_model::vehicle_initialize(){
     restart.reset(new Restart() );
     current_time = 0.0;
 }
+
 void Vehicle_model::vehicle_advance(Cfd2Vehicle *cfd2veh_data, Vehicle2Cfd *veh2cfd_data ){
     Exchange_data exc_data(*inp);
 
