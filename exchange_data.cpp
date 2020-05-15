@@ -78,8 +78,8 @@ void Exchange_data::data_packing(WheeledVehicle &veh,  Vehicle2Cfd *output_data)
     //クオータニオンから，(x-y)平面上でのヨー角を取得
 
     //-------------------------------------------------
-    for (std::shared_ptr< ChAxle > axle : veh->GetAxles()) {
-        for (std::shared_ptr< Chwheel > wheel : axle->GetWheels()){
+    for (std::shared_ptr< ChAxle > axle : veh.GetAxles()) {
+        for (std::shared_ptr< ChWheel > wheel : axle->GetWheels()){
             //step2　各wheelのグローバル座標系でのヨー角(x-y)
             //output_list.cppの125行目を参考にしてwheelのクオータニオンを取得
             //クオータニオンから，(x-y)平面上でのヨー角を取得
