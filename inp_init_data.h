@@ -25,6 +25,8 @@ private:
     //dir_path
     std::string inp_dir_name, out_dir_name;
    
+    //-------------------------------------------
+    //vehicle or tractor
     //vehicle model
     std::string vehicle_JSON_fname;
 
@@ -40,7 +42,12 @@ private:
     //driver model
     std::string path_txt_fname;
     double driver_lookah;
-    
+
+    //-------------------------------------------
+    //trailer
+    bool use_trailer_model;
+    std::string trailer_JSON_fname;
+    ChVector<> trailer_offset;
     
 
     //vehicle situation    
@@ -86,8 +93,10 @@ private:
     //parameters for stand-alone
     double calc_t_begin, calc_t_end;
     int calc_begin_step;
+    //irricht
     ChVector<> cam_trackPoint;
-
+    double chase_distance;
+    double chase_height;
     //fforce map
     std::string fforce_map_fname;
     bool fforce_map_bool;
@@ -113,15 +122,15 @@ public:
     
     //vehicle model
     std::string Get_vehicle_JSON_fname(){ return vehicle_JSON_fname; }
-
-    //powertrain model
     std::string Get_powertrain_JSON_fname(){ return powertrain_JSON_fname; }
-    
-    //tire model
     std::string Get_tire_JSON_fnames(int i) { return tire_JSON_fnames[i]; }
     int Get_ntire_JSON(){ return tire_JSON_fnames.size(); }
 
-    
+    //trailer model
+    std::string Get_trailer_JSON_fname(){ return this->trailer_JSON_fname; }
+    bool Get_use_trailer_model(){ return this->use_trailer_model; }
+    ChVector<> Get_trailer_offset(){ return this->trailer_offset; }
+
     //driver model
     std::string Get_path_txt_fname(){ return path_txt_fname; }
     double Get_driver_lookah(){ return this->driver_lookah; }
@@ -151,14 +160,18 @@ public:
     bool Get_status_povray(){ return this->povray_output; }
     bool Get_export_pov_mesh(){ return this->export_pov_mesh; }
     int Get_itvl_povray(){ return this->out_pov_itvl; }
+
     //irricht
     bool Get_use_irricht(){ return this->use_irricht; }
+    ChVector<> Get_cam_trackPoint(){ return this->cam_trackPoint; }
+    double Get_chase_distance(){ return this->chase_distance; }
+    double Get_chase_height(){ return this->chase_height; }
 
     //parameters for vehicle motion analysis alone
     double Get_calc_t_begin(){ return this->calc_t_begin; }
     double Get_calc_t_end(){ return this->calc_t_end; }
     int Get_calc_begin_step(){ return this->calc_begin_step;}
-    ChVector<> Get_cam_trackPoint(){ return this->cam_trackPoint; }
+    
     //output data
     bool Get_chassis_ref_bool();
     std::string Get_chassis_ref_fname();

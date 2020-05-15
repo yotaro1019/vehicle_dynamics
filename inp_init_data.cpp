@@ -101,6 +101,12 @@ void Input_data::default_param(){
     vehicle_JSON_fname = "NaN";
     powertrain_JSON_fname = "NaN";
     terrain_JSON_fname = "NaN";
+    
+
+    //trailer system 
+    use_trailer_model = false;
+    trailer_JSON_fname = "NaN";
+    vehicle_init_loc.Set(0.0, 0.0, 0.0);
 
 
     //driver path (must check)
@@ -161,7 +167,11 @@ void Input_data::default_param(){
     calc_t_begin = 0.0;
     calc_t_end = 0.0;
     calc_begin_step = 0;
+    //irrlicht
     cam_trackPoint = 0.0, 0.0, 1.75;
+    chase_distance = 6.0;
+    chase_height = 0.5;
+
     //fforce_map
     fforce_map_fname = "NaN";
     fforce_map_bool = false;
@@ -284,6 +294,7 @@ void Input_data::read_param(std::string input_fname){
               this->out_dir_name = Set_str_value(ss);
             }
 
+        //vehicle model
             if(name == "vehicle_JSON"){
                this->vehicle_JSON_fname = Set_str_value(ss);
             }
@@ -303,6 +314,18 @@ void Input_data::read_param(std::string input_fname){
                 this->tire_JSON_fnames = Set_str_vec(ss);
             }
 
+
+        //trailer model
+            if(name == "trailer_JSON_fname"){
+               this->trailer_JSON_fname = Set_str_value(ss);
+               this->use_trailer_model = true;
+            }
+            if(name == "trailer_offset"){
+               this->trailer_offset = Set_ChVector(ss);
+            }
+            
+
+        //driver model
             if(name == "path_txt"){
                 this->path_txt_fname =  Set_str_value(ss);
             }
@@ -415,6 +438,15 @@ void Input_data::read_param(std::string input_fname){
             if(name == "use_irrlicht"){
                 this->use_irricht = Set_bool_value(ss);
             }
+            if(name == "cam_trackPoint"){
+                this->cam_trackPoint = Set_ChVector(ss);
+            }
+            if(name == "chase_distance"){
+                this->chase_distance = Set_double_value(ss);
+            }
+            if(name == "chase_height"){
+                this->chase_height = Set_double_value(ss);
+            }
             
 
 //output data
@@ -487,9 +519,7 @@ void Input_data::read_param(std::string input_fname){
             if(name == "culc_begin_step"){
                 this->calc_begin_step = Set_int_value(ss);
             }
-            if(name == "cam_trackPoint"){
-                this->cam_trackPoint = Set_ChVector(ss);
-            }
+
 
             //fforce map
             if(name == "ffoce_map_inp"){

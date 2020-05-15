@@ -107,7 +107,66 @@ void Vehicle_model::initialize(){
              //each side has dual tire
              naxle++;
          }
+         if(inp->Get_use_trailer_model()){
+             GetLog() << "Created Tractor model\n";
+         }else{
+             GetLog() << "Created Vehicle model\n"; 
+         }
+
      }
+
+    //==========================================================================
+    //create trailer system
+    if(inp->Get_use_trailer_model()){
+        tlr.reset(new WheeledVehicle (veh->GetSystem(), vehicle::GetDataFile(inp->Get_trailer_JSON_fname()) ));
+        tlr->Initialize(ChCoordsys<>(inp->Get_vehicle_init_loc() + inp->Get_trailer_offset(), inp->Get_vehicle_init_rot()));
+        ////veh->GetChassis()->SetFixed(true);
+        tlr->SetChassisVisualizationType(inp->Get_chassis_viz_type());
+        tlr->SetSuspensionVisualizationType(inp->Get_parts_viz_type());
+        tlr->SetSteeringVisualizationType(inp->Get_parts_viz_type());
+        tlr->SetWheelVisualizationType(inp->Get_wheel_viz_type());
+
+        // Create and initialize the powertrain system
+        //std::shared_ptr<ChPowertrain> powertrain = ReadPowertrainJSON( vehicle::GetDataFile(inp->Get_powertrain_JSON_fname()) ); 
+        //veh->InitializePowertrain(powertrain);
+
+        //create and initialize the tires
+        {int naxle = 0;
+        int ntire_file = inp->Get_ntire_JSON();
+            for (std::shared_ptr< ChAxle > axle : tlr->GetAxles()) {
+                std::string tire_fname;
+                if(ntire_file == 1){
+                    tire_fname = inp->Get_tire_JSON_fnames(0);
+                }else if(ntire_file == 2){
+                    if(naxle ==0){
+                        tire_fname = inp->Get_tire_JSON_fnames(0);
+                    }else{
+                        tire_fname = inp->Get_tire_JSON_fnames(1);
+                    }
+                }else{
+                    if(tlr->GetNumberAxles() > naxle){
+                        tire_fname = inp->Get_tire_JSON_fnames(naxle);
+                    }
+                }
+                GetLog() << "naxle = " << naxle << "\t" << tire_fname << "\n";
+                
+                for (std::shared_ptr< ChWheel > wheel : axle->GetWheels()){
+                    std::shared_ptr<ChTire> tire = ReadTireJSON( vehicle::GetDataFile(tire_fname) );
+                    tlr->InitializeTire(tire,wheel, inp->Get_tire_viz_type());
+                }
+
+                //each side has dual tire
+                naxle++;
+            }
+        }
+        GetLog() << "Created trailer model\n";
+    }
+
+
+
+
+    //==========================================================================
+
 
      // ----------------------
      // Create the Bezier path
@@ -152,11 +211,17 @@ void Vehicle_model::advance(double adv_step_size, Cfd2Vehicle *cfd2veh_data){
     driver_follower->Synchronize(time);
     terrain->Synchronize(time);
     veh->Synchronize(time, driver_inputs, *terrain, act_fforce, act_fmoment);
-
+    if(inp->Get_use_trailer_model()){
+        tlr->Synchronize(time, driver_inputs, *terrain);;
+    }
     // Advance simulation for one timestep for all modules
     driver_follower->Advance(adv_step_size);
     terrain->Advance(adv_step_size);
     veh->Advance(adv_step_size);
+    if(inp->Get_use_trailer_model()){
+        tlr->Advance(adv_step_size);
+    }
+
 
     //visualization
     irricht_advance(adv_step_size, driver_inputs);
@@ -185,7 +250,7 @@ void Vehicle_model::irricht_initialize(double step_size){
      app->AddTypicalLights(irr::core::vector3df(150.f, -150.f, 200.f), irr::core::vector3df(150.0f, 150.f, 200.f), 100,
                          100);
      //app->EnableGrid(false);
-     app->SetChaseCamera(inp->Get_cam_trackPoint(), 6.0, 0.5);
+     app->SetChaseCamera(inp->Get_cam_trackPoint(), inp->Get_chase_distance(), inp->Get_chase_height());
 
      app->SetTimestep(step_size);
 
