@@ -48,6 +48,7 @@ private:
     bool use_trailer_model;
     std::string trailer_JSON_fname;
     ChVector<> trailer_offset;
+    ChVector<> trailer_joint_pos;
     
 
     //vehicle situation    
@@ -130,6 +131,7 @@ public:
     std::string Get_trailer_JSON_fname(){ return this->trailer_JSON_fname; }
     bool Get_use_trailer_model(){ return this->use_trailer_model; }
     ChVector<> Get_trailer_offset(){ return this->trailer_offset; }
+    ChVector<> Get_trailer_joint_pos(){ return this->trailer_joint_pos; }
 
     //driver model
     std::string Get_path_txt_fname(){ return path_txt_fname; }

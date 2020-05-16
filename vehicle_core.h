@@ -34,6 +34,8 @@ private:
 std::shared_ptr<Input_data> inp;    //object of input params
 std::shared_ptr<WheeledVehicle> veh;    //object of WheeledVehicle
 std::shared_ptr<WheeledVehicle> tlr;    //object of WheeledVehicle (Trailer)
+std::shared_ptr<chrono::ChLinkLockSpherical> m_puller;  ///< joint between trailer and pulling vehicle
+
 std::shared_ptr<RigidTerrain> terrain;  //object of RigidTerrain
 
 std::shared_ptr<ChPathFollowerDriver> driver_follower;  //object of PathFollower

@@ -159,6 +159,11 @@ void Vehicle_model::initialize(){
                 naxle++;
             }
         }
+        m_puller = chrono_types::make_shared<ChLinkLockSpherical>();
+        m_puller->Initialize(tlr->GetChassisBody() , veh->GetChassisBody(),
+                             ChCoordsys<>(inp->Get_trailer_joint_pos()) >> ChCoordsys<>(inp->Get_vehicle_init_loc() + inp->Get_trailer_offset(), inp->Get_vehicle_init_rot()));
+        veh->GetSystem()->Add(m_puller);        
+
         GetLog() << "Created trailer model\n";
     }
 

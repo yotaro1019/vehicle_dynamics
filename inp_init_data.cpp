@@ -101,21 +101,18 @@ void Input_data::default_param(){
     vehicle_JSON_fname = "NaN";
     powertrain_JSON_fname = "NaN";
     terrain_JSON_fname = "NaN";
-    
+    vehicle_init_loc.Set(0.0, 0.0, 0.0);
+    vehicle_init_rot.Set(1.0, 0.0, 0.0, 0.0);    
 
     //trailer system 
     use_trailer_model = false;
     trailer_JSON_fname = "NaN";
-    vehicle_init_loc.Set(0.0, 0.0, 0.0);
-
+    trailer_offset.Set(0.0, 0.0, 0.0);
+    trailer_joint_pos.Set(0.0, 0.0, 0.0);
 
     //driver path (must check)
     path_txt_fname = "NaN";
     driver_lookah = 5.0;
-
-    //vehicle init status
-    vehicle_init_loc.Set(0.0, 0.0, 0.0);
-    vehicle_init_rot.Set(1.0, 0.0, 0.0, 0.0);
 
     //target speed (must check)
     target_speed = -123456789.0;
@@ -323,7 +320,9 @@ void Input_data::read_param(std::string input_fname){
             if(name == "trailer_offset"){
                this->trailer_offset = Set_ChVector(ss);
             }
-            
+            if(name == "trailer_joint_pos"){
+               this->trailer_joint_pos = Set_ChVector(ss);
+            }            
 
         //driver model
             if(name == "path_txt"){
