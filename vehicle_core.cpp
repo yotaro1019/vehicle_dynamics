@@ -119,7 +119,8 @@ void Vehicle_model::initialize(){
     //create trailer system
     if(inp->Get_use_trailer_model()){
         tlr.reset(new WheeledVehicle (veh->GetSystem(), vehicle::GetDataFile(inp->Get_trailer_JSON_fname()) ));
-        tlr->Initialize(ChCoordsys<>(inp->Get_vehicle_init_loc() + inp->Get_trailer_offset(), inp->Get_vehicle_init_rot()));
+        ChCoordsys<> trailer_chassis_pos(inp->Get_vehicle_init_loc() + inp->Get_trailer_offset(), inp->Get_vehicle_init_rot());
+        tlr->Initialize(trailer_chassis_pos);
         ////veh->GetChassis()->SetFixed(true);
         tlr->SetChassisVisualizationType(inp->Get_chassis_viz_type());
         tlr->SetSuspensionVisualizationType(inp->Get_parts_viz_type());
@@ -161,7 +162,7 @@ void Vehicle_model::initialize(){
         }
         m_puller = chrono_types::make_shared<ChLinkLockSpherical>();
         m_puller->Initialize(tlr->GetChassisBody() , veh->GetChassisBody(),
-                             ChCoordsys<>(inp->Get_trailer_joint_pos()) >> ChCoordsys<>(inp->Get_vehicle_init_loc() + inp->Get_trailer_offset(), inp->Get_vehicle_init_rot()));
+                             ChCoordsys<>(inp->Get_trailer_joint_pos()) >> trailer_chassis_pos);
         veh->GetSystem()->Add(m_puller);        
 
         GetLog() << "Created trailer model\n";
