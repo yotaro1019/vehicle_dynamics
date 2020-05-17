@@ -28,6 +28,7 @@ class Exchange_data{
 private:
     double direction_axis[3] = {1.0, 1.0, 1.0}; //convert direction of each axis0
     double direction_rot[3] = {1.0, 1.0, 1.0};  //convert direction of each rotation
+    double wheel_angvel[20]; // angular velocity of each wheels
 
     void conv_dir(double data[3]);
     void conv_rot(double data[3]);
