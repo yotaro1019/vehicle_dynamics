@@ -5,11 +5,13 @@ module vehicle_operations
     type,bind(c) :: Cfd2Vehicle
         real(c_double) :: chassis_fforce(3)  !ゼロ初期化して
         real(c_double) :: chassis_fmoment(3)  !ゼロ初期化して
+        
     end type Cfd2Vehicle    
 
     type,bind(c) :: Vehicle2Cfd
         real(c_double) :: mesh_vel(3)
         real(c_double) :: mesh_acc(3)
+        real(c_double) :: wheel_angvel(3,20)
     end type Vehicle2Cfd
 
 contains
