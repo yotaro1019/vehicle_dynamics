@@ -96,7 +96,7 @@ void Exchange_data::data_packing(WheeledVehicle &veh,  Vehicle2Cfd *output_data)
 
             //step3
             //ボデーから見たwheelの相対的な運動を計算
-            wheel_angvel[nwheel] = omega - yaw_2D;
+            output_data->wheel_angvel[nwheel] = omega - yaw_2D;
             nwheel++;
         }
     }

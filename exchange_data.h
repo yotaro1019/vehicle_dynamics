@@ -14,7 +14,7 @@ struct Vehicle2Cfd{
     //Using translational movement of mesh by non-inertial system
     double mesh_vel[3] = {0.0};
     double mesh_acc[3] = {0.0};
-    
+    double wheel_angvel[20]; // angular velocity of each wheels    
 };
 
 //exchange data structure from CFD to vehicle
@@ -22,7 +22,7 @@ struct Cfd2Vehicle{
     //Representation in absolute coordinate system
     double chassis_fforce[3]; // = {0.0, 0.0, 0.0};
     double chassis_fmoment[3] = {0.0, 0.0, 0.0};
-    double wheel_angvel[20]; // angular velocity of each wheels
+
 };
 
 class Exchange_data{
