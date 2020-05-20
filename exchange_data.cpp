@@ -79,18 +79,18 @@ void Exchange_data::data_packing(WheeledVehicle &veh,  Vehicle2Cfd *output_data)
     //step1　グローバル座標系でのボデーのヨー角を計算(x-y)
     //output_list.cppの36行目を参考にしてボデーのクオータニオンを取得
     //クオータニオンから，(x-y)平面上でのヨー角を取得
-    ChQuaternion<> angvel_q = veh.GetRot_dt();
+    ChQuaternion<> angvel_q = veh.GetChassisBody()->GetRot_dt();
     ChVector<> angvel_q_xaxis = angvel_q.GetXaxis();
     double yaw_2D = atan( angvel_q_xaxis.y() / angvel_q_xaxis.x() );
 
     //-------------------------------------------------
     int nwheel = 0;
-    for (std::shared_ptr< ChAxle > axle : veh->GetAxles()) {
-        for (std::shared_ptr< Chwheel > wheel : axle->GetWheels()){
+    for (std::shared_ptr< ChAxle > axle : veh.GetAxles()) {
+        for (std::shared_ptr< ChWheel > wheel : axle->GetWheels()){
             //step2　各wheelのグローバル座標系でのヨー角(x-y)
             //output_list.cppの125行目を参考にしてwheelのクオータニオンを取得
             //クオータニオンから，(x-y)平面上でのヨー角を取得
-            ChQuaternion<> rot_q = wheel.GetRot_dt();
+            ChQuaternion<> rot_q = wheel->GetSpindle()->GetRot_dt();
             ChVector<> yaxis = rot_q.GetYaxis();
             double omega = atan( yaxis.y() / yaxis.x() );
 
