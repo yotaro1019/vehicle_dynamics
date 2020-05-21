@@ -60,20 +60,19 @@ void Exchange_data::data_packing(WheeledVehicle &veh,  Vehicle2Cfd *output_data)
     output_data->mesh_acc[2] = 0.0;   
     conv_dir(output_data->mesh_acc);
 
-    //for (std::shared_ptr< ChAxle > axle : veh->GetAxles()) {
-//
-    //         //each side has single tire
-    //         if(axle->GetWheels().size() == 2){
-    //             //task of 2 tires on the axle
-//
-//
-    //         }else if(axle->GetWheels().size() == 4){
-    //             //task of 4 tires on the axle
-//
-    //         }
-    //         //each side has dual tire
-    //         naxle++;
-    //     }
+    //Translation speed of chassis
+    output_data->chassis_linvel[0] = 0.0;
+    output_data->chassis_linvel[1] = 0.0;
+    output_data->chassis_linvel[2] = vel_axis.z();
+    conv_dir(output_data->chassis_linvel);
+
+    //Rotational speed of chassis
+    ChVector<> rot_Euler_vel = veh.GetChassisBody()->GetRot_dt().Q_to_Euler123();
+    output_data->chassis_rotvel[0] = rot_Euler_vel.x();
+    output_data->chassis_rotvel[1] = rot_Euler_vel.y();
+    output_data->chassis_rotvel[2] = rot_Euler_vel.z();   
+    conv_rot(output_data->chassis_rotvel);
+
 
     //-------------------------------------------------
     //step1　グローバル座標系でのボデーのヨー角を計算(x-y)
