@@ -1,0 +1,106 @@
+#PathFollower
+#Parameter File
+inp_dir_name = inp_vehicle_models
+out_dir_name = output_HMMWV
+
+#vehicle system
+vehicle_JSON = HMMWV/vehicle/HMMWV_Vehicle_Rigid.json
+terrain_JSON = terrain/RigidPlane.json
+powertrain_JSON = HMMWV/powertrain/HMMWV_SimpleCVTPowertrain.json
+
+#tire system
+tire_FL_JSON = HMMWV/tire/HMMWV_RigidTire.json
+tire_FR_JSON = HMMWV/tire/HMMWV_RigidTire.json
+tire_RL_JSON = HMMWV/tire/HMMWV_RigidTire.json
+tire_RR_JSON = HMMWV/tire/HMMWV_RigidTire.json
+
+
+#driver system
+path_txt = paths/ISO_double_lane_change.txt
+#path_txt = paths/ISO_DLC_test.txt
+#path_txt = paths/toyota_lane_change.txt
+
+#vehicle init status
+vehicle_init_loc = -125.0, 0.0, 0.5
+#vehicle_init_loc = -50.0, 0.0, 0.2
+vehicle_init_rot = 1.0, 0.0, 0.0, 0.0
+#target_speed = 38.89
+#target_speed = 27.78
+target_speed = 12.0
+vehicle_trackPoint = 0.0, 0.0, 1.75
+vehicle_trackPoint_distance = 5.0
+vehicle_trackPoint_height = 0.5
+
+#visualization_type = MESH,PRIMITIVES,NONE,     parts_vizn_type = PRIMITIVES or NONE only
+chassis_viz_type = NONE
+wheel_viz_type = NONE
+tire_viz_type = PRIMITIVES
+parts_viz_type = PRIMITIVES
+
+#POV-RAY
+output_POV-Ray = true
+POV-Ray_output_itvl = 32
+export_pov_mesh = true
+
+#simulation parameters
+stabilize_step_size = 0.002
+coupling_step_size = 0.001
+tire_step_size = 0.0005
+begin_step = 0
+t_end = 1.0
+stabilization_step = 3500
+restart = false
+restart_inp_fname = restart3.out
+#restart_step = 0
+restart_cube_step = 6000
+
+
+#output
+chassis_COM_data = true
+chassis_COM_fname = chassis_COM.out
+
+driver_input_data = true
+driver_input_fname = driver_inp.out
+
+powertrain_status_data = true
+powertrain_status_fname = powertrain.out
+
+tire_force_data = true
+tire_fl_force_fname = tire_FL_force.out
+tire_fr_force_fname = tire_FR_force.out
+tire_rl_force_fname = tire_RL_force.out
+tire_rr_force_fname = tire_RR_force.out
+wheel_steering_angle_fname = wheel_steering_angle.out
+wheel_rot_fname = wheel_rot.out
+
+fforce_output = true
+fforce_chassis_fname = fforce_chassis.out
+
+init_loc_pos_data = true
+
+restart_output_fname = restart.out
+
+#-------------------------------------------------------------------
+#couplinng
+#data exchange
+direction_x_axis = false
+rot_x_axis = false
+direction_y_axis = false
+rot_y_axis = false
+direction_z_axis = false
+rot_z_axis = false
+
+#geometry number
+geom_chassis = 1
+geom_caliper_FL = 2
+geom_caliper_FR = 3
+geom_wheel_FL = 4
+geom_wheel_FR = 6
+geom_wheel_RL = 8
+geom_wheel_RR = 10
+geom_tire_FL = 5
+geom_tire_FR = 7
+geom_tire_RL = 9
+geom_tire_RR = 11
+
+flow_stabilize_time = 0.5

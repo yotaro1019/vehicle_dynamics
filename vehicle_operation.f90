@@ -10,6 +10,8 @@ module vehicle_operations
     type,bind(c) :: Vehicle2Cfd
         real(c_double) :: mesh_vel(3)
         real(c_double) :: mesh_acc(3)
+        real(c_double) :: obj_vel(30,3)
+        real(c_double) :: obj_rot(30,3)
     end type Vehicle2Cfd
 
 contains
