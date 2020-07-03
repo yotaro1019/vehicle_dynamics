@@ -11,9 +11,8 @@ module vehicle_operations
     type,bind(c) :: Vehicle2Cfd
         real(c_double) :: mesh_vel(3)
         real(c_double) :: mesh_acc(3)
-        real(c_double) :: chassis_linvel(3)
-        real(c_double) :: chassis_rotvel(3)
-        real(c_double) :: wheel_angvel(3,20)  !Note: Rows and columns of 2D arrays are different in C and Fortran
+        real(c_double) :: obj_vel(30,3)
+        real(c_double) :: obj_rot(30,3)
     end type Vehicle2Cfd
 
 contains
