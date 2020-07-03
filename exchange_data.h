@@ -14,9 +14,8 @@ struct Vehicle2Cfd{
     //Using translational movement of mesh by non-inertial system
     double mesh_vel[3] = {0.0};
     double mesh_acc[3] = {0.0};
-    double chassis_linvel[3] = {0.0};   //Translation speed of chassis
-    double chassis_rotvel[3] = {0.0};   //Rotation speed of chassis
-    double wheel_angvel[20][3] = {0.0}; // angular velocity of each wheels    
+    double obj_vel[30][3] = {0.0};   //Translation speed of chassis
+    double obj_rot[30][3] = {0.0};   //Rotation speed of chassis   
 };
 
 //exchange data structure from CFD to vehicle
