@@ -60,20 +60,26 @@ void Exchange_data::data_packing(WheeledVehicle &veh,  Vehicle2Cfd *output_data)
     output_data->mesh_acc[2] = 0.0;   
     conv_dir(output_data->mesh_acc);
 
+    int id = 0;
+
+//--------------chassis data------------------------------------------------------
     //Translation speed of chassis
-    output_data->chassis_linvel[0] = 0.0;
-    output_data->chassis_linvel[1] = 0.0;
-    output_data->chassis_linvel[2] = vel_axis.z();
-    conv_dir(output_data->chassis_linvel);
+    output_data->obj_vel[id][0] = 0.0;
+    output_data->obj_vel[id][1] = 0.0;
+    output_data->obj_vel[id][2] = vel_axis.z();
+
+    conv_dir(output_data->obj_vel[id]);
 
     //Rotational speed of chassis
     ChVector<> rot_Euler_vel = veh.GetChassisBody()->GetRot_dt().Q_to_Euler123();
-    output_data->chassis_rotvel[0] = rot_Euler_vel.x();
-    output_data->chassis_rotvel[1] = rot_Euler_vel.y();
-    output_data->chassis_rotvel[2] = rot_Euler_vel.z();   
-    conv_rot(output_data->chassis_rotvel);
+    output_data->obj_rot[id][0] = rot_Euler_vel.x();
+    output_data->obj_rot[id][1] = rot_Euler_vel.y();
+    output_data->obj_rot[id][2] = rot_Euler_vel.z();   
+    conv_rot(output_data->obj_rot[id]);
 
+    id++;
 
+//--------------culc steering angle-----------------------------------------------    
     //-------------------------------------------------
     //step1　グローバル座標系でのボデーのヨー角を計算(x-y)
     //output_list.cppの36行目を参考にしてボデーのクオータニオンを取得
@@ -83,9 +89,14 @@ void Exchange_data::data_packing(WheeledVehicle &veh,  Vehicle2Cfd *output_data)
     double yaw_2D = atan( angvel_q_xaxis.y() / angvel_q_xaxis.x() );
 
     //-------------------------------------------------
-    int nwheel = 0;
     for (std::shared_ptr< ChAxle > axle : veh.GetAxles()) {
         for (std::shared_ptr< ChWheel > wheel : axle->GetWheels()){
+            //ステアリング角の回転中心はchassisに固定
+            output_data->obj_vel[id][0] = 0.0;
+            output_data->obj_vel[id][1] = 0.0;
+            output_data->obj_vel[id][2] = 0.0;
+            conv_dir(output_data->obj_vel[id]);
+
             //step2　各wheelのグローバル座標系でのヨー角(x-y)
             //output_list.cppの125行目を参考にしてwheelのクオータニオンを取得
             //クオータニオンから，(x-y)平面上でのヨー角を取得
@@ -95,12 +106,11 @@ void Exchange_data::data_packing(WheeledVehicle &veh,  Vehicle2Cfd *output_data)
 
             //step3
             //ボデーから見たwheelの相対的な運動を計算
-            output_data->wheel_angvel[nwheel][0] = 0.0;
-            output_data->wheel_angvel[nwheel][1] = omega - yaw_2D;
-            output_data->wheel_angvel[nwheel][2] = 0.0;
-            conv_rot(output_data->wheel_angvel[nwheel]);
-
-            nwheel++;
+            output_data->obj_rot[id][0] = 0.0;
+            output_data->obj_rot[id][1] = omega - yaw_2D;
+            output_data->obj_rot[id][2] = 0.0;
+            conv_rot(output_data->obj_rot[id]);
+            id++;
         }
     }
 
