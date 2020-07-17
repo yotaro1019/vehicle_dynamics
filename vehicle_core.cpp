@@ -297,15 +297,27 @@ void Vehicle_model::initialize_pov(){
     if(!inp->Get_status_povray())
         return;
 
-    pov_dir =  GetChronoOutputPath() + "/POVRAY";
-    
+    pov_dir =  GetChronoOutputPath() + "/POVRAY";   
     if (!filesystem::create_directory(filesystem::path(pov_dir))) {
         std::cout << "Error creating directory " << pov_dir << std::endl;
         return;
     }
-    GetLog() << pov_dir << "\n";
-    terrain->ExportMeshPovray(pov_dir);
-    driver_follower->ExportPathPovray(GetChronoOutputPath());
+
+
+    std::string pov_inc_dir = pov_dir + "/inc";    
+    if (!filesystem::create_directory(filesystem::path(pov_inc_dir))) {
+        std::cout << "Error creating directory " << pov_inc_dir << std::endl;
+        return;
+    }
+
+    terrain->ExportMeshPovray(pov_inc_dir);
+    driver_follower->ExportPathPovray(pov_inc_dir);
+
+    pov_dir += "/data";   
+    if (!filesystem::create_directory(filesystem::path(pov_dir))) {
+        std::cout << "Error creating directory " << pov_dir << std::endl;
+        return;
+    }   
 
 }
 
