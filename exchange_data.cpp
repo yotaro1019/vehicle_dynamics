@@ -47,7 +47,7 @@ void Exchange_data::data_packing(WheeledVehicle &veh,  Vehicle2Cfd *output_data)
     
     ChVector<> com_pos = veh.GetVehicleCOMPos();
     ChVector<> vel_axis = veh.GetVehiclePointVelocity(com_pos);
-    ChVector<> acc_axis = veh.GetVehicleAcceleration(com_pos);
+    ChVector<> acc_axis = veh.GetVehiclePointAcceleration(com_pos);
     //mesh velocity
     output_data->mesh_vel[0] = vel_axis.x();
     output_data->mesh_vel[1] = vel_axis.y();

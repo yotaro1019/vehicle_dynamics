@@ -209,7 +209,7 @@ void Vehicle_model::advance(double adv_step_size, Cfd2Vehicle *cfd2veh_data){
     // Extract system state
     double time = veh->GetSystem()->GetChTime();
     ChVector<> acc_CG = veh->GetChassisBody()->GetPos_dtdt();
-    ChVector<> acc_driver = veh->GetVehicleAcceleration(driver_pos);
+    ChVector<> acc_driver = veh->GetVehiclePointAcceleration(driver_pos);
     // Driver inputs
     ChDriver::Inputs driver_inputs = driver_follower->GetInputs();
 
