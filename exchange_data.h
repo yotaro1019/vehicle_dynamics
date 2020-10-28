@@ -21,7 +21,7 @@ struct Vehicle2Cfd{
 //exchange data structure from CFD to vehicle
 struct Cfd2Vehicle{
     //Representation in absolute coordinate system
-    double chassis_fforce[3]; // = {0.0, 0.0, 0.0};
+    double chassis_fforce[3] = {0.0, 0.0, 0.0};
     double chassis_fmoment[3] = {0.0, 0.0, 0.0};
 
 };

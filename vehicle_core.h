@@ -78,6 +78,10 @@ void advance(double adv_step_size, Cfd2Vehicle *cfd2veh_data); //advance vehicle
 void irricht_initialize(double step_size); //Must be called once before real-time visualization to initialize the Irrlicht system
 void irricht_advance(double step_size, ChDriver::Inputs driver_inputs);//Calling this function once will update the visualization of Irricht by one step 
 
+//restart
+//void veh_stabi(int stabi_step, double stabi_dt);
+
+
 //use Povray rendering(PovRay)
 std::string pov_dir;
 void initialize_pov();

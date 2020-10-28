@@ -360,6 +360,21 @@ void Vehicle_model::vehicle_initialize(){
 
     initialize();
     GetLog() << "Initialization of vehicle system completed\n";
+    
+    //-------------------------------------------------------------
+    //Someone will implimant restart system
+
+    //暫定措置
+    //stabilizimg vehicle 
+    {
+        Cfd2Vehicle zero_fforce;
+        for(int i=0;i<=inp->Get_stabi_step();i++){
+            
+            advance(inp->Get_stabi_dt(), &zero_fforce);
+            std::cout << "stabilize\t" << i << "\n\n";    
+        }     
+    }
+    //-------------------------------------------------------------
     out.reset(new Output(*inp, *veh));
     restart.reset(new Restart() );
     current_time = 0.0;

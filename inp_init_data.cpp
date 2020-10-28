@@ -374,7 +374,7 @@ void Input_data::read_param(std::string input_fname){
             }
 
 
-            if(name == "parts_vizn_type"){
+            if(name == "parts_viz_type"){
                 std::string vis = Set_str_value(ss);
 
                 if(vis == "MESH"){
