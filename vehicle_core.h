@@ -73,6 +73,7 @@ enum culculation_section culc_sec;
 void setup_system();
 void initialize();      //initialize vehicle system
 void advance(double adv_step_size, Cfd2Vehicle *cfd2veh_data); //advance vehicle step(adv_step_size : current time step )
+void restart_chrono();
 
 //use realtime rendering (Irrlicht)
 void irricht_initialize(double step_size); //Must be called once before real-time visualization to initialize the Irrlicht system

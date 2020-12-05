@@ -193,8 +193,6 @@ void Vehicle_model::initialize(){
      driver_follower->GetSpeedController().SetGains(0.4, 0, 0);
      driver_follower->Initialize();
      
-     //initialize irricht
-     irricht_initialize(step_size);
      //initialize povray
      initialize_pov();
     }
@@ -239,6 +237,23 @@ void Vehicle_model::advance(double adv_step_size, Cfd2Vehicle *cfd2veh_data){
     
 }
 
+//function of restart system
+void Vehicle_model::restart_chrono(){
+    //-------------------------------------------------------------
+    //Someone will implimant restart system
+
+    //暫定措置
+    //stabilizimg vehicle 
+    {
+        Cfd2Vehicle zero_fforce;
+        for(int i=0;i<=inp->Get_stabi_step();i++){
+            
+            advance(inp->Get_stabi_dt(), &zero_fforce);
+            std::cout << "stabilize\t" << i << "\n\n";    
+        }     
+    }
+    //-------------------------------------------------------------
+}
 
 //use realtime rendering (Irrlicht)
 //Must be called once before real-time visualization to initialize the Irrlicht system
@@ -361,20 +376,8 @@ void Vehicle_model::vehicle_initialize(){
     initialize();
     GetLog() << "Initialization of vehicle system completed\n";
     
-    //-------------------------------------------------------------
-    //Someone will implimant restart system
+    restart_chrono();
 
-    //暫定措置
-    //stabilizimg vehicle 
-    {
-        Cfd2Vehicle zero_fforce;
-        for(int i=0;i<=inp->Get_stabi_step();i++){
-            
-            advance(inp->Get_stabi_dt(), &zero_fforce);
-            std::cout << "stabilize\t" << i << "\n\n";    
-        }     
-    }
-    //-------------------------------------------------------------
     out.reset(new Output(*inp, *veh));
     restart.reset(new Restart() );
     current_time = 0.0;
@@ -384,8 +387,8 @@ void Vehicle_model::vehicle_advance(Cfd2Vehicle *cfd2veh_data, Vehicle2Cfd *veh2
     Exchange_data exc_data(*inp);
 
     exc_data.data_unpacking(cfd2veh_data);
-    double avd_step_size = this->step_size;
-    advance(avd_step_size, cfd2veh_data);
+    double adv_step_size = this->step_size;
+    advance(adv_step_size, cfd2veh_data);
     disp_current_status();
     out->write(current_time, *veh, *driver_follower, *terrain);  
     exc_data.data_packing(*veh, veh2cfd_data);
@@ -403,20 +406,8 @@ void Vehicle_model::vehicle_initialize_stand_alone(){
     fmap.reset(new FForce_map(*inp) ); //initialize flow force sytem from aero-coef map
 
     GetLog() << "Initialization of vehicle system and aerodynamic-coef map completed\n";
-    //-------------------------------------------------------------
-    //Someone will implimant restart system
-
-    //暫定措置
-    //stabilizimg vehicle 
-    {
-        Cfd2Vehicle zero_fforce;
-        for(int i=0;i<=inp->Get_stabi_step();i++){
-            
-            advance(inp->Get_stabi_dt(), &zero_fforce);
-            std::cout << "stabilize\t" << i << "\n\n";    
-        }     
-    }
-    //-------------------------------------------------------------
+    restart_chrono();
+    irricht_initialize(step_size);         //initialize irricht
     out.reset(new Output(*inp, *veh));
     restart.reset(new Restart() );
     current_time = 0.0;
