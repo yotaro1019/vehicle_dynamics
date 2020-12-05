@@ -199,9 +199,9 @@ void Vehicle_model::initialize(){
 
 void Vehicle_model::advance(double adv_step_size, Cfd2Vehicle *cfd2veh_data){
    
-
-    ChVector<> act_fforce(cfd2veh_data->chassis_fforce[0], cfd2veh_data->chassis_fforce[1], cfd2veh_data->chassis_fforce[2]); 
-    ChVector<> act_fmoment(cfd2veh_data->chassis_fmoment[0], cfd2veh_data->chassis_fmoment[1], cfd2veh_data->chassis_fmoment[2]); 
+    GetLog() << "CMP\t" << cfd2veh_data->fforce.translation[0] << " " <<  cfd2veh_data->fforce.translation[1] << " " <<  cfd2veh_data->fforce.translation[2] << "\n";
+    ChVector<> act_fforce(cfd2veh_data->fforce.translation[0], cfd2veh_data->fforce.translation[1], cfd2veh_data->fforce.translation[2]); 
+    ChVector<> act_fmoment(cfd2veh_data->fforce.rotation[0], cfd2veh_data->fforce.rotation[1], cfd2veh_data->fforce.rotation[2]); 
     GetLog() << "act_fforce = " << act_fforce.x() << " " << act_fforce.y() << " " << act_fforce.z() << "\n";
     GetLog() << "act_fmoment = " << act_fmoment.x() << " " << act_fmoment.y() << " " << act_fmoment.z() << "\n\n";
     // Extract system state

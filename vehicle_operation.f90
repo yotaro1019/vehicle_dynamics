@@ -2,9 +2,13 @@ module vehicle_operations
     use iso_c_binding
     implicit none
 
+    type,bind(c) :: Components
+        real(c_double) :: translation(3)  !ゼロ初期化して
+        real(c_double) :: rotation(3)  !ゼロ初期化して   
+    end type Components
+
     type,bind(c) :: Cfd2Vehicle
-        real(c_double) :: chassis_fforce(3)  !ゼロ初期化して
-        real(c_double) :: chassis_fmoment(3)  !ゼロ初期化して
+        type(Components) fforce 
         
     end type Cfd2Vehicle    
 

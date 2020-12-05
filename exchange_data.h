@@ -8,6 +8,13 @@
 
 using namespace chrono;
 using namespace chrono::vehicle;
+
+//Components of data structure
+struct Components{
+    double translation[3] = {0.0};
+    double rotation[3] = {0.0};
+};
+
 //exchange data structure from vehicle to cfd
 struct Vehicle2Cfd{
 
@@ -21,18 +28,18 @@ struct Vehicle2Cfd{
 //exchange data structure from CFD to vehicle
 struct Cfd2Vehicle{
     //Representation in absolute coordinate system
-    double chassis_fforce[3] = {0.0, 0.0, 0.0};
-    double chassis_fmoment[3] = {0.0, 0.0, 0.0};
-
+    Components fforce;
 };
+
 
 class Exchange_data{
 private:
     double direction_axis[3] = {1.0, 1.0, 1.0}; //convert direction of each axis0
     double direction_rot[3] = {1.0, 1.0, 1.0};  //convert direction of each rotation
 
-   void conv_dir(double data[3]);
-    void conv_rot(double data[3]);
+    void conv_direction(Components &cmp);
+    void conv_translation(double data[3]);
+    void conv_rotation(double data[3]);
 
 
 public:

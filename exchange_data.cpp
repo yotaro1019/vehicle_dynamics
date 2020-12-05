@@ -22,22 +22,28 @@ Exchange_data::Exchange_data(Input_data &inp){
 
 
 
-void Exchange_data::conv_dir(double data[3]){
+void Exchange_data::conv_translation(double data[3]){
     for(int i=0; i<3; i++){
         data[i] *= direction_axis[i];
     }
 }
 
-void Exchange_data::conv_rot(double data[3]){
+void Exchange_data::conv_rotation(double data[3]){
     for(int i=0; i<3; i++){
         data[i] *= direction_rot[i];
     }
 }
 
+void Exchange_data::conv_direction(Components &cmp){
+    conv_translation(cmp.translation);
+    conv_rotation(cmp.rotation);   
+}
+
 void Exchange_data::data_unpacking(Cfd2Vehicle *input_data){
     //convert direction
-    conv_dir(input_data->chassis_fforce);
-    conv_rot(input_data->chassis_fmoment);
+    conv_direction(input_data->fforce);
+    //conv_translation(input_data->fforce.translation);
+    //conv_rotation(input_data->fforce.rotation);
 
 }
 
@@ -52,13 +58,13 @@ void Exchange_data::data_packing(WheeledVehicle &veh,  Vehicle2Cfd *output_data)
     output_data->mesh_vel[0] = vel_axis.x();
     output_data->mesh_vel[1] = vel_axis.y();
     output_data->mesh_vel[2] = 0.0;
-    conv_dir(output_data->mesh_vel);
+    conv_translation(output_data->mesh_vel);
 
     //mesh acceleration
     output_data->mesh_acc[0] = acc_axis.x();
     output_data->mesh_acc[1] = acc_axis.y();
     output_data->mesh_acc[2] = 0.0;   
-    conv_dir(output_data->mesh_acc);
+    conv_rotation(output_data->mesh_acc);
 
     int id = 0;
 
@@ -68,14 +74,14 @@ void Exchange_data::data_packing(WheeledVehicle &veh,  Vehicle2Cfd *output_data)
     output_data->obj_vel[id][1] = 0.0;
     output_data->obj_vel[id][2] = vel_axis.z();
 
-    conv_dir(output_data->obj_vel[id]);
+    conv_translation(output_data->obj_vel[id]);
 
     //Rotational speed of chassis
     ChVector<> rot_Euler_vel = veh.GetChassisBody()->GetRot_dt().Q_to_Euler123();
     output_data->obj_rot[id][0] = rot_Euler_vel.x();
     output_data->obj_rot[id][1] = rot_Euler_vel.y();
     output_data->obj_rot[id][2] = rot_Euler_vel.z();   
-    conv_rot(output_data->obj_rot[id]);
+    conv_rotation(output_data->obj_rot[id]);
 
     id++;
 
@@ -95,7 +101,7 @@ void Exchange_data::data_packing(WheeledVehicle &veh,  Vehicle2Cfd *output_data)
             output_data->obj_vel[id][0] = 0.0;
             output_data->obj_vel[id][1] = 0.0;
             output_data->obj_vel[id][2] = 0.0;
-            conv_dir(output_data->obj_vel[id]);
+            conv_translation(output_data->obj_vel[id]);
 
             //step2　各wheelのグローバル座標系でのヨー角(x-y)
             //output_list.cppの125行目を参考にしてwheelのクオータニオンを取得
@@ -109,7 +115,7 @@ void Exchange_data::data_packing(WheeledVehicle &veh,  Vehicle2Cfd *output_data)
             output_data->obj_rot[id][0] = 0.0;
             output_data->obj_rot[id][1] = omega - yaw_2D;
             output_data->obj_rot[id][2] = 0.0;
-            conv_rot(output_data->obj_rot[id]);
+            conv_rotation(output_data->obj_rot[id]);
             id++;
         }
     }

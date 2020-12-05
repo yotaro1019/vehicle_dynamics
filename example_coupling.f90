@@ -35,8 +35,8 @@ program example_coupling
     cube_step  = begin_step
     !call file_open()
     if(cube_time == 0.0)then
-        cfd2veh%chassis_fforce(:) = 0.0
-        cfd2veh%chassis_fmoment(:) = 0.0
+        cfd2veh%fforce%translation(:) = 0.0
+        cfd2veh%fforce%rotation(:) = 0.0
     end if
 
     if(cube_time < t_end)then
@@ -57,8 +57,8 @@ program example_coupling
 
         fforce = 100*sin(pi * cube_step/15000)
         
-        cfd2veh%chassis_fforce(:) = 10000.0
-        cfd2veh%chassis_fmoment(:) = 500.0
+        cfd2veh%fforce%translation(:) = 10.0 !fforce
+        cfd2veh%fforce%rotation(:) = 10.0 !fforce
         
 
         !write(*,'(a10,i10,a15,f10.5)') "cube_step", cube_step, "cube_time", cube_time

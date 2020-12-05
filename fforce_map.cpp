@@ -178,12 +178,12 @@ void FForce_map::Get_fforce_from_map(WheeledVehicle &veh, double time, Cfd2Vehic
     if(!z_rot_Xaxis)
         mz *= -1.0;
     //convert L-RF => G-RF
-    input_data->chassis_fforce[0] = fx*cos(chassis_grobal_yaw)-fy*sin(chassis_grobal_yaw);
-    input_data->chassis_fforce[1] = fx*sin(chassis_grobal_yaw)+fy*cos(chassis_grobal_yaw);
-    input_data->chassis_fforce[2] = fz;
-    input_data->chassis_fmoment[0] = mx*cos(chassis_grobal_yaw)-my*sin(chassis_grobal_yaw);
-    input_data->chassis_fmoment[1] = mx*sin(chassis_grobal_yaw)+my*cos(chassis_grobal_yaw);
-    input_data->chassis_fmoment[2] = mz;
+    input_data->fforce.translation[0] = fx*cos(chassis_grobal_yaw)-fy*sin(chassis_grobal_yaw);
+    input_data->fforce.translation[1] = fx*sin(chassis_grobal_yaw)+fy*cos(chassis_grobal_yaw);
+    input_data->fforce.translation[2] = fz;
+    input_data->fforce.rotation[0] = mx*cos(chassis_grobal_yaw)-my*sin(chassis_grobal_yaw);
+    input_data->fforce.rotation[1] = mx*sin(chassis_grobal_yaw)+my*cos(chassis_grobal_yaw);
+    input_data->fforce.rotation[2] = mz;
 }
 
 double FForce_map::Get_Cdmap(double deg){
