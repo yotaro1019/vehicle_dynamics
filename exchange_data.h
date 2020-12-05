@@ -19,10 +19,9 @@ struct Components{
 struct Vehicle2Cfd{
 
     //Using translational movement of mesh by non-inertial system
-    double mesh_vel[3] = {0.0};
-    double mesh_acc[3] = {0.0};
-    double obj_vel[30][3] = {0.0};   //Translation speed of chassis
-    double obj_rot[30][3] = {0.0};   //Rotation speed of chassis   
+    Components mesh_vel;
+    Components mesh_acc;
+    Components object_vel[30];
 };
 
 //exchange data structure from CFD to vehicle

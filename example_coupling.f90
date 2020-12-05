@@ -72,8 +72,8 @@ program example_coupling
             !call file_write(cube_time,  mesh_vel_acc, chassis_vel_cube, str_vel_cube, wheel_rot_cube )
 
         end if   
-
-
+        write(*,*) veh2cfd%object_vel(2)%translation(1),veh2cfd%object_vel(2)%translation(2),veh2cfd%object_vel(2)%translation(3)
+        write(*,*) veh2cfd%object_vel(2)%rotation(1),veh2cfd%object_vel(2)%rotation(2),veh2cfd%object_vel(2)%rotation(3)
 
     end do
 
