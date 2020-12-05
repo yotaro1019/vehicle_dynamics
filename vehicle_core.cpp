@@ -230,7 +230,7 @@ void Vehicle_model::advance(double adv_step_size, Cfd2Vehicle *cfd2veh_data){
 
 
     //visualization
-    irricht_advance(adv_step_size, driver_inputs);
+    //irricht_advance(adv_step_size);
     if(current_step%inp->Get_itvl_povray() == 0)
         output_pov(current_step/inp->Get_itvl_povray());
 
@@ -273,7 +273,7 @@ void Vehicle_model::irricht_initialize(double step_size){
 
 
 //Calling this function once will update the visualization of Irricht by one step 
-void Vehicle_model::irricht_advance(double step_size, ChDriver::Inputs driver_inputs){
+void Vehicle_model::irricht_advance(double step_size){
     if(!inp->Get_use_irricht())
         return;
 
@@ -287,7 +287,7 @@ void Vehicle_model::irricht_advance(double step_size, ChDriver::Inputs driver_in
     app->DrawAll();
     app->EndScene();
     std::string msg = "Follower driver";
-    app->Synchronize(msg, driver_inputs);
+    app->Synchronize(msg, driver_follower->GetInputs());
     app->Advance(step_size);
 }
 
@@ -403,6 +403,20 @@ void Vehicle_model::vehicle_initialize_stand_alone(){
     fmap.reset(new FForce_map(*inp) ); //initialize flow force sytem from aero-coef map
 
     GetLog() << "Initialization of vehicle system and aerodynamic-coef map completed\n";
+    //-------------------------------------------------------------
+    //Someone will implimant restart system
+
+    //暫定措置
+    //stabilizimg vehicle 
+    {
+        Cfd2Vehicle zero_fforce;
+        for(int i=0;i<=inp->Get_stabi_step();i++){
+            
+            advance(inp->Get_stabi_dt(), &zero_fforce);
+            std::cout << "stabilize\t" << i << "\n\n";    
+        }     
+    }
+    //-------------------------------------------------------------
     out.reset(new Output(*inp, *veh));
     restart.reset(new Restart() );
     current_time = 0.0;
@@ -411,8 +425,9 @@ void Vehicle_model::vehicle_initialize_stand_alone(){
 void Vehicle_model::vehicle_advance_stand_alone(){
     Cfd2Vehicle fmap2veh_data;
     fmap->Get_fforce_from_map(*veh, current_time, &fmap2veh_data);
-    double avd_step_size = this->step_size;
-    advance(avd_step_size, &fmap2veh_data);
+    double adv_step_size = this->step_size;
+    advance(adv_step_size, &fmap2veh_data);     //advance phisics step        
+    irricht_advance(adv_step_size);             //advance visualization step
     disp_current_status();
     out->write(current_time, *veh, *driver_follower, *terrain);  
 
