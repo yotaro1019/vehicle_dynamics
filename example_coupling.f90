@@ -1,5 +1,6 @@
 program example_coupling
     use vehicle_operations
+    use mpi
     implicit none
     integer :: call_itvl
     integer :: begin_step
@@ -15,7 +16,7 @@ program example_coupling
     integer :: loop_begin, loop_end, loop
     type(Cfd2Vehicle),target :: cfd2veh
     type(vehicle2cfd),target :: veh2cfd
-
+    integer :: ierr, PETOT, my_rank
     pi = 4.0 * atan(1.0)
 
     !=========================================
@@ -28,141 +29,77 @@ program example_coupling
     begin_step = 0
     !=========================================
 
-
-    call vehicle_initialize_rapper()    !initialize vehicle system
+    call MPI_INIT(ierr)
+    call MPI_COMM_SIZE(MPI_COMM_WORLD, PETOT, ierr)
+    call MPI_COMM_RANK(MPI_COMM_WORLD, my_rank, ierr)  
+    call MPI_Barrier( MPI_COMM_WORLD, ierr) 
     
+    if(my_rank == 0)then   
+        call vehicle_initialize_rapper()    !initialize vehicle system
+    end if
+
     cube_time = t_begin    
     cube_step  = begin_step
-    !call file_open()
-    if(cube_time == 0.0)then
-        cfd2veh%fforce%translation(:) = 0.0
-        cfd2veh%fforce%rotation(:) = 0.0
-    end if
-
-    if(cube_time < t_end)then
-        call  vehicle_advence_rapper(cfd2veh, veh2cfd)
-    end if
 
     loop_begin = 1 + int(t_begin/cube_dt)
     loop_end = int(t_end/cube_dt)
+
+
+
+
     do loop = 1+cube_step, loop_end 
+        call MPI_Barrier( MPI_COMM_WORLD, ierr) 
         !--------------------------------------------------------
         !cube flow calculation
         cube_time = cube_time + cube_dt
         cube_step = cube_step+1
 
-        !if(cube_time > t_end)then
-        !    exit
-        !end if
 
         fforce = 100*sin(pi * cube_step/15000)
         
         cfd2veh%fforce%translation(:) = 10.0 !fforce
-        cfd2veh%fforce%rotation(:) = 10.0 !fforce
-        
+        cfd2veh%fforce%rotation(:) = 10.0 !fforce      
 
-        !write(*,'(a10,i10,a15,f10.5)') "cube_step", cube_step, "cube_time", cube_time
+
         !--------------------------------------------------------
+        call MPI_Barrier( MPI_COMM_WORLD, ierr) 
         if(mod(cube_step,call_itvl) == 0)then
             
+
             
+            if(my_rank == 0)then            
+                call  vehicle_advence_rapper(cfd2veh, veh2cfd)
+                write(*,*) "chrono_call"
+                write(*,*) "my_rank = ", my_rank,"/" ,PETOT
+                write(*,*) "<translation>"
+                write(*,*) veh2cfd%mesh_vel%translation(1),veh2cfd%mesh_vel%translation(2),veh2cfd%mesh_vel%translation(3)
+                write(*,*)
+                write(*,*) "<rotation>"
+                write(*,*) veh2cfd%mesh_vel%rotation(1),veh2cfd%mesh_vel%rotation(2),veh2cfd%mesh_vel%rotation(3)
+            end if
             
-            call  vehicle_advence_rapper(cfd2veh, veh2cfd)
-
-            !call file_write(cube_time,  mesh_vel_acc, chassis_vel_cube, str_vel_cube, wheel_rot_cube )
-
-        end if   
-        write(*,*) veh2cfd%object_vel(2)%translation(1),veh2cfd%object_vel(2)%translation(2),veh2cfd%object_vel(2)%translation(3)
-        write(*,*) veh2cfd%object_vel(2)%rotation(1),veh2cfd%object_vel(2)%rotation(2),veh2cfd%object_vel(2)%rotation(3)
-
+        end if
+        call MPI_Barrier( MPI_COMM_WORLD, ierr);   
+        call veh2cfd_mpi_bcast(veh2cfd)
+        call MPI_Barrier( MPI_COMM_WORLD, ierr);
+        if(my_rank == 0)then            
+            write(*,*) "-*-*-*-"
+        end if
+        call MPI_Barrier( MPI_COMM_WORLD, ierr);
+        write(*,*) ":*my_rank = ", my_rank,"/" ,PETOT, veh2cfd%mesh_vel%translation(1),&
+            veh2cfd%mesh_vel%translation(2),veh2cfd%mesh_vel%translation(3)
+        call MPI_Barrier( MPI_COMM_WORLD, ierr);
+        if(my_rank == 0)then            
+            write(*,*) "**********************************"
+        end if
+        call MPI_Barrier( MPI_COMM_WORLD, ierr);
+        call MPI_FINALIZE(ierr)
+        return 
     end do
 
-    !call file_close()
 
-
+    call MPI_FINALIZE(ierr)
 
     stop
 end program example_coupling
-
-
-
-subroutine file_open()
-    implicit none
-    character fname*100
-    integer :: i
-    open(10, file = "fforce.inp", status = "unknown")
-    write(10,'(a10,7a15)') 'step','time', 'fx', 'fy', 'fz', 'mx', 'my', 'mz'
-
-    call system("mkdir vehicle_vel_rot")
- 
-     do i = 1, 3
-        write (fname, '("./vehicle_vel_rot/chassis_vel_", i3.3, ".txt")') i ! ここでファイル名を生成している
-        open(100+i, file = trim(fname), status = "unknown")
-    end do
-
-    do i = 1, 50
-        write (fname, '("./vehicle_vel_rot/steering_angle_", i3.3, ".txt")') i ! ここでファイル名を生成している
-        open(200+i, file = trim(fname), status = "unknown")
-    end do
-
-    do i = 1, 50
-        write (fname, '("./vehicle_vel_rot/wheel_rot_", i3.3, ".txt")') i ! ここでファイル名を生成している
-        open(300+i, file = trim(fname), status = "unknown")        
-    end do 
-
-
-    return
-end subroutine file_open
-
-
-subroutine file_write(cube_time,  mesh_vel_acc, chassis_vel_cube, str_vel_cube, wheel_rot_cube )
-    implicit none
-    integer :: output_id, i
-    real(8),intent(in) :: cube_time
-    real(8),dimension(6),intent(in) :: mesh_vel_acc
-    real(8),dimension(3,6),intent(in) :: chassis_vel_cube
-    real(8),dimension(50,6),intent(in) :: str_vel_cube, wheel_rot_cube
-
-    do i = 1, 3
-        write(100+i,'(7f15.5)') cube_time, chassis_vel_cube(i,1), chassis_vel_cube(i,2), &
-        chassis_vel_cube(i,3), chassis_vel_cube(i,4), chassis_vel_cube(i,5), &
-        chassis_vel_cube(i,6)
-    end do
-
-    do i = 1, 50
-        write(200+i,'(7f15.5)') cube_time, str_vel_cube(i,1), str_vel_cube(i,2), &
-        str_vel_cube(i,3), str_vel_cube(i,4), str_vel_cube(i,5), &
-        str_vel_cube(i,6)
-    end do 
-
-
-    do i = 1, 50
-        write(300+i,'(7f15.5)') cube_time, wheel_rot_cube(i,1), wheel_rot_cube(i,2), &
-        wheel_rot_cube(i,3), wheel_rot_cube(i,4), wheel_rot_cube(i,5), &
-        wheel_rot_cube(i,6)
-    end do
-
-    return
-end subroutine file_write
-
-subroutine file_close()
-    implicit none
-    integer :: i
-
-    close(10)
-
-    do i = 1, 3
-        close(100+i)
-    end do
-
-    do i = 1, 50
-        close(200+i)
-    end do
-
-    do i = 1, 50
-        close(300+i)
-    end do
-
-    return
-end subroutine file_close
 
