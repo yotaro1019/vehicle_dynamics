@@ -46,7 +46,7 @@ program example_coupling
 
 
 
-
+    write(*,*) "=========================================================================="
     do loop = 1+cube_step, loop_end 
         call MPI_Barrier( MPI_COMM_WORLD, ierr) 
         !--------------------------------------------------------
@@ -57,6 +57,7 @@ program example_coupling
 
         fforce = 100*sin(pi * cube_step/15000)
         
+        cfd2veh%cfd_time = cube_time
         cfd2veh%fforce%translation(:) = 10.0 !fforce
         cfd2veh%fforce%rotation(:) = 10.0 !fforce      
 
@@ -70,35 +71,27 @@ program example_coupling
             if(my_rank == 0)then            
                 call  vehicle_advence_rapper(cfd2veh, veh2cfd)
                 write(*,*) "chrono_call"
-                write(*,*) "my_rank = ", my_rank,"/" ,PETOT
+                write(*,*) "my_rank = ", my_rank, " / " , PETOT, "loop = ", loop
                 write(*,*) "<translation>"
                 write(*,*) veh2cfd%mesh_vel%translation(1),veh2cfd%mesh_vel%translation(2),veh2cfd%mesh_vel%translation(3)
-                write(*,*)
-                write(*,*) "<rotation>"
-                write(*,*) veh2cfd%mesh_vel%rotation(1),veh2cfd%mesh_vel%rotation(2),veh2cfd%mesh_vel%rotation(3)
             end if
             
         end if
         call MPI_Barrier( MPI_COMM_WORLD, ierr);   
         call veh2cfd_mpi_bcast(veh2cfd)
-        call MPI_Barrier( MPI_COMM_WORLD, ierr);
-        if(my_rank == 0)then            
-            write(*,*) "-*-*-*-"
-        end if
-        call MPI_Barrier( MPI_COMM_WORLD, ierr);
-        write(*,*) ":*my_rank = ", my_rank,"/" ,PETOT, veh2cfd%mesh_vel%translation(1),&
+
+        write(*,*) ":*my_rank = ", my_rank,"loop = ", loop,  veh2cfd%mesh_vel%translation(1),&
             veh2cfd%mesh_vel%translation(2),veh2cfd%mesh_vel%translation(3)
         call MPI_Barrier( MPI_COMM_WORLD, ierr);
         if(my_rank == 0)then            
             write(*,*) "**********************************"
         end if
         call MPI_Barrier( MPI_COMM_WORLD, ierr);
+
+    end do
         call MPI_FINALIZE(ierr)
         return 
-    end do
 
-
-    call MPI_FINALIZE(ierr)
 
     stop
 end program example_coupling

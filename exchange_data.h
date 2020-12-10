@@ -28,6 +28,7 @@ struct Vehicle2Cfd{
 struct Cfd2Vehicle{
     //Representation in absolute coordinate system
     Components fforce;
+    double cfd_time = 0.0;
 };
 
 

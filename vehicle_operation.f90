@@ -10,6 +10,7 @@ module vehicle_operations
 
     type,bind(c) :: Cfd2Vehicle
         type(Components) fforce 
+        real(c_double) :: cfd_time
         
     end type Cfd2Vehicle    
 
