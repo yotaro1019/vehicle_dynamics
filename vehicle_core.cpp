@@ -234,15 +234,6 @@ void Vehicle_model::advance(double adv_step_size, Cfd2Vehicle *cfd2veh_data){
         tlr->Advance(adv_step_size);
     }
 
-
-    //visualization
-    //irricht_advance(adv_step_size);
-    if(current_step%inp->Get_itvl_povray() == 0)
-        output_pov(current_step/inp->Get_itvl_povray());
-
-    current_time += adv_step_size;
-    current_step ++;
-    
 }
 
 //function of restart system
@@ -389,6 +380,7 @@ void Vehicle_model::vehicle_initialize(){
     out.reset(new Output(*inp, *veh));
     restart.reset(new Restart() );
     current_time = 0.0;
+    current_step = 0.0;
 }
 
 void Vehicle_model::vehicle_advance(Cfd2Vehicle *cfd2veh_data, Vehicle2Cfd *veh2cfd_data ){
@@ -400,6 +392,13 @@ void Vehicle_model::vehicle_advance(Cfd2Vehicle *cfd2veh_data, Vehicle2Cfd *veh2
     disp_current_status();
     out->write(current_time, *veh, *driver_follower, *terrain);  
     exc_data.data_packing(*veh, veh2cfd_data);
+
+    //visualization
+    if(current_step%inp->Get_itvl_povray() == 0)
+        output_pov(current_step/inp->Get_itvl_povray());
+
+    current_time += adv_step_size;
+    current_step ++;
 
 }
 
@@ -426,9 +425,17 @@ void Vehicle_model::vehicle_advance_stand_alone(){
     fmap->Get_fforce_from_map(*veh, current_time, &fmap2veh_data);
     double adv_step_size = this->step_size;
     advance(adv_step_size, &fmap2veh_data);     //advance phisics step        
-    irricht_advance(adv_step_size);             //advance visualization step
+    
     disp_current_status();
-    out->write(current_time, *veh, *driver_follower, *terrain);  
+    out->write(current_time, *veh, *driver_follower, *terrain);
 
+    //visualization
+    if(current_step%inp->Get_itvl_povray() == 0)
+        output_pov(current_step/inp->Get_itvl_povray());
+
+    irricht_advance(adv_step_size);             //advance visualization step
+    
+    current_time += adv_step_size;
+    current_step ++;
 }
 
