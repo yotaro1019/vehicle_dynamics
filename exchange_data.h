@@ -21,7 +21,9 @@ struct Vehicle2Cfd{
     //Using translational movement of mesh by non-inertial system
     Components mesh_vel;
     Components mesh_acc;
-    Components object_vel[30];
+    Components chassis_vel;
+    Components str_vel[4];
+    Components wheel_vel[4];
 };
 
 //exchange data structure from CFD to vehicle

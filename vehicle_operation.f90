@@ -17,7 +17,9 @@ module vehicle_operations
     type,bind(c) :: Vehicle2Cfd
         type(Components) :: mesh_vel
         type(Components) :: mesh_acc
-        type(Components) :: object_vel(30)
+        type(Components) :: chassis_vel
+        type(Components) :: str_vel(4)
+        type(Components) :: wheel_vel(4)
     end type Vehicle2Cfd
 
 contains
@@ -57,15 +59,18 @@ contains
         implicit none
         integer :: i
         integer :: ierror
-        type(vehicle2cfd),intent(in) :: veh2cfd
+        type(vehicle2cfd),intent(inout) :: veh2cfd
         
         call MPI_Barrier( MPI_COMM_WORLD, ierror);
 
         call comp_bcast(veh2cfd%mesh_vel) 
         call comp_bcast(veh2cfd%mesh_acc) 
+        
+        call comp_bcast(veh2cfd%chassis_vel) 
 
-        do i = 1, 30
-            call comp_bcast(veh2cfd%object_vel(i))
+        do i = 1, 4
+            call comp_bcast(veh2cfd%str_vel(i))
+            call comp_bcast(veh2cfd%wheel_vel(i))
         end do
 
         call MPI_Barrier( MPI_COMM_WORLD, ierror);

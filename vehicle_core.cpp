@@ -202,7 +202,7 @@ void Vehicle_model::advance(double adv_step_size, Cfd2Vehicle *cfd2veh_data){
     ChVector<> act_fforce;
     ChVector<> act_fmoment;  
 
-    GetLog() << "CMP\t" << cfd2veh_data->fforce.translation[0] << " " <<  cfd2veh_data->fforce.translation[1] << " " <<  cfd2veh_data->fforce.translation[2] << "\n";
+    //GetLog() << "CMP\t" << cfd2veh_data->fforce.translation[0] << " " <<  cfd2veh_data->fforce.translation[1] << " " <<  cfd2veh_data->fforce.translation[2] << "\n";
     if(cfd2veh_data->cfd_time > inp->Get_flowstabi_time()){
         act_fforce.Set(cfd2veh_data->fforce.translation[0], cfd2veh_data->fforce.translation[1], cfd2veh_data->fforce.translation[2]); 
         act_fmoment.Set(cfd2veh_data->fforce.rotation[0], cfd2veh_data->fforce.rotation[1], cfd2veh_data->fforce.rotation[2]); 
@@ -210,8 +210,9 @@ void Vehicle_model::advance(double adv_step_size, Cfd2Vehicle *cfd2veh_data){
         act_fforce.Set(0.0, 0.0, 0.0); 
         act_fmoment.Set(0.0, 0.0, 0.0); 
     }
-    GetLog() << "act_fforce = " << act_fforce.x() << " " << act_fforce.y() << " " << act_fforce.z() << "\n";
-    GetLog() << "act_fmoment = " << act_fmoment.x() << " " << act_fmoment.y() << " " << act_fmoment.z() << "\n\n";
+    //GetLog() << "act_fforce = " << act_fforce.x() << " " << act_fforce.y() << " " << act_fforce.z() << "\n";
+    //GetLog() << "act_fmoment = " << act_fmoment.x() << " " << act_fmoment.y() << " " << act_fmoment.z() << "\n\n";
+    
     // Extract system state
     double time = veh->GetSystem()->GetChTime();
     ChVector<> acc_CG = veh->GetChassisBody()->GetPos_dtdt();
