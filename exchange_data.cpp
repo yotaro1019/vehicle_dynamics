@@ -53,10 +53,12 @@ void Exchange_data::data_packing(WheeledVehicle &veh,  Vehicle2Cfd *output_data)
     ChVector<> com_pos = veh.GetVehicleCOMPos();
     ChVector<> vel_axis = veh.GetVehiclePointVelocity(com_pos);
     ChVector<> acc_axis = veh.GetVehiclePointAcceleration(com_pos);
+
+
     //mesh velocity
     output_data->mesh_vel.translation[0] = vel_axis.x();
     output_data->mesh_vel.translation[1] = vel_axis.y();
-    output_data->mesh_vel.translation[2] = 0.0;
+    output_data->mesh_vel.translation[2] = 0.0;;
     conv_direction(output_data->mesh_vel);
 
     //mesh acceleration
@@ -64,14 +66,14 @@ void Exchange_data::data_packing(WheeledVehicle &veh,  Vehicle2Cfd *output_data)
     output_data->mesh_acc.translation[1] = acc_axis.y();
     output_data->mesh_acc.translation[2] = 0.0;   
     conv_direction(output_data->mesh_acc);
-
+    
 
 
 //--------------chassis data------------------------------------------------------
     //Translation speed of chassis
     output_data->chassis_vel.translation[0] = 0.0;
     output_data->chassis_vel.translation[1] = 0.0;
-    output_data->chassis_vel.translation[2] = 0.0; //veh_vel.z();
+    output_data->chassis_vel.translation[2] = veh_vel.z();
 
     //Rotational speed of chassis
     ChVector<> rot_Euler_vel = veh.GetChassisBody()->GetWvel_loc();
