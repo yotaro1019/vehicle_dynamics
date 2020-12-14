@@ -159,6 +159,7 @@ void Input_data::default_param(){
     fforce_output_bool = false;
     fforce_chassis_fname = "chassis_fforce.out";
     init_loc_pos_bool = true;
+    coupling_info_bool = false;
 
     //parameters for vehicle motion analysis alone
     calc_t_begin = 0.0;
@@ -502,6 +503,10 @@ void Input_data::read_param(std::string input_fname){
             }
             if(name == "init_loc_pos_data"){
                 this->init_loc_pos_bool = Set_bool_value(ss);;
+            }
+
+            if(name == "coupling_info"){
+                this->coupling_info_bool = Set_bool_value(ss);;
             }
 
             if(name == "restart_output_fname"){

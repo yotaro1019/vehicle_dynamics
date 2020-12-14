@@ -195,6 +195,10 @@ void Vehicle_model::initialize(){
      
      //initialize povray
      initialize_pov();
+
+     //initialize coupling data structure
+     exc_data.reset(new Exchange_data(*inp));
+
     }
 
 void Vehicle_model::advance(double adv_step_size, Cfd2Vehicle *cfd2veh_data){
@@ -385,14 +389,13 @@ void Vehicle_model::vehicle_initialize(){
 }
 
 void Vehicle_model::vehicle_advance(Cfd2Vehicle *cfd2veh_data, Vehicle2Cfd *veh2cfd_data ){
-    Exchange_data exc_data(*inp);
 
-    exc_data.data_unpacking(cfd2veh_data);
+    exc_data->data_unpacking(cfd2veh_data);
     double adv_step_size = this->step_size;
     advance(adv_step_size, cfd2veh_data);
     disp_current_status();
     out->write(current_time, *veh, *driver_follower, *terrain);  
-    exc_data.data_packing(*veh, veh2cfd_data);
+    exc_data->data_packing(*veh, veh2cfd_data);
 
     //visualization
     if(current_step%inp->Get_itvl_povray() == 0)
@@ -423,6 +426,7 @@ void Vehicle_model::vehicle_initialize_stand_alone(){
 
 void Vehicle_model::vehicle_advance_stand_alone(){
     Cfd2Vehicle fmap2veh_data;
+    Vehicle2Cfd *veh2cfd_data;
     fmap->Get_fforce_from_map(*veh, current_time, &fmap2veh_data);
     double adv_step_size = this->step_size;
     advance(adv_step_size, &fmap2veh_data);     //advance phisics step        

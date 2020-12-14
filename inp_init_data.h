@@ -91,6 +91,8 @@ private:
 
     std::string restart_output_fname;
 
+    bool coupling_info_bool;
+
     //parameters for stand-alone
     double calc_t_begin, calc_t_end;
     int calc_begin_step;
@@ -200,6 +202,8 @@ public:
     bool Get_init_loc_pos_bool(){ return init_loc_pos_bool; };
 
     std::string Get_restart_output_fname(){ return this->restart_output_fname; }
+    bool Get_coupling_info_bool() { return this->coupling_info_bool; }
+
 
     //fforce map
     std::string Get_fforce_map_fname(){ return this->fforce_map_fname; };

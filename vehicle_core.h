@@ -43,6 +43,9 @@ irr::scene::IMeshSceneNode* ballS;  //sentinel point(driver)
 irr::scene::IMeshSceneNode* ballT;  // target point(driver)
 ChVector<> driver_pos;
 
+std::shared_ptr<Exchange_data> exc_data;
+
+
 std::shared_ptr<ChWheeledVehicleIrrApp> app;    //object of Irricht
 
 std::shared_ptr<Output> out;
