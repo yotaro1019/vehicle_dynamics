@@ -394,9 +394,12 @@ void Vehicle_model::vehicle_advance(Cfd2Vehicle *cfd2veh_data, Vehicle2Cfd *veh2
     double adv_step_size = this->step_size;
     advance(adv_step_size, cfd2veh_data);
     disp_current_status();
-    out->write(current_time, *veh, *driver_follower, *terrain);  
+ 
     exc_data->data_packing(*veh, veh2cfd_data);
 
+    out->write(current_time, *veh, *driver_follower, *terrain); 
+    
+    
     //visualization
     if(current_step%inp->Get_itvl_povray() == 0)
         output_pov(current_step/inp->Get_itvl_povray());

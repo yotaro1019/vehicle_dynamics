@@ -14,17 +14,29 @@ std::vector<int> ntire_list; //number of tire (record each axis)
 int ntire_total;    //number of total tires
 
 Output::Output(Input_data &inp, WheeledVehicle &veh){
+    this->initialize_veh_status(inp, veh);
+
+}
+
+void Output::write(double time, WheeledVehicle &veh, ChPathFollowerDriver &dvr, RigidTerrain &ter){
+    this->write_veh_status(time, veh, dvr, ter);
+    
+}
+
+void Output::initialize_veh_status(Input_data &inp, WheeledVehicle &veh){
     chassis_log.initialize(inp.Get_chassis_com_bool(), GetChronoOutputPath() + inp.Get_chassis_COM_fname());
     dvr_log.initialize(inp.Get_driver_input_bool(), GetChronoOutputPath() + inp.Get_driver_input_fname());
     ptr_log.initialize(inp.Get_powertrain_status_bool(), GetChronoOutputPath() + inp.Get_powertrain_status_fname());
 
     ntire_total = 0;
+    
     for (std::shared_ptr< ChAxle > axle : veh.GetAxles()){
     int ntire =  axle->GetWheels().size();
     GetLog() << ntire << "\t";
     ntire_list.push_back(ntire);
     ntire_total += ntire;
     }
+
     tire_log.resize(ntire_total);
     GetLog() << ntire_list.size() << "\n";
     int ntire = 0;
@@ -72,14 +84,16 @@ Output::Output(Input_data &inp, WheeledVehicle &veh){
             tire_log[ntire].initialize(inp.Get_tire_force_bool(), GetChronoOutputPath() + fname);
             GetLog() << ntire << "\n";
             ntire++;
-         }        
-     naxle++;    
- }
- GetLog() << "ntire = " << ntire << "\tnaxle = " << naxle << "\n";
- GetLog() << tire_log.size() << "\n";
-
+        }        
+        naxle++;    
+    }
+    GetLog() << "ntire = " << ntire << "\tnaxle = " << naxle << "\n";
+    GetLog() << tire_log.size() << "\n";
 }
-void Output::write(double time, WheeledVehicle &veh, ChPathFollowerDriver &dvr, RigidTerrain &ter){
+
+
+
+void Output::write_veh_status(double time, WheeledVehicle &veh, ChPathFollowerDriver &dvr, RigidTerrain &ter){
     chassis_log.write(time, veh);
     dvr_log.write(time, dvr);
     ptr_log.write(time, *veh.GetPowertrain() );
