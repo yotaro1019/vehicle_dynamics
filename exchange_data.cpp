@@ -47,7 +47,7 @@ void Exchange_data::data_unpacking(Cfd2Vehicle *input_data){
 
 //packing datas from vehicle instance to Vehicle2Cfd
 void Exchange_data::data_packing(WheeledVehicle &veh,  Vehicle2Cfd *output_data){
-    
+
     ChVector<> veh_vel = veh.GetChassisBody()->GetFrame_REF_to_abs().GetPos_dt();
 
     ChVector<> com_pos = veh.GetVehicleCOMPos();

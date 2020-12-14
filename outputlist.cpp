@@ -19,7 +19,6 @@ void Chassis_vel_fout::initialize(bool c_switch, const std::string fname)
 
     fout.reset(new std::ofstream(fname.c_str()) );
     check_file_status(fout, fname);
-    GetLog() << "!\n";
     char header[500];
     sprintf(header, "%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s", "time", "x", "y", "z", "vel", "u", "v", "w", "roll", "pitch", "yaw", "yaw_2D");
     *fout << header << "\n";
@@ -149,4 +148,26 @@ void Tire_fout::write(double time, ChWheel &wheel , RigidTerrain &terrain){
     moment_loc.x(), moment_loc.y(), moment_loc.z(), slip, lng_slip, cmb_angle, pos.x(), pos.y(), pos.z(), deflection );    
     *fout << output_value << "\n";
     
+}
+
+
+//1WAY-info
+void Vehicle2CFD_info::initialize(bool c_switch, const std::string fname){
+    this->c_switch = c_switch;
+    
+    if(!c_switch)
+        return;
+
+    fout.reset(new std::ofstream(fname.c_str()) );
+    check_file_status(fout, fname);  
+}
+
+void Vehicle2CFD_info::write(double time, double comp1[], double comp2[]){
+    if(!c_switch)
+        return; 
+    GetLog() << "COMP\t" << comp1[0] << comp1[1] << comp1[2] << comp2[0] << comp2[1] <<  comp2[2] << "\n";
+    char output_value[500];
+    sprintf(output_value,"%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f",  time, comp1[0], comp1[1], comp1[2],
+    comp2[0], comp2[1], comp2[2]);
+    *fout << output_value << "\n";
 }

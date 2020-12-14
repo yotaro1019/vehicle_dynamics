@@ -55,4 +55,14 @@ class Tire_fout : public Baseout{
 };
 
 
+//1WAY-info
+class Vehicle2CFD_info : public Baseout{
+  public:
+    Vehicle2CFD_info() { Baseout(); };
+    void initialize(bool c_switch, const std::string fname);
+    void write(double time, double comp1[], double comp2[]);  
+};
+
+
+
 #endif

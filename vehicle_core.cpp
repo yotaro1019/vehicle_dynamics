@@ -397,7 +397,7 @@ void Vehicle_model::vehicle_advance(Cfd2Vehicle *cfd2veh_data, Vehicle2Cfd *veh2
  
     exc_data->data_packing(*veh, veh2cfd_data);
 
-    out->write(current_time, *veh, *driver_follower, *terrain); 
+    out->write(current_time, *veh, *driver_follower, *terrain, *veh2cfd_data); 
     
     
     //visualization
@@ -429,13 +429,13 @@ void Vehicle_model::vehicle_initialize_stand_alone(){
 
 void Vehicle_model::vehicle_advance_stand_alone(){
     Cfd2Vehicle fmap2veh_data;
-    Vehicle2Cfd *veh2cfd_data;
+    Vehicle2Cfd *v2c;
     fmap->Get_fforce_from_map(*veh, current_time, &fmap2veh_data);
     double adv_step_size = this->step_size;
     advance(adv_step_size, &fmap2veh_data);     //advance phisics step        
-    
     disp_current_status();
-    out->write(current_time, *veh, *driver_follower, *terrain);
+    //exc_data->data_packing(*veh, v2c);
+    //out->write(current_time, *veh, *driver_follower, *terrain, *v2c);
 
     //visualization
     if(current_step%inp->Get_itvl_povray() == 0)

@@ -13,15 +13,20 @@ std::vector<Tire_fout> tire_log;
 std::vector<int> ntire_list; //number of tire (record each axis)
 int ntire_total;    //number of total tires
 
+//1way-info
+Vehicle2CFD_info mesh_vel_info;
+
 Output::Output(Input_data &inp, WheeledVehicle &veh){
     this->initialize_veh_status(inp, veh);
-
+    this->initialize_1way_info(inp, veh);
 }
 
-void Output::write(double time, WheeledVehicle &veh, ChPathFollowerDriver &dvr, RigidTerrain &ter){
+void Output::write(double time, WheeledVehicle &veh, ChPathFollowerDriver &dvr, RigidTerrain &ter, Vehicle2Cfd &v2c){
     this->write_veh_status(time, veh, dvr, ter);
-    
+    this->write_1way_info(time, v2c);
 }
+
+
 
 void Output::initialize_veh_status(Input_data &inp, WheeledVehicle &veh){
     chassis_log.initialize(inp.Get_chassis_com_bool(), GetChronoOutputPath() + inp.Get_chassis_COM_fname());
@@ -141,4 +146,30 @@ void Output::write_veh_status(double time, WheeledVehicle &veh, ChPathFollowerDr
         }
         naxle++;
     }
+}
+
+
+//1WAY info
+void Output::initialize_1way_info(Input_data &inp, WheeledVehicle &veh){
+    this->info_1way_bool = inp.Get_coupling_info_bool();
+    if(!this->info_1way_bool)
+        return;
+
+    std::string out_dir =  GetChronoOutputPath() + "/1way";   
+    if (!filesystem::create_directory(filesystem::path(out_dir))) {
+        std::cout << "Error creating directory " << out_dir << std::endl;
+        return;
+    }
+
+    mesh_vel_info.initialize(inp.Get_coupling_info_bool(), out_dir+"/mesh_vel.txt");
+
+}
+
+void Output::write_1way_info(double time, Vehicle2Cfd &v2c){
+    if(!this->info_1way_bool)
+        return;
+
+    GetLog() << v2c.mesh_vel.translation << "\n";
+    mesh_vel_info.write(time, v2c.mesh_vel.translation, v2c.mesh_acc.translation);
+
 }
