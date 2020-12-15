@@ -33,7 +33,7 @@ class  CH_VEHICLE_API  Output{
     void initialize_1way_info(Input_data &inp, WheeledVehicle &veh);
     void write(double time, WheeledVehicle &veh, ChPathFollowerDriver &dvr, RigidTerrain &ter, Vehicle2Cfd &v2c);  
     void write_veh_status(double time, WheeledVehicle &veh, ChPathFollowerDriver &dvr, RigidTerrain &ter);
-    void write_1way_info(double time, Vehicle2Cfd &v2c);
+    void write_1way_info(double time, WheeledVehicle &veh, Vehicle2Cfd &v2c);
 };
 
 #endif
