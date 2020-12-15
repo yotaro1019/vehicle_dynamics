@@ -222,7 +222,6 @@ void Output::write_1way_info(double time, WheeledVehicle &veh, Vehicle2Cfd &v2c)
                 //wheel vel
                 wheel_vel_info[wheel_id].write(time, v2c.wheel_vel[wheel_id].translation, v2c.wheel_vel[wheel_id].rotation);
                 wheel_id++;
-                GetLog() << "***********************\n"<< v2c.wheel_vel[wheel_id].translation << "\n";
             }
         }else if(ntire_list[axle_id] == 4){
             for(int j = 0; j<4; j++){

@@ -77,9 +77,9 @@ void Exchange_data::data_packing(WheeledVehicle &veh,  Vehicle2Cfd *output_data)
 
     //Rotational speed of chassis
     ChVector<> rot_Euler_vel = veh.GetChassisBody()->GetWvel_loc();
-    output_data->chassis_vel.rotation[0] = 0.0; //rot_Euler_vel.x();
-    output_data->chassis_vel.rotation[1] = 0.0; //rot_Euler_vel.y();
-    output_data->chassis_vel.rotation[2] = 0.0; //rot_Euler_vel.z();   
+    output_data->chassis_vel.rotation[0] = rot_Euler_vel.x();
+    output_data->chassis_vel.rotation[1] = rot_Euler_vel.y();
+    output_data->chassis_vel.rotation[2] = rot_Euler_vel.z();   
     conv_direction(output_data->chassis_vel);
  	
 
@@ -101,7 +101,7 @@ void Exchange_data::data_packing(WheeledVehicle &veh,  Vehicle2Cfd *output_data)
             //ボデーから見たwheelの相対的な運動を計算
             output_data->str_vel[id].rotation[0] = 0.0;
             output_data->str_vel[id].rotation[1] = 0.0;
-            output_data->str_vel[id].rotation[2] = 0.0; // str_rot_vel_gl.z() - chassis_rot_vel_gl.z();
+            output_data->str_vel[id].rotation[2] = str_rot_vel_gl.z() - chassis_rot_vel_gl.z();
             conv_direction(output_data->str_vel[id]);
 
             //step4　タイヤの回転角速度を取得
@@ -109,7 +109,7 @@ void Exchange_data::data_packing(WheeledVehicle &veh,  Vehicle2Cfd *output_data)
             output_data->wheel_vel[id].translation[1] = 0.0;
             output_data->wheel_vel[id].translation[2] = 0.0;
             output_data->wheel_vel[id].rotation[0] = 0.0;
-            output_data->wheel_vel[id].rotation[1] = 0.0; // wheel->GetState().omega;
+            output_data->wheel_vel[id].rotation[1] = wheel->GetState().omega;
             output_data->wheel_vel[id].rotation[2] = 0.0;
             conv_direction(output_data->wheel_vel[id]);
 
