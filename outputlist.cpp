@@ -31,7 +31,7 @@ void Chassis_vel_fout::write(double time, WheeledVehicle &veh){
     
     ChVector<> com_pos = veh.GetVehicleCOMPos();
     double vel = veh.GetVehicleSpeedCOM();
-    ChVector<> vel_axis = veh.GetVehiclePointVelocity(com_pos);
+    ChVector<> vel_global = veh.GetVehiclePointVelocity(veh.GetChassis()->GetLocalPosCOM());
     ChQuaternion<> angle_q = veh.GetVehicleRot();
     ChVector<> angle_euler = angle_q.Q_to_Euler123();
     ChVector<> angle_q_xaxis = angle_q.GetXaxis();
@@ -40,7 +40,7 @@ void Chassis_vel_fout::write(double time, WheeledVehicle &veh){
 
     char output_value[500];
     sprintf(output_value,"%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f",  time, com_pos.x(), com_pos.y(), com_pos.z(),
-    vel, vel_axis.x(), vel_axis.y(), vel_axis.z(), angle_euler.x(), angle_euler.y(), angle_euler.z(), yaw_2D );
+    vel, vel_global.x(), vel_global.y(), vel_global.z(), angle_euler.x(), angle_euler.y(), angle_euler.z(), yaw_2D );
     *fout << output_value << "\n";
 }
 
@@ -165,7 +165,7 @@ void Vehicle2CFD_info::initialize(bool c_switch, const std::string fname){
 void Vehicle2CFD_info::write(double time, double comp1[], double comp2[]){
     if(!c_switch)
         return; 
-        
+
     char output_value[500];
     sprintf(output_value,"%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f",  time, comp1[0], comp1[1], comp1[2],
     comp2[0], comp2[1], comp2[2]);

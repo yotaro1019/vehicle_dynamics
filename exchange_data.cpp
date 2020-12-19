@@ -48,8 +48,6 @@ void Exchange_data::data_unpacking(Cfd2Vehicle *input_data){
 //packing datas from vehicle instance to Vehicle2Cfd
 void Exchange_data::data_packing(WheeledVehicle &veh,  Vehicle2Cfd *output_data){
 
-    ChVector<> veh_vel = veh.GetChassisBody()->GetFrame_REF_to_abs().GetPos_dt();
-
     ChVector<> com_loc_poc = veh.GetChassis()->GetLocalPosCOM();
     ChVector<> vel_axis = veh.GetVehiclePointVelocity(com_loc_poc);
     ChVector<> acc_axis = veh.GetVehiclePointAcceleration(com_loc_poc);
@@ -70,16 +68,18 @@ void Exchange_data::data_packing(WheeledVehicle &veh,  Vehicle2Cfd *output_data)
 
 
 //--------------chassis data------------------------------------------------------
+
     //Translation speed of chassis
+    ChVector<> chassis_loc_vel = veh.GetChassisBody()->GetPos_dt();
     output_data->chassis_vel.translation[0] = 0.0;
     output_data->chassis_vel.translation[1] = 0.0;
-    output_data->chassis_vel.translation[2] = veh_vel.z();
+    output_data->chassis_vel.translation[2] = chassis_loc_vel.z();
 
     //Rotational speed of chassis
-    ChVector<> rot_Euler_vel = veh.GetChassisBody()->GetWvel_loc();
-    output_data->chassis_vel.rotation[0] = rot_Euler_vel.x();
-    output_data->chassis_vel.rotation[1] = rot_Euler_vel.y();
-    output_data->chassis_vel.rotation[2] = rot_Euler_vel.z(); 
+    ChVector<> chassis_rot_vel_Euler = veh.GetChassisBody()->GetWvel_loc();
+    output_data->chassis_vel.rotation[0] = -1.0 * chassis_rot_vel_Euler.x();
+    output_data->chassis_vel.rotation[1] = -1.0 * chassis_rot_vel_Euler.y();
+    output_data->chassis_vel.rotation[2] = -1.0 * chassis_rot_vel_Euler.z(); 
     conv_direction(output_data->chassis_vel);
 
 //--------------culc steering angle-----------------------------------------------    
@@ -99,7 +99,7 @@ void Exchange_data::data_packing(WheeledVehicle &veh,  Vehicle2Cfd *output_data)
             //ボデーから見たwheelの相対的な運動を計算
             output_data->str_vel[id].rotation[0] = 0.0;
             output_data->str_vel[id].rotation[1] = 0.0;
-            output_data->str_vel[id].rotation[2] = str_rot_vel_gl.z() - chassis_rot_vel_gl.z();
+            output_data->str_vel[id].rotation[2] = -1.0 * (str_rot_vel_gl.z() - chassis_rot_vel_gl.z() );
             conv_direction(output_data->str_vel[id]);
 
             //step4　タイヤの回転角速度を取得
