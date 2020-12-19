@@ -165,7 +165,7 @@ void Vehicle2CFD_info::initialize(bool c_switch, const std::string fname){
 void Vehicle2CFD_info::write(double time, double comp1[], double comp2[]){
     if(!c_switch)
         return; 
-    GetLog() << "COMP\t" << comp1[0] << comp1[1] << comp1[2] << comp2[0] << comp2[1] <<  comp2[2] << "\n";
+        
     char output_value[500];
     sprintf(output_value,"%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f",  time, comp1[0], comp1[1], comp1[2],
     comp2[0], comp2[1], comp2[2]);

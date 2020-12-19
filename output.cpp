@@ -208,7 +208,7 @@ void Output::write_1way_info(double time, WheeledVehicle &veh, Vehicle2Cfd &v2c)
     if(!this->info_1way_bool)
         return;
 
-    GetLog() << v2c.mesh_vel.translation << "\n";
+    
     mesh_vel_info.write(time, v2c.mesh_vel.translation, v2c.mesh_acc.translation);
     chassis_vel_info.write(time, v2c.chassis_vel.translation, v2c.chassis_vel.rotation);
     
