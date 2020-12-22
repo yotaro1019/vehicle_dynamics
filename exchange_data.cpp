@@ -55,13 +55,13 @@ void Exchange_data::data_packing(WheeledVehicle &veh,  Vehicle2Cfd *output_data)
 
     //mesh velocity
     output_data->mesh_vel.translation[0] = vel_axis.x();
-    output_data->mesh_vel.translation[1] = vel_axis.y();
-    output_data->mesh_vel.translation[2] = 0.0;;
+    output_data->mesh_vel.translation[1] = -1.0 * vel_axis.y();
+    output_data->mesh_vel.translation[2] = 0.0;
     conv_direction(output_data->mesh_vel);
 
     //mesh acceleration
     output_data->mesh_acc.translation[0] = acc_axis.x();
-    output_data->mesh_acc.translation[1] = acc_axis.y();
+    output_data->mesh_acc.translation[1] = -1.0 * acc_axis.y();
     output_data->mesh_acc.translation[2] = 0.0;   
     conv_direction(output_data->mesh_acc);
     
@@ -99,7 +99,7 @@ void Exchange_data::data_packing(WheeledVehicle &veh,  Vehicle2Cfd *output_data)
             //ボデーから見たwheelの相対的な運動を計算
             output_data->str_vel[id].rotation[0] = 0.0;
             output_data->str_vel[id].rotation[1] = 0.0;
-            output_data->str_vel[id].rotation[2] = -1.0 * (str_rot_vel_gl.z() - chassis_rot_vel_gl.z() );
+            output_data->str_vel[id].rotation[2] = 0.0; //-1.0 * (str_rot_vel_gl.z() - chassis_rot_vel_gl.z() );
             conv_direction(output_data->str_vel[id]);
 
             //step4　タイヤの回転角速度を取得

@@ -250,10 +250,13 @@ void Vehicle_model::restart_chrono(){
     //stabilizimg vehicle 
     {
         Cfd2Vehicle zero_fforce;
+        double log_itvl = floor(inp->Get_stabi_step()/5);
         for(int i=0;i<=inp->Get_stabi_step();i++){
-            
             advance(inp->Get_stabi_dt(), &zero_fforce);
-            std::cout << "stabilize\t" << i << "\n\n";    
+            if(i%(int)log_itvl == 0 || i==inp->Get_stabi_step()){
+                std::cout << "stabilize\t" << i << "\n"; 
+            }
+               
         }     
     }
     //-------------------------------------------------------------
