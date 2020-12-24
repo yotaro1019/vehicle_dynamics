@@ -171,3 +171,30 @@ void Vehicle2CFD_info::write(double time, double comp1[], double comp2[]){
     comp2[0], comp2[1], comp2[2]);
     *fout << output_value << "\n";
 }
+
+
+//fforce-info
+void FForce_info::initialize(bool c_switch, const std::string fname){
+    this->c_switch = c_switch;
+    
+    if(!c_switch)
+        return;
+
+    fout.reset(new std::ofstream(fname.c_str()) );
+    check_file_status(fout, fname);
+
+    char header[500];
+    sprintf(header, "%12s%17s%17s%17s%17s%17s%17s", "time","fx","fy","fz","mx","my","mz");
+    *fout << header << "\n";
+  
+}
+
+void FForce_info::write(double time, double comp1[], double comp2[]){
+    if(!c_switch)
+        return; 
+
+    char output_value[500];
+    sprintf(output_value,"%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f",  time, comp1[0], comp1[1], comp1[2],
+    comp2[0], comp2[1], comp2[2]);
+    *fout << output_value << "\n";
+}

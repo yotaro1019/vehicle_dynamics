@@ -45,6 +45,14 @@ void Exchange_data::data_unpacking(Cfd2Vehicle *input_data){
 }
 
 
+//public
+void Exchange_data::comp_zeros(Components &cmp){
+    for(int i=0; i<3; i++){
+        cmp.translation[i] = 0.0;
+        cmp.rotation[i]    = 0.0;
+    }
+
+}
 //packing datas from vehicle instance to Vehicle2Cfd
 void Exchange_data::data_packing(WheeledVehicle &veh,  Vehicle2Cfd *output_data){
 

@@ -21,8 +21,8 @@ program example_coupling
 
     !=========================================
     !parameters
-    cube_dt = 0.001
-    chrono_dt = 0.001
+    cube_dt = 0.002
+    chrono_dt = 0.002
     call_itvl = 1
     t_begin = 0.0
     t_end = 8.0

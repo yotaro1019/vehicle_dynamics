@@ -19,14 +19,19 @@ Vehicle2CFD_info chassis_vel_info;
 std::vector<Vehicle2CFD_info> str_vel_info;
 std::vector<Vehicle2CFD_info> wheel_vel_info;
 
+//ffoece_info
+FForce_info cfd_fforce_info;
+
 Output::Output(Input_data &inp, WheeledVehicle &veh){
     this->initialize_veh_status(inp, veh);
     this->initialize_1way_info(inp, veh);
+    this->initialize_fforce_info(inp);
 }
 
-void Output::write(double time, WheeledVehicle &veh, ChPathFollowerDriver &dvr, RigidTerrain &ter, Vehicle2Cfd &v2c){
+void Output::write(double time, WheeledVehicle &veh, ChPathFollowerDriver &dvr, RigidTerrain &ter, Cfd2Vehicle &c2v, Vehicle2Cfd &v2c){
     this->write_veh_status(time, veh, dvr, ter);
     this->write_1way_info(time, veh, v2c);
+    this->write_fforce(time, c2v);
 }
 
 
@@ -234,4 +239,12 @@ void Output::write_1way_info(double time, WheeledVehicle &veh, Vehicle2Cfd &v2c)
         }
         axle_id++;
     }
+}
+
+void Output::initialize_fforce_info(Input_data &inp){
+    cfd_fforce_info.initialize(inp.Get_coupling_info_bool(), GetChronoOutputPath() + "/inp_fforce.out");
+}
+
+void Output::write_fforce(double time, Cfd2Vehicle &c2v){
+    cfd_fforce_info.write(time, c2v.fforce.translation, c2v.fforce.rotation);
 }

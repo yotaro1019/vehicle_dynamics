@@ -206,14 +206,10 @@ void Vehicle_model::advance(double adv_step_size, Cfd2Vehicle *cfd2veh_data){
     ChVector<> act_fforce;
     ChVector<> act_fmoment;  
 
-    //GetLog() << "CMP\t" << cfd2veh_data->fforce.translation[0] << " " <<  cfd2veh_data->fforce.translation[1] << " " <<  cfd2veh_data->fforce.translation[2] << "\n";
-    if(cfd2veh_data->cfd_time > inp->Get_flowstabi_time()){
-        act_fforce.Set(cfd2veh_data->fforce.translation[0], cfd2veh_data->fforce.translation[1], cfd2veh_data->fforce.translation[2]); 
-        act_fmoment.Set(cfd2veh_data->fforce.rotation[0], cfd2veh_data->fforce.rotation[1], cfd2veh_data->fforce.rotation[2]); 
-    }else{
-        act_fforce.Set(0.0, 0.0, 0.0); 
-        act_fmoment.Set(0.0, 0.0, 0.0); 
-    }
+    //GetLog() << "CMP\t" << cfd2veh_data->fforce.translation[0] << " " <<  cfd2veh_data->fforce.translation[1] << " " <<  cfd2veh_data->fforce.translation[2] << "\n"; 
+    act_fforce.Set(cfd2veh_data->fforce.translation[0], cfd2veh_data->fforce.translation[1], cfd2veh_data->fforce.translation[2]); 
+    act_fmoment.Set(cfd2veh_data->fforce.rotation[0], cfd2veh_data->fforce.rotation[1], cfd2veh_data->fforce.rotation[2]); 
+
     //GetLog() << "act_fforce = " << act_fforce.x() << " " << act_fforce.y() << " " << act_fforce.z() << "\n";
     //GetLog() << "act_fmoment = " << act_fmoment.x() << " " << act_fmoment.y() << " " << act_fmoment.z() << "\n\n";
     
@@ -395,12 +391,20 @@ void Vehicle_model::vehicle_advance(Cfd2Vehicle *cfd2veh_data, Vehicle2Cfd *veh2
 
     exc_data->data_unpacking(cfd2veh_data);
     double adv_step_size = this->step_size;
+    //GetLog() << cfd2veh_data->cfd_time << "\n";
+    //GetLog() << "!act_fforce = " << cfd2veh_data->fforce.translation[0] << " " << cfd2veh_data->fforce.translation[1] << " " << cfd2veh_data->fforce.translation[2] << "\n";
+    //GetLog() << "!act_fmoment = " << cfd2veh_data->fforce.rotation[0] << " " << cfd2veh_data->fforce.rotation[1] << " " << cfd2veh_data->fforce.rotation[2] << "\n";
+    if(cfd2veh_data->cfd_time < inp->Get_flowstabi_time()){
+        exc_data->comp_zeros(cfd2veh_data->fforce);
+    }
+    //GetLog() << "!act_fforce = " << cfd2veh_data->fforce.translation[0] << " " << cfd2veh_data->fforce.translation[1] << " " << cfd2veh_data->fforce.translation[2] << "\n";
+    //GetLog() << "!act_fmoment = " << cfd2veh_data->fforce.rotation[0] << " " << cfd2veh_data->fforce.rotation[1] << " " << cfd2veh_data->fforce.rotation[2] << "\n";
     advance(adv_step_size, cfd2veh_data);
     disp_current_status();
  
     exc_data->data_packing(*veh, veh2cfd_data);
 
-    out->write(current_time, *veh, *driver_follower, *terrain, *veh2cfd_data); 
+    out->write(current_time, *veh, *driver_follower, *terrain, *cfd2veh_data, *veh2cfd_data); 
     
     
     //visualization
@@ -438,7 +442,7 @@ void Vehicle_model::vehicle_advance_stand_alone(){
     advance(adv_step_size, &fmap2veh_data);     //advance phisics step        
     disp_current_status();
     exc_data->data_packing(*veh, &v2c);
-    out->write(current_time, *veh, *driver_follower, *terrain, v2c);
+    out->write(current_time, *veh, *driver_follower, *terrain, fmap2veh_data, v2c);
 
     //visualization
     if(current_step%inp->Get_itvl_povray() == 0)

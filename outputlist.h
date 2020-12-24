@@ -63,6 +63,12 @@ class Vehicle2CFD_info : public Baseout{
     void write(double time, double comp1[], double comp2[]);  
 };
 
-
+//fforce-info
+class FForce_info : public Baseout{
+  public:
+    FForce_info() { Baseout(); };
+    void initialize(bool c_switch, const std::string fname);
+    void write(double time, double comp1[], double comp2[]);  
+};
 
 #endif
