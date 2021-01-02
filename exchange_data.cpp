@@ -53,6 +53,33 @@ void Exchange_data::comp_zeros(Components &cmp){
     }
 
 }
+void Exchange_data::comp_set6array(Components &cmp, double array[6]){
+    for(int i=0; i<3; i++){
+        cmp.translation[i] = array[i];
+        cmp.rotation[i]  = array[i+3];
+    }
+}
+
+void Exchange_data::comp_get6array(Components &cmp, double array[6]){
+    for(int i=0; i<3; i++){
+        array[i] = cmp.translation[i];
+        array[i+3] = cmp.rotation[i];
+    }    
+}
+
+void Exchange_data::comp_get3transarray(Components &cmp, double array[3]){
+    for(int i = 0; i<3; i++){
+        array[i] = cmp.translation[i];
+    }
+} 
+
+void Exchange_data::comp_get3rotarray(Components &cmp, double array[3]){
+    for(int i = 0; i<3; i++){
+        array[i] = cmp.rotation[i];
+    }
+}
+
+
 //packing datas from vehicle instance to Vehicle2Cfd
 void Exchange_data::data_packing(WheeledVehicle &veh,  Vehicle2Cfd *output_data){
 

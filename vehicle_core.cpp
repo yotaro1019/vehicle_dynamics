@@ -416,6 +416,7 @@ void Vehicle_model::vehicle_advance(Cfd2Vehicle *cfd2veh_data, Vehicle2Cfd *veh2
 
 }
 
+//====================================================================
 //stand-alone
 void Vehicle_model::vehicle_initialize_stand_alone(){
     culc_mode = stand_alone;
