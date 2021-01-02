@@ -80,11 +80,11 @@ contains
 
     subroutine comp_bcast(comp)
         implicit none
-        type(Components),intent(in) :: comp
+        type(Components),intent(inout) :: comp
         integer :: ierror
 
-        call MPI_Barrier( MPI_COMM_WORLD, ierror);
         call MPI_BCAST(comp%translation, 3, MPI_double_precision, 0, MPI_COMM_WORLD, ierror)
+        call MPI_Barrier( MPI_COMM_WORLD, ierror);        
         call MPI_BCAST(comp%rotation, 3, MPI_double_precision, 0, MPI_COMM_WORLD, ierror)
         call MPI_Barrier( MPI_COMM_WORLD, ierror);
 
