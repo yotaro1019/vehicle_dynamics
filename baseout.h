@@ -1,3 +1,5 @@
+#ifndef _BASEOUT_
+#define _BASEOUT_
 #include<iostream>
 #include<string>
 #include<fstream>
@@ -13,3 +15,4 @@ class Baseout{
     virtual ~Baseout();    
     void check_file_status(std::shared_ptr<std::ofstream> fout, std::string fname);
 };
+#endif

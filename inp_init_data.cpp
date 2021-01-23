@@ -519,7 +519,7 @@ void Input_data::read_param(std::string input_fname){
             }
 
             //Get Point vel and acc in cabin
-            if(name == "rcabin_pdata_fname"){
+            if(name == "cabin_pdata_fname"){
                 this->cabin_pdata_fname = Set_str_value(ss);
                 this->cabin_pdata_bool = true;
             }          

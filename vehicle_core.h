@@ -23,6 +23,7 @@
 #include"output.h"
 #include"restart.h"
 #include"exchange_data.h"
+#include"point_vel_acc.h"
 
 using namespace chrono;
 using namespace chrono::geometry;
@@ -50,6 +51,7 @@ std::shared_ptr<ChWheeledVehicleIrrApp> app;    //object of Irricht
 
 std::shared_ptr<Output> out;
 std::shared_ptr<Restart> restart;
+std::shared_ptr<Point_vel_acc> point_vel_acc;
 
 std::shared_ptr<FForce_map> fmap;       //culc fforce from aero-coef map
 //params
