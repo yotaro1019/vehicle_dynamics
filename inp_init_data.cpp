@@ -161,6 +161,10 @@ void Input_data::default_param(){
     init_loc_pos_bool = true;
     coupling_info_bool = false;
 
+    //Get Point vel and acc in cabin
+    cabin_pdata_fname = "NaN";
+    cabin_pdata_bool = false;
+
     //parameters for vehicle motion analysis alone
     calc_t_begin = 0.0;
     calc_t_end = 0.0;
@@ -243,6 +247,7 @@ void Input_data::check_param(){
            GetLog() << "Not input Wheel base\n";
        }
     }
+    
     if(airspeed_bool){
         if(airspeed_inp_fname == "NaN"){
             GetLog() << "Not input airspeed file\n";
@@ -512,6 +517,12 @@ void Input_data::read_param(std::string input_fname){
             if(name == "restart_output_fname"){
                 this->restart_output_fname = Set_str_value(ss);
             }
+
+            //Get Point vel and acc in cabin
+            if(name == "rcabin_pdata_fname"){
+                this->cabin_pdata_fname = Set_str_value(ss);
+                this->cabin_pdata_bool = true;
+            }          
 
             //parameters for vehicle motion analysis alone
             if(name == "culc_time_begin"){
