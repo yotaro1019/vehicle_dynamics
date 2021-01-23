@@ -83,8 +83,7 @@ contains
         type(Components),intent(inout) :: comp
         integer :: ierror
 
-        call MPI_BCAST(comp%translation, 3, MPI_double_precision, 0, MPI_COMM_WORLD, ierror)
-        call MPI_Barrier( MPI_COMM_WORLD, ierror);        
+        call MPI_BCAST(comp%translation, 3, MPI_double_precision, 0, MPI_COMM_WORLD, ierror)       
         call MPI_BCAST(comp%rotation, 3, MPI_double_precision, 0, MPI_COMM_WORLD, ierror)
         call MPI_Barrier( MPI_COMM_WORLD, ierror);
 
