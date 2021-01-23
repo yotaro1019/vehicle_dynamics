@@ -8,11 +8,13 @@
 #include "chrono/core/ChQuaternion.h"
 #include "chrono_vehicle/ChSubsysDefs.h"
 
+#include"set_value.h"
+
 
 namespace chrono{
 namespace vehicle{
 
-class Input_data{
+class Input_data : public Set_value{
 private:
     //constructor
     void default_param();
@@ -225,16 +227,6 @@ public:
     //flow stabilize time
     double Get_flowstabi_time(){ return flow_stabi_time; }
    
-
-    //set function
-    std::string Set_str_value(std::stringstream &ss);
-    int Set_int_value(std::stringstream &ss);
-    double Set_double_value(std::stringstream &ss);
-    bool Set_bool_value(std::stringstream &ss);
-    ChVector<> Set_ChVector(std::stringstream &ss);
-    ChQuaternion<> Set_ChQuaternion(std::stringstream &ss);
-    std::vector<std::string> Set_str_vec(std::stringstream &ss);
-
 };
 
 }
