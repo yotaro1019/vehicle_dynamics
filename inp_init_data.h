@@ -95,9 +95,14 @@ private:
 
     bool coupling_info_bool;
 
+    //Get Point vel and acc in cabin
+    std::string cabin_pdata_fname;
+    bool cabin_pdata_bool;
+
     //parameters for stand-alone
     double calc_t_begin, calc_t_end;
     int calc_begin_step;
+
     //irricht
     ChVector<> cam_trackPoint;
     double chase_distance;
@@ -206,6 +211,9 @@ public:
     std::string Get_restart_output_fname(){ return this->restart_output_fname; }
     bool Get_coupling_info_bool() { return this->coupling_info_bool; }
 
+    //Get Point vel and acc in cabin
+    std::string Get_cabin_pdata_fname(){ return this->cabin_pdata_fname; }
+    bool Get_cabin_pdata_bool() { return this->cabin_pdata_bool; }
 
     //fforce map
     std::string Get_fforce_map_fname(){ return this->fforce_map_fname; };
