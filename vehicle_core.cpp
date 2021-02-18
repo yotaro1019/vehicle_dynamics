@@ -384,7 +384,7 @@ void Vehicle_model::vehicle_initialize(){
 
     out.reset(new Output(*inp, *veh));
     restart.reset(new Restart() );
-    point_vel_acc.reset(new Point_vel_acc(inp->Get_cabin_pdata_bool(), inp->Get_cabin_pdata_fname()) );
+    point_vel_acc.reset(new Point_vel_acc(inp->Get_cabin_pdata_bool(), inp->Get_cabin_pdata_fname(), *veh) );
     current_time = 0.0;
     current_step = 0.0;
 }
@@ -434,7 +434,7 @@ void Vehicle_model::vehicle_initialize_stand_alone(){
     irricht_initialize(step_size);         //initialize irricht
     out.reset(new Output(*inp, *veh));
     restart.reset(new Restart() );
-    point_vel_acc.reset(new Point_vel_acc(inp->Get_cabin_pdata_bool(), inp->Get_cabin_pdata_fname()) );
+    point_vel_acc.reset(new Point_vel_acc(inp->Get_cabin_pdata_bool(), inp->Get_cabin_pdata_fname(), *veh) );
     current_time = 0.0;
 }
 
