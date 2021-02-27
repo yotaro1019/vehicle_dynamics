@@ -199,6 +199,9 @@ void Vehicle_model::initialize(){
      //initialize coupling data structure
      exc_data.reset(new Exchange_data(*inp));
 
+    current_time = 0.0;
+    current_step = 0;
+
     }
 
 void Vehicle_model::advance(double adv_step_size, Cfd2Vehicle *cfd2veh_data){
@@ -234,29 +237,13 @@ void Vehicle_model::advance(double adv_step_size, Cfd2Vehicle *cfd2veh_data){
     if(inp->Get_use_trailer_model()){
         tlr->Advance(adv_step_size);
     }
+    
+    current_time += adv_step_size;
+    current_step ++;
 
 }
 
-//function of restart system
-void Vehicle_model::restart_chrono(){
-    //-------------------------------------------------------------
-    //Someone will implimant restart system
 
-    //暫定措置
-    //stabilizimg vehicle 
-    {
-        Cfd2Vehicle zero_fforce;
-        double log_itvl = floor(inp->Get_stabi_step()/5);
-        for(int i=0;i<=inp->Get_stabi_step();i++){
-            advance(inp->Get_stabi_dt(), &zero_fforce);
-            if(i%(int)log_itvl == 0 || i==inp->Get_stabi_step()){
-                std::cout << "stabilize\t" << i << "\n"; 
-            }
-               
-        }     
-    }
-    //-------------------------------------------------------------
-}
 
 //use realtime rendering (Irrlicht)
 //Must be called once before real-time visualization to initialize the Irrlicht system
@@ -368,23 +355,25 @@ void  Vehicle_model::conv_axis(double array[6]){
         array[5] *= -1.0;
 }
 
+
+
+
+//======================================================================
 //public
+
 //coupling
 void Vehicle_model::vehicle_initialize(){
-    culc_mode = coupling;
-    culc_sec = preparation;
+    calc_mode = coupling;
+    calc_sec = preparation;
     setup_system();
     GetLog() << "system setup completed\n";
 
     initialize();
     GetLog() << "Initialization of vehicle system completed\n";
     
-    restart_chrono();
 
     out.reset(new Output(*inp, *veh));
-    restart.reset(new Restart() );
-    current_time = 0.0;
-    current_step = 0.0;
+    restart.reset(new Restart(*inp) );
 }
 
 void Vehicle_model::vehicle_advance(Cfd2Vehicle *cfd2veh_data, Vehicle2Cfd *veh2cfd_data ){
@@ -411,16 +400,13 @@ void Vehicle_model::vehicle_advance(Cfd2Vehicle *cfd2veh_data, Vehicle2Cfd *veh2
     if(current_step%inp->Get_itvl_povray() == 0)
         output_pov(current_step/inp->Get_itvl_povray());
 
-    current_time += adv_step_size;
-    current_step ++;
-
 }
 
 //====================================================================
 //stand-alone
 void Vehicle_model::vehicle_initialize_stand_alone(){
-    culc_mode = stand_alone;
-    culc_sec = preparation;
+    calc_mode = stand_alone;
+    calc_sec = preparation;
     setup_system();
     GetLog() << "system setup completed\n";
 
@@ -428,11 +414,10 @@ void Vehicle_model::vehicle_initialize_stand_alone(){
     fmap.reset(new FForce_map(*inp) ); //initialize flow force sytem from aero-coef map
 
     GetLog() << "Initialization of vehicle system and aerodynamic-coef map completed\n";
-    restart_chrono();
     irricht_initialize(step_size);         //initialize irricht
     out.reset(new Output(*inp, *veh));
-    restart.reset(new Restart() );
-    current_time = 0.0;
+    restart.reset(new Restart(*inp) );
+    restart->rebuild_system(*veh);
 }
 
 void Vehicle_model::vehicle_advance_stand_alone(){
@@ -444,14 +429,12 @@ void Vehicle_model::vehicle_advance_stand_alone(){
     disp_current_status();
     exc_data->data_packing(*veh, &v2c);
     out->write(current_time, *veh, *driver_follower, *terrain, fmap2veh_data, v2c);
-
+    restart->output(*veh, *app,  current_step, current_time);
     //visualization
     if(current_step%inp->Get_itvl_povray() == 0)
         output_pov(current_step/inp->Get_itvl_povray());
 
     irricht_advance(adv_step_size);             //advance visualization step
     
-    current_time += adv_step_size;
-    current_step ++;
 }
 

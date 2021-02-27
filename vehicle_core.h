@@ -28,6 +28,18 @@ using namespace chrono;
 using namespace chrono::geometry;
 using namespace chrono::vehicle;
 
+
+//calculation_mode
+enum Calculation_mode{
+    coupling,
+    stand_alone
+};
+enum Calculation_section{
+    preparation,
+    production
+};
+
+
 class Vehicle_model{
 private:
 //shared_ptr
@@ -51,39 +63,27 @@ std::shared_ptr<ChWheeledVehicleIrrApp> app;    //object of Irricht
 std::shared_ptr<Output> out;
 std::shared_ptr<Restart> restart;
 
-std::shared_ptr<FForce_map> fmap;       //culc fforce from aero-coef map
+std::shared_ptr<FForce_map> fmap;       //calc fforce from aero-coef map
 //params
 double step_size, tire_step_size;
 
 //status
 double current_time;
-int current_step = 0;
+int current_step;
 
-//culculation_mode
-enum culculation_mode{
-    coupling,
-    stand_alone
-};
-enum culculation_section{
-    preparation,
-    production
-};
 
-enum culculation_mode culc_mode;
-enum culculation_section culc_sec;
+
+enum Calculation_mode calc_mode;
+enum Calculation_section calc_sec;
 
 //function
 void setup_system();
 void initialize();      //initialize vehicle system
 void advance(double adv_step_size, Cfd2Vehicle *cfd2veh_data); //advance vehicle step(adv_step_size : current time step )
-void restart_chrono();
 
 //use realtime rendering (Irrlicht)
 void irricht_initialize(double step_size); //Must be called once before real-time visualization to initialize the Irrlicht system
 void irricht_advance(double step_size);//Calling this function once will update the visualization of Irricht by one step 
-
-//restart
-//void veh_stabi(int stabi_step, double stabi_dt);
 
 
 //use Povray rendering(PovRay)
@@ -94,6 +94,7 @@ void output_pov(int render_frame);
 void disp_current_status(); //Display time and other current data as text
 
 void conv_axis(double array[6]);   //coordinate transformation fo rotation and translatiion direction
+
 
 public:
 //coupling
