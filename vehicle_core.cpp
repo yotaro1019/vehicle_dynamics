@@ -277,13 +277,15 @@ void Vehicle_model::vehicle_initialize(){
     calc_sec = preparation;
     setup_system();
     GetLog() << "system setup completed\n";
-
     initialize();
     GetLog() << "Initialization of vehicle system completed\n";
     
 
     out.reset(new Output(*inp, *veh));
     restart.reset(new Restart(*inp) );
+    
+    //visualization
+    veh_viz.reset(new Veh_Visualization(calc_mode, *inp, *veh, *terrain, *driver_follower));
 }
 
 void Vehicle_model::vehicle_advance(Cfd2Vehicle *cfd2veh_data, Vehicle2Cfd *veh2cfd_data ){
@@ -304,8 +306,9 @@ void Vehicle_model::vehicle_advance(Cfd2Vehicle *cfd2veh_data, Vehicle2Cfd *veh2
     exc_data->data_packing(*veh, veh2cfd_data);
 
     out->write(current_time, *veh, *driver_follower, *terrain, *cfd2veh_data, *veh2cfd_data); 
-    
 
+    //visualization
+    veh_viz->viz_advance(adv_step_size, current_time, current_step, *veh, *driver_follower);             //advance visualization step
 }
 
 //====================================================================
@@ -337,8 +340,8 @@ void Vehicle_model::vehicle_advance_stand_alone(){
     exc_data->data_packing(*veh, &v2c);
     out->write(current_time, *veh, *driver_follower, *terrain, fmap2veh_data, v2c);
     restart->output(*veh, current_step, current_time);
-    //visualization
 
+    //visualization
     veh_viz->viz_advance(adv_step_size, current_time, current_step, *veh, *driver_follower);             //advance visualization step
 
 }
