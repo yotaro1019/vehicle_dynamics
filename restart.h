@@ -1,6 +1,7 @@
 #ifndef _vehicle_restart_
 #define _vehicle_restart_
 
+#include "calculation_mode.h"
 #include"inp_init_data.h"
 #include "chrono/core/ChVector.h"
 #include "chrono/core/ChQuaternion.h"
@@ -20,9 +21,6 @@ class Restart{
   int restart_step;
   char restart_fname[500];
   
-  //check irricht
-  bool use_irricht;
-
   private:
   void read_from_file(ChState &state_pos, ChStateDelta &state_vel, ChStateDelta &state_acc, double &T);
 
@@ -30,7 +28,7 @@ class Restart{
   public:
     Restart(Input_data &inp);
     void rebuild_system(WheeledVehicle &veh);
-    void output(WheeledVehicle &veh, ChWheeledVehicleIrrApp &app, int step, double time);
+    void output(WheeledVehicle &veh, int step, double time);
 
 };
 

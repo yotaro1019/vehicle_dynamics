@@ -412,12 +412,13 @@ void Vehicle_model::vehicle_initialize_stand_alone(){
 
     initialize();       //initialize vehicle system
     fmap.reset(new FForce_map(*inp) ); //initialize flow force sytem from aero-coef map
-
-    GetLog() << "Initialization of vehicle system and aerodynamic-coef map completed\n";
-    irricht_initialize(step_size);         //initialize irricht
-    out.reset(new Output(*inp, *veh));
     restart.reset(new Restart(*inp) );
-    restart->rebuild_system(*veh);
+    restart->rebuild_system(*veh); //when restart, this function is use
+    GetLog() << "Initialization of vehicle system and aerodynamic-coef map completed\n";
+
+    out.reset(new Output(*inp, *veh));
+
+    irricht_initialize(step_size);         //initialize irricht    
 }
 
 void Vehicle_model::vehicle_advance_stand_alone(){
@@ -429,7 +430,7 @@ void Vehicle_model::vehicle_advance_stand_alone(){
     disp_current_status();
     exc_data->data_packing(*veh, &v2c);
     out->write(current_time, *veh, *driver_follower, *terrain, fmap2veh_data, v2c);
-    restart->output(*veh, *app,  current_step, current_time);
+    restart->output(*veh, current_step, current_time);
     //visualization
     if(current_step%inp->Get_itvl_povray() == 0)
         output_pov(current_step/inp->Get_itvl_povray());

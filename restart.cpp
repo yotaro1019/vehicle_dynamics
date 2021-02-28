@@ -3,6 +3,7 @@
 #include "chrono_vehicle/wheeled_vehicle/vehicle/WheeledVehicle.h"
 
 
+
 Restart::Restart(Input_data &inp){
     this->output_itvl = inp.Get_restart_output_itvl();
     this->out_dir = GetChronoOutputPath() + "restart_files/";
@@ -19,12 +20,6 @@ Restart::Restart(Input_data &inp){
         sprintf(restart_fname, "restart_veh_%05d.txt",  inp.Get_restart_step());
     }
 
-    //check irricht
-    if(inp.Get_use_irricht() == true){
-        this->use_irricht = true;
-    }else{
-        this->use_irricht = false;
-    }
 }
 
 
@@ -44,11 +39,12 @@ void Restart::rebuild_system(WheeledVehicle &veh){
 
 }
 
-void Restart::output(WheeledVehicle &veh, ChWheeledVehicleIrrApp &app,  int current_step, double time){
+void Restart::output(WheeledVehicle &veh,  int current_step, double time){
     if(current_step%output_itvl == 0){
         double T;
         ChState state_pos;
         ChStateDelta state_vel, state_acc;
+        ChVector<> irr_cam_pos;
 
         veh.GetSystem()->StateSetup(state_pos, state_vel, state_acc);
         veh.GetSystem()->StateGather(state_pos, state_vel, T);

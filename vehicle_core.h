@@ -2,7 +2,7 @@
 #define _vehicle_core_
 #include "inp_init_data.h"
 #include "fforce_map.h"
-
+#include "calculation_mode.h"
 #include "chrono/core/ChRealtimeStep.h"
 #include "chrono/utils/ChFilters.h"
 
@@ -27,17 +27,6 @@
 using namespace chrono;
 using namespace chrono::geometry;
 using namespace chrono::vehicle;
-
-
-//calculation_mode
-enum Calculation_mode{
-    coupling,
-    stand_alone
-};
-enum Calculation_section{
-    preparation,
-    production
-};
 
 
 class Vehicle_model{
