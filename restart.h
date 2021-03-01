@@ -26,8 +26,8 @@ class Restart{
 
 
   public:
-    Restart(Input_data &inp);
-    void rebuild_system(WheeledVehicle &veh);
+    Restart(Input_data &inp, int &step);
+    void rebuild_system(WheeledVehicle &veh, double &time);
     void output(WheeledVehicle &veh, int step, double time);
 
 };

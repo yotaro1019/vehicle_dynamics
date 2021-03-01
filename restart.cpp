@@ -4,7 +4,7 @@
 
 
 
-Restart::Restart(Input_data &inp){
+Restart::Restart(Input_data &inp, int &step){
     this->output_itvl = inp.Get_restart_output_itvl();
     this->out_dir = GetChronoOutputPath() + "restart_files/";
         
@@ -17,13 +17,14 @@ Restart::Restart(Input_data &inp){
         restart_switch = false;
     }else{
         restart_switch = true;
+        step = inp.Get_restart_step();
         sprintf(restart_fname, "restart_veh_%05d.txt",  inp.Get_restart_step());
     }
 
 }
 
 
-void Restart::rebuild_system(WheeledVehicle &veh){
+void Restart::rebuild_system(WheeledVehicle &veh, double &time){
     if(!restart_switch)
         return;
         
@@ -33,7 +34,7 @@ void Restart::rebuild_system(WheeledVehicle &veh){
     ChStateDelta state_vel, state_acc;    
     double T;
     this->read_from_file(state_pos, state_vel, state_acc, T);
-
+    time = T;
     veh.GetSystem()->StateScatter(state_pos, state_vel, T, true);
     veh.GetSystem()->StateScatterAcceleration(state_acc);
 

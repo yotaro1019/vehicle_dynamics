@@ -245,7 +245,7 @@ void Vehicle_model::advance(double adv_step_size, Cfd2Vehicle *cfd2veh_data){
 //Display time and other current data as texts
 void Vehicle_model::disp_current_status(){
 
-    GetLog() << "time = " << current_time << "[s]" << "  vel = " << veh->GetVehicleSpeedCOM() << "\n";
+    GetLog() << "step : " << current_step <<  "\ttime : " << current_time << "[s]" << "\t vel = " << veh->GetVehicleSpeedCOM() << "\n";
 
 }
 
@@ -280,10 +280,9 @@ void Vehicle_model::vehicle_initialize(){
     initialize();
     GetLog() << "Initialization of vehicle system completed\n";
     
-
+    restart.reset(new Restart(*inp, current_step) );
     out.reset(new Output(*inp, *veh));
-    restart.reset(new Restart(*inp) );
-    
+        
     //visualization
     veh_viz.reset(new Veh_Visualization(calc_mode, *inp, *veh, *terrain, *driver_follower));
 }
@@ -323,8 +322,8 @@ void Vehicle_model::vehicle_initialize_stand_alone(){
     fmap.reset(new FForce_map(*inp) ); //initialize flow force sytem from aero-coef map
 
     //restart
-    restart.reset(new Restart(*inp) );
-    restart->rebuild_system(*veh); //when restart, this function is use
+    restart.reset(new Restart(*inp, current_step) );
+    restart->rebuild_system(*veh, current_time); //when restart, this function is use
     GetLog() << "Initialization of vehicle system and aerodynamic-coef map completed\n";
 
     out.reset(new Output(*inp, *veh));
