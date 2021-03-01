@@ -305,7 +305,7 @@ void Vehicle_model::vehicle_advance(Cfd2Vehicle *cfd2veh_data, Vehicle2Cfd *veh2
  
     exc_data->data_packing(*veh, veh2cfd_data);
 
-    out->write(current_time, *veh, *driver_follower, *terrain, *cfd2veh_data, *veh2cfd_data); 
+    out->write(current_step, current_time, *veh, *driver_follower, *terrain, *cfd2veh_data, *veh2cfd_data); 
 
     //visualization
     veh_viz->viz_advance(adv_step_size, current_time, current_step, *veh, *driver_follower);             //advance visualization step
@@ -321,6 +321,8 @@ void Vehicle_model::vehicle_initialize_stand_alone(){
 
     initialize();       //initialize vehicle system
     fmap.reset(new FForce_map(*inp) ); //initialize flow force sytem from aero-coef map
+
+    //restart
     restart.reset(new Restart(*inp) );
     restart->rebuild_system(*veh); //when restart, this function is use
     GetLog() << "Initialization of vehicle system and aerodynamic-coef map completed\n";
@@ -335,10 +337,17 @@ void Vehicle_model::vehicle_advance_stand_alone(){
     Vehicle2Cfd v2c;
     fmap->Get_fforce_from_map(*veh, current_time, &fmap2veh_data);
     double adv_step_size = this->step_size;
+
+    //advance vehicle system
     advance(adv_step_size, &fmap2veh_data);     //advance phisics step        
     disp_current_status();
+
     exc_data->data_packing(*veh, &v2c);
-    out->write(current_time, *veh, *driver_follower, *terrain, fmap2veh_data, v2c);
+
+    //output vehicle and driver status
+    out->write(current_step, current_time, *veh, *driver_follower, *terrain, fmap2veh_data, v2c);
+
+    //output restart file
     restart->output(*veh, current_step, current_time);
 
     //visualization
