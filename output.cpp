@@ -108,7 +108,7 @@ void Output::initialize_veh_status(Input_data &inp, WheeledVehicle &veh){
 
 void Output::write_veh_status(double time, WheeledVehicle &veh, ChPathFollowerDriver &dvr, RigidTerrain &ter){
     chassis_log.write(time, veh);
-    dvr_log.write(time, dvr);
+    dvr_log.write(time, dvr, veh);
     ptr_log.write(time, *veh.GetPowertrain() );
     
     int tire_id = 0;

@@ -55,15 +55,18 @@ void Driver_fout::initialize(bool c_switch, const std::string fname)
     check_file_status(fout, fname);
     GetLog() << "!\n";
     char header[500];
-    sprintf(header, "%12s%12s%12s%12s", "time", "steering", "throttle", "brake");
+    sprintf(header, "%12s%12s%12s%12s%12s", "time", "steering", "throttle", "brake", "tierod force");
     *fout << header << "\n";
 
 }
 
-void Driver_fout::write(double time, ChPathFollowerDriver &dvr){
+void Driver_fout::write(double time, ChPathFollowerDriver &dvr, WheeledVehicle &veh){
     if(!c_switch)
         return;
 
+    //culc tierod force
+    ChVector<> tierod_force = veh.GetSteering(0)->GetSteeringLink()->GetAppliedForce();
+    GetLog() << "tierod_force " << tierod_force.x() << "  " << tierod_force.y() << "  " << tierod_force.z() << "\n";
     char output_value[500];
     sprintf(output_value,"%12.5f%12.5f%12.5f%12.5f",  time, dvr.GetSteering(), dvr.GetThrottle(), dvr.GetBraking() );
     *fout << output_value << "\n";
