@@ -34,7 +34,7 @@ class  CH_VEHICLE_API  Output{
     void initialize_fforce_info(Input_data &inp);
     void write(int step, double time, WheeledVehicle &veh, ChPathFollowerDriver &dvr, RigidTerrain &ter, Cfd2Vehicle &c2v, Vehicle2Cfd &v2c);  
     void write_veh_status(int step, double time, WheeledVehicle &veh, ChPathFollowerDriver &dvr, RigidTerrain &ter);
-    void write_1way_info(double time, WheeledVehicle &veh, Vehicle2Cfd &v2c);
+    void write_1way_info(int step, double time, WheeledVehicle &veh, Vehicle2Cfd &v2c);
     void write_fforce(int step, double time, Cfd2Vehicle &c2v);  
 };
 

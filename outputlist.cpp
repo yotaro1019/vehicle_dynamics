@@ -10,14 +10,14 @@
 using namespace chrono;
 using namespace chrono::vehicle;
 
-void Chassis_vel_fout::initialize(bool c_switch, const std::string fname)
+void Chassis_vel_fout::initialize(int init_step, bool c_switch, const std::string fname)
 {
     this->c_switch = c_switch;
     
     if(!c_switch)
         return;
 
-    fout.reset(new std::ofstream(fname.c_str()) );
+    fout.reset(new std::fstream(fname.c_str()) );
     check_file_status(fout, fname);
     char header[500];
     sprintf(header, "%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s", "step", "time", "x", "y", "z", "vel", "u", "v", "w", "roll", "pitch", "yaw", "yaw_2D");
@@ -44,14 +44,14 @@ void Chassis_vel_fout::write(int step, double time, WheeledVehicle &veh){
     *fout << output_value << "\n";
 }
 
-void Driver_fout::initialize(bool c_switch, const std::string fname)
+void Driver_fout::initialize(int init_step, bool c_switch, const std::string fname)
 {
     this->c_switch = c_switch;
     
     if(!c_switch)
         return;
     
-    fout.reset(new std::ofstream(fname.c_str()) );
+    fout.reset(new std::fstream(fname.c_str()) );
     check_file_status(fout, fname);
     GetLog() << "!\n";
     char header[500];
@@ -70,14 +70,14 @@ void Driver_fout::write(int step, double time, ChPathFollowerDriver &dvr){
 
 }
 
-void Powertrain_fout::initialize(bool c_switch, const std::string fname)
+void Powertrain_fout::initialize(int init_step, bool c_switch, const std::string fname)
 {
     this->c_switch = c_switch;
     
     if(!c_switch)
         return;
     
-    fout.reset(new std::ofstream(fname.c_str()) );
+    fout.reset(new std::fstream(fname.c_str()) );
     check_file_status(fout, fname);
 
     char header[500];
@@ -96,13 +96,13 @@ void Powertrain_fout::write(int step, double time, ChPowertrain &pt){
     *fout << output_value << "\n";    
 }
 
-void Tire_fout::initialize(bool c_switch, const std::string fname){
+void Tire_fout::initialize(int init_step, bool c_switch, const std::string fname){
     this->c_switch = c_switch;
     
     if(!c_switch)
         return;
     
-    fout.reset(new std::ofstream(fname.c_str()) );
+    fout.reset(new std::fstream(fname.c_str()) );
     check_file_status(fout, fname);
 
     char header[500];
@@ -152,35 +152,39 @@ void Tire_fout::write(int step, double time, ChWheel &wheel , RigidTerrain &terr
 
 
 //1WAY-info
-void Vehicle2CFD_info::initialize(bool c_switch, const std::string fname){
+void Vehicle2CFD_info::initialize(int init_step, bool c_switch, const std::string fname){
     this->c_switch = c_switch;
     
     if(!c_switch)
         return;
 
-    fout.reset(new std::ofstream(fname.c_str()) );
+    fout.reset(new std::fstream(fname.c_str()) );
     check_file_status(fout, fname);  
+
+    char header[500];
+    sprintf(header, "%12s%12s%17s%17s%17s%17s%17s%17s", "step", "time","vel_x","vel_y","vel_z","om_x","om_y","om_z");
+    *fout << header << "\n";
 }
 
-void Vehicle2CFD_info::write(double time, double comp1[], double comp2[]){
+void Vehicle2CFD_info::write(int step, double time, double comp1[], double comp2[]){
     if(!c_switch)
         return; 
 
     char output_value[500];
-    sprintf(output_value,"%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f",  time, comp1[0], comp1[1], comp1[2],
+    sprintf(output_value,"%10d%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f", step, time, comp1[0], comp1[1], comp1[2],
     comp2[0], comp2[1], comp2[2]);
     *fout << output_value << "\n";
 }
 
 
 //fforce-info
-void FForce_info::initialize(bool c_switch, const std::string fname){
+void FForce_info::initialize(int init_step, bool c_switch, const std::string fname){
     this->c_switch = c_switch;
     
     if(!c_switch)
         return;
 
-    fout.reset(new std::ofstream(fname.c_str()) );
+    fout.reset(new std::fstream(fname.c_str()) );
     check_file_status(fout, fname);
 
     char header[500];

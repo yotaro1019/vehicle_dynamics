@@ -66,6 +66,9 @@ void Restart::output(WheeledVehicle &veh,  int current_step, double time){
         out << "T\t" << T << "\n";
         out << "step\t" << current_step << "\n";
         out << "time \t " << time << "\n";
+        out << "acc n_coord\t" <<  veh.GetSystem()->GetNcoords_a() << "\n";
+        out << "n_coord\t" <<  veh.GetSystem()->GetNcoords_y() << "\n";
+        out << "vel n_coord\t" <<  veh.GetSystem()->GetNcoords_dy() << "\n";
         out << "end_informations\n\n\n"; 
 
         out << "begin_state_pos\n";
