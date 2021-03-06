@@ -53,11 +53,12 @@ private:
 
     //vehicle situation    
     double target_speed, stabi_dt, coupling_dt, tire_step_size, begin_step;
-    int stabi_step, restart_step, restart_cube_step;
-    bool restart_bool;
+    int stabi_step, restart_step;
     std::string restart_inp_fname;
     ChVector<> vehicle_init_loc;
     ChQuaternion<> vehicle_init_rot;
+    int restart_output_itvl;
+
     
 
     //visualization
@@ -89,7 +90,6 @@ private:
 
     bool init_loc_pos_bool;
 
-    std::string restart_output_fname;
 
     bool coupling_info_bool;
 
@@ -150,10 +150,12 @@ public:
     double Get_tire_step_size() { return tire_step_size; }
     int Get_begin_step();
     int Get_stabi_step(){  return this->stabi_step; }
+
+
+    //restart
     int Get_restart_step(){ return this->restart_step; }
-    int Get_restart_cube_step(){ return this->restart_cube_step; }
-    bool Get_restart_bool(){ return this->restart_bool; }
-    std::string Get_restart_inp_fname(){  return this->restart_inp_fname; }
+    std::string Get_restart_inp_fname(){  return this->restart_inp_fname; }    
+    int Get_restart_output_itvl(){ return this->restart_output_itvl; }
 
     //visualization  
     VisualizationType Get_chassis_viz_type(){ return this->chassis_viz_type; }
@@ -200,8 +202,6 @@ public:
     std::string Get_fforce_chassis_fname();
 
     bool Get_init_loc_pos_bool(){ return init_loc_pos_bool; };
-
-    std::string Get_restart_output_fname(){ return this->restart_output_fname; }
     bool Get_coupling_info_bool() { return this->coupling_info_bool; }
 
 

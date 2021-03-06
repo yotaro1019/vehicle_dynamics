@@ -14,7 +14,7 @@ Baseout::~Baseout(){
     fout->close(); 
 }
 
-void Baseout::check_file_status(std::shared_ptr<std::ofstream> fout, std::string fname){
+void Baseout::check_file_status(std::shared_ptr<std::fstream> fout, std::string fname){
     if(fout->fail()){
         std::cout << "cannot open " << fname << "\n";
         this->c_switch = false;
