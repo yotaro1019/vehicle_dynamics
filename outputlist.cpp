@@ -63,14 +63,12 @@ void Driver_fout::initialize(int init_step, bool c_switch, const std::string fna
 }
 
 
-void Driver_fout::write(double time, ChPathFollowerDriver &dvr, WheeledVehicle &veh){
+void Driver_fout::write(int step, double time, ChPathFollowerDriver &dvr){
 
     if(!c_switch)
         return;
 
-    //culc tierod force
-    ChVector<> tierod_force = veh.GetSteering(0)->GetSteeringLink()->GetAppliedForce();
-    GetLog() << "tierod_force " << tierod_force.x() << "  " << tierod_force.y() << "  " << tierod_force.z() << "\n";
+
     char output_value[500];
     sprintf(output_value,"%10d%12.5f%12.5f%12.5f%12.5f",  step, time, dvr.GetSteering(), dvr.GetThrottle(), dvr.GetBraking() );
     *fout << output_value << "\n";
