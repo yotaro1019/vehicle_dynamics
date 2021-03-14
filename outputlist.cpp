@@ -21,7 +21,7 @@ void Chassis_vel_fout::initialize(int init_step, bool c_switch, const std::strin
     check_file_status(fout, fname);
     char header[500];
     sprintf(header, "%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s", "step", "time", "x", "y", "z", "vel", "u", "v", "w", "roll", "pitch", "yaw", "yaw_2D");
-    *fout << header << "\n";
+    this->write_data(header);
 
 }
 
@@ -41,7 +41,7 @@ void Chassis_vel_fout::write(int step, double time, WheeledVehicle &veh){
     char output_value[500];
     sprintf(output_value,"%10d%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f",  step, time, com_pos.x(), com_pos.y(), com_pos.z(),
     vel, vel_global.x(), vel_global.y(), vel_global.z(), angle_euler.x(), angle_euler.y(), angle_euler.z(), yaw_2D );
-    *fout << output_value << "\n";
+    this->write_data(output_value);
 }
 
 void Driver_fout::initialize(int init_step, bool c_switch, const std::string fname)
@@ -58,7 +58,7 @@ void Driver_fout::initialize(int init_step, bool c_switch, const std::string fna
 
     sprintf(header, "%12s%12s%12s%12s%12s", "time", "steering", "throttle", "brake", "tierod force");
 
-    *fout << header << "\n";
+    this->write_data(header);
 
 }
 
@@ -71,7 +71,7 @@ void Driver_fout::write(int step, double time, ChPathFollowerDriver &dvr){
 
     char output_value[500];
     sprintf(output_value,"%10d%12.5f%12.5f%12.5f%12.5f",  step, time, dvr.GetSteering(), dvr.GetThrottle(), dvr.GetBraking() );
-    *fout << output_value << "\n";
+    this->write_data(output_value);
 
 }
 
@@ -87,7 +87,7 @@ void Powertrain_fout::initialize(int init_step, bool c_switch, const std::string
 
     char header[500];
     sprintf(header, "%12s%12s%12s%12s%12s%12s%12s%12s%12s", "step", "time", "engine_spd", "engine_trq", "TC_slipage", "TC_in_trq", "TC_out_trq", "TM_gear", "out_trq");
-    *fout << header << "\n";
+    this->write_data(header);
 
 }
 
@@ -98,7 +98,7 @@ void Powertrain_fout::write(int step, double time, ChPowertrain &pt){
 
     sprintf(output_value,"%10d%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12d%12.5f", step, time, pt.GetMotorSpeed(), pt.GetMotorTorque(), pt.GetTorqueConverterSlippage(), pt.GetTorqueConverterInputTorque(), pt.GetTorqueConverterOutputTorque(), pt.GetCurrentTransmissionGear(), pt.GetOutputTorque() );
 
-    *fout << output_value << "\n";    
+    this->write_data(output_value);    
 }
 
 void Tire_fout::initialize(int init_step, bool c_switch, const std::string fname){
@@ -112,7 +112,7 @@ void Tire_fout::initialize(int init_step, bool c_switch, const std::string fname
 
     char header[500];
     sprintf(header, "%12s%12s%17s%17s%17s%17s%17s%17s%17s%17s%17s%17s%17s%17s%17s", "step", "time","fx","fy","fz","mx","my","mz","slip","Longslip","camber","posX", "posY", "posZ", "daflection");
-    *fout << header << "\n";
+    this->write_data(header);
 
 }
 
@@ -151,7 +151,7 @@ void Tire_fout::write(int step, double time, ChWheel &wheel , RigidTerrain &terr
     char output_value[500];
     sprintf(output_value,"%10d%12.5f%17.5f%17.5f%17.5f%17.5f%17.5f%17.5f%17.5f%17.5f%17.5f%17.5f%17.5f%17.5f%17.5f", step, time, force_loc.x(), force_loc.y(), force_loc.z(),
     moment_loc.x(), moment_loc.y(), moment_loc.z(), slip, lng_slip, cmb_angle, pos.x(), pos.y(), pos.z(), deflection );    
-    *fout << output_value << "\n";
+    this->write_data(output_value);
     
 }
 
@@ -168,7 +168,7 @@ void Vehicle2CFD_info::initialize(int init_step, bool c_switch, const std::strin
 
     char header[500];
     sprintf(header, "%12s%12s%17s%17s%17s%17s%17s%17s", "step", "time","vel_x","vel_y","vel_z","om_x","om_y","om_z");
-    *fout << header << "\n";
+    this->write_data(header);
 }
 
 void Vehicle2CFD_info::write(int step, double time, double comp1[], double comp2[]){
@@ -178,7 +178,7 @@ void Vehicle2CFD_info::write(int step, double time, double comp1[], double comp2
     char output_value[500];
     sprintf(output_value,"%10d%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f", step, time, comp1[0], comp1[1], comp1[2],
     comp2[0], comp2[1], comp2[2]);
-    *fout << output_value << "\n";
+    this->write_data(output_value);
 }
 
 
@@ -194,7 +194,7 @@ void FForce_info::initialize(int init_step, bool c_switch, const std::string fna
 
     char header[500];
     sprintf(header, "%12s%12s%17s%17s%17s%17s%17s%17s", "step", "time","fx","fy","fz","mx","my","mz");
-    *fout << header << "\n";
+    this->write_data(header);
   
 }
 
@@ -205,5 +205,5 @@ void FForce_info::write(int step, double time, double comp1[], double comp2[]){
     char output_value[500];
     sprintf(output_value,"%10d%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f", step, time, comp1[0], comp1[1], comp1[2],
     comp2[0], comp2[1], comp2[2]);
-    *fout << output_value << "\n";
+    this->write_data(output_value);
 }

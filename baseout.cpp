@@ -21,3 +21,10 @@ void Baseout::check_file_status(std::shared_ptr<std::fstream> fout, std::string 
         exit(1);
     }  
 }
+
+
+
+///protected
+void Baseout::write_data(char data[500]){
+    *fout << data << "\n";
+}
