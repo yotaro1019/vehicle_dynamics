@@ -14,7 +14,15 @@ Baseout::~Baseout(){
     fout->close(); 
 }
 
-void Baseout::check_file_status(std::string fname){
+void Baseout::check_file_status(std::string fname, char header[]){
+
+    if(this->checkFileExistence(fname) == false){
+        std::ofstream outputfile(fname);
+        outputfile << header << "\n";
+    }
+
+    fout.reset(new std::fstream(fname.c_str()) );
+
     if(fout->fail()){
         std::cout << "cannot open " << fname << "\n";
         this->c_switch = false;
@@ -25,6 +33,12 @@ void Baseout::check_file_status(std::string fname){
 
 
 ///protected
-void Baseout::write_data(char data[500]){
+void Baseout::write_data(char data[]){
     *fout << data << "\n";
+}
+
+bool Baseout::checkFileExistence(const std::string& str)
+{
+    std::ifstream ifs(str);
+    return ifs.is_open();
 }
