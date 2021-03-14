@@ -11,6 +11,6 @@ class Baseout{
   public:
     Baseout();
     virtual ~Baseout();    
-    void check_file_status(std::shared_ptr<std::fstream> fout, std::string fname);
+    void check_file_status(std::string fname);
 
 };
