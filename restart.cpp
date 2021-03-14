@@ -24,12 +24,15 @@ Restart::Restart(Input_data &inp, int &step){
 }
 
 
-void Restart::rebuild_system(WheeledVehicle &veh, double &time){
+void Restart::rebuild_system(double &time, WheeledVehicle &veh, ChPathFollowerDriver &driver, RigidTerrain &terrain){
     if(!restart_switch)
         return;
         
     GetLog() << "start restart system\n";
-        
+    ChDriver::Inputs driver_inputs = driver.GetInputs();
+    veh.Synchronize(time, driver_inputs, terrain);
+    veh.Advance(0.000001);
+
     ChState state_pos;
     ChStateDelta state_vel, state_acc;    
     double T;

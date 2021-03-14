@@ -8,6 +8,8 @@
 #include "chrono_vehicle/wheeled_vehicle/vehicle/WheeledVehicle.h"
 #include "chrono_thirdparty/filesystem/path.h"
 #include "chrono_vehicle/wheeled_vehicle/utils/ChWheeledVehicleIrrApp.h"
+#include "chrono_vehicle/terrain/RigidTerrain.h"
+#include "chrono_vehicle/driver/ChPathFollowerDriver.h"
 
 using namespace chrono;
 using namespace chrono::geometry;
@@ -27,7 +29,7 @@ class Restart{
 
   public:
     Restart(Input_data &inp, int &step);
-    void rebuild_system(WheeledVehicle &veh, double &time);
+    void rebuild_system(double &time, WheeledVehicle &veh, ChPathFollowerDriver &driver, RigidTerrain &terrain);
     void output(WheeledVehicle &veh, int step, double time);
 
 };

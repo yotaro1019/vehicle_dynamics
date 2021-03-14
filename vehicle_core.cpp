@@ -323,7 +323,7 @@ void Vehicle_model::vehicle_initialize_stand_alone(){
 
     //restart
     restart.reset(new Restart(*inp, current_step) );
-    restart->rebuild_system(*veh, current_time); //when restart, this function is use
+    restart->rebuild_system(current_time, *veh, *driver_follower, *terrain); //when restart, this function is use
     GetLog() << "Initialization of vehicle system and aerodynamic-coef map completed\n";
 
     out.reset(new Output(*inp, *veh));
