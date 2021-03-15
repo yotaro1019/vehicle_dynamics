@@ -59,7 +59,7 @@ void Output::initialize_veh_status(Input_data &inp, WheeledVehicle &veh){
        std::string fname_base = "tire_axle-" + std::to_string(naxle);
        std::string fname;
 
-       Tire_fout tire_log_base;
+
 
        if(ntire_list[naxle] == 2){
            //LEFT
