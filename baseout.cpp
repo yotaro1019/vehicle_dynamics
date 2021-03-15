@@ -18,7 +18,6 @@ void Baseout::check_file_status(std::string fname, char header[]){
 
     if(this->checkFileExistence(fname) == false){
         std::ofstream outputfile(fname);
-        outputfile << header << "\n";
     }
 
     fout.reset(new std::fstream(fname.c_str()) );
@@ -28,6 +27,8 @@ void Baseout::check_file_status(std::string fname, char header[]){
         this->c_switch = false;
         exit(1);
     }  
+    *fout << header << "\n";
+
 }
 
 
@@ -41,4 +42,9 @@ bool Baseout::checkFileExistence(const std::string& str)
 {
     std::ifstream ifs(str);
     return ifs.is_open();
+}
+
+void Baseout::skip_line(int step){
+    std::cout << step << "\n";
+
 }

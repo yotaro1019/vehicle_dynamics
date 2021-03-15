@@ -36,6 +36,8 @@ class  CH_VEHICLE_API  Output{
     void write_veh_status(int step, double time, WheeledVehicle &veh, ChPathFollowerDriver &dvr, RigidTerrain &ter);
     void write_1way_info(int step, double time, WheeledVehicle &veh, Vehicle2Cfd &v2c);
     void write_fforce(int step, double time, Cfd2Vehicle &c2v);  
+
+    void restart(int restart_step);
 };
 
 #endif

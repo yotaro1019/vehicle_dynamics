@@ -253,3 +253,11 @@ void Output::initialize_fforce_info(Input_data &inp){
 void Output::write_fforce(int step, double time, Cfd2Vehicle &c2v){
     cfd_fforce_info.write(step, time, c2v.fforce.translation, c2v.fforce.rotation);
 }
+
+
+void Output::restart(int restart_step){
+    
+    chassis_log.skip_line(restart_step);
+    exit(1);
+    
+}

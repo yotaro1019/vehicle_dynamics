@@ -13,18 +13,19 @@ Restart::Restart(Input_data &inp, int &step){
         return;
     }
 
-    if(inp.Get_restart_step() == 0){
+    this->restart_step = inp.Get_restart_step();
+    if(this->restart_step == 0){
         restart_switch = false;
     }else{
         restart_switch = true;
-        step = inp.Get_restart_step();
-        sprintf(restart_fname, "restart_veh_%05d.txt",  inp.Get_restart_step());
+        step = this->restart_step;
+        sprintf(restart_fname, "restart_veh_%05d.txt",  this->restart_step);
     }
 
 }
 
 
-void Restart::rebuild_system(double &time, WheeledVehicle &veh, ChPathFollowerDriver &driver, RigidTerrain &terrain){
+void Restart::rebuild_system(double &time, WheeledVehicle &veh, ChPathFollowerDriver &driver, RigidTerrain &terrain, Output &out){
     if(!restart_switch)
         return;
         
@@ -40,6 +41,8 @@ void Restart::rebuild_system(double &time, WheeledVehicle &veh, ChPathFollowerDr
     time = T;
     veh.GetSystem()->StateScatter(state_pos, state_vel, T, true);
     veh.GetSystem()->StateScatterAcceleration(state_acc);
+
+    out.restart(this->restart_step);
 
 }
 
@@ -121,14 +124,12 @@ void Restart::read_from_file(ChState &state_pos, ChStateDelta &state_vel, ChStat
         ss >> val;
 
         if(val == "begin_informations"){
-            GetLog() << "\n===========\nbegin_informations\n";
             while(getline(inp_param_file,str)){
                 std::stringstream ss;
                 std::string val;
                 ss << str;
                 ss >> val;                    
                 if(val == "end_informations" ){
-                    GetLog() << "end_informations\n===========\n\n";
                     break;
                 }
 
@@ -141,14 +142,12 @@ void Restart::read_from_file(ChState &state_pos, ChStateDelta &state_vel, ChStat
 
 
         if(val == "begin_state_pos"){
-            GetLog() << "\n===========\nbegin_state_pos\n";
             while(getline(inp_param_file,str)){
                 std::stringstream ss;
                 std::string val;
                 ss << str;
                 ss >> val;                    
                 if(val == "end_state_pos" ){
-                    GetLog() << "end_state_pos\n===========\n\n";
                     break;
                 }else{
                     double dbl;
@@ -159,14 +158,12 @@ void Restart::read_from_file(ChState &state_pos, ChStateDelta &state_vel, ChStat
         }
 
         if(val == "begin_state_vel"){
-            GetLog() << "\n===========\nbegin_state_vel\n";
             while(getline(inp_param_file,str)){
                 std::stringstream ss;
                 std::string val;
                 ss << str;
                 ss >> val;                   
                 if(val == "end_state_vel" ){
-                    GetLog() << "end_state_vel\n===========\n\n";
                     break;
                 }else{
                     double dbl;
@@ -177,14 +174,12 @@ void Restart::read_from_file(ChState &state_pos, ChStateDelta &state_vel, ChStat
         }
 
         if(val == "begin_state_acc"){
-            GetLog() << "\n===========\nbegin_state_acc\n";
             while(getline(inp_param_file,str)){
                 std::stringstream ss;
                 std::string val;
                 ss << str;
                 ss >> val;                    
                 if(val == "end_state_acc" ){
-                    GetLog() << "end_state_acc\n===========\n\n";
                     break;
                 }else{
                     double dbl;
