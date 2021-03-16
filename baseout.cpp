@@ -27,7 +27,7 @@ void Baseout::check_file_status(std::string fname, char header[]){
         this->c_switch = false;
         exit(1);
     }  
-    *fout << header << "\n";
+    this-<write_data(header);
 
 }
 
@@ -46,5 +46,10 @@ bool Baseout::checkFileExistence(const std::string& str)
 
 void Baseout::skip_line(int step){
     std::cout << step << "\n";
+    std::string *str;
+    std::cout << "!!!";
 
+    //while(getline(*fout,*str)){
+    //    std::cout << *str << "\n";
+    //}
 }

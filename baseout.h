@@ -15,5 +15,5 @@ class Baseout{
     Baseout();
     virtual ~Baseout();    
     void check_file_status(std::string fname, char header[]);
-   void skip_line(int step);
+    void skip_line(int step);
 };

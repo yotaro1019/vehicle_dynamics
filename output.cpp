@@ -258,6 +258,6 @@ void Output::write_fforce(int step, double time, Cfd2Vehicle &c2v){
 void Output::restart(int restart_step){
     
     chassis_log.skip_line(restart_step);
-    exit(1);
+
     
 }
