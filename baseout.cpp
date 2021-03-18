@@ -2,7 +2,8 @@
 #include<string>
 #include<fstream>
 #include"baseout.h"
-
+#include<sstream>
+#include <unistd.h>
 Baseout::Baseout(){
     this->c_switch = false;
 }
@@ -11,23 +12,26 @@ Baseout::~Baseout(){
     if(!this->c_switch)
         return;
         
-    fout->close(); 
+    fout.close(); 
 }
 
 void Baseout::check_file_status(std::string fname, char header[]){
+    if(!this->c_switch)
+        return;
 
     if(this->checkFileExistence(fname) == false){
         std::ofstream outputfile(fname);
     }
 
-    fout.reset(new std::fstream(fname.c_str()) );
+    fout.open(fname.c_str());
 
-    if(fout->fail()){
+    if(fout.fail()){
         std::cout << "cannot open " << fname << "\n";
         this->c_switch = false;
         exit(1);
     }  
-    this-<write_data(header);
+    this->fname  = fname;
+    this->write_data(header);
 
 }
 
@@ -35,21 +39,36 @@ void Baseout::check_file_status(std::string fname, char header[]){
 
 ///protected
 void Baseout::write_data(char data[]){
-    *fout << data << "\n";
+    if(!this->c_switch)
+        return;
+
+    fout << data << "\n";
 }
 
-bool Baseout::checkFileExistence(const std::string& str)
-{
+bool Baseout::checkFileExistence(const std::string& str){
+
+
     std::ifstream ifs(str);
     return ifs.is_open();
 }
 
-void Baseout::skip_line(int step){
-    std::cout << step << "\n";
-    std::string *str;
-    std::cout << "!!!";
+void Baseout::restart(int step){
+    if(!this->c_switch)
+        return;
 
-    //while(getline(*fout,*str)){
-    //    std::cout << *str << "\n";
-    //}
+    std::string str;
+
+
+    while(getline(this->fout,str)){
+        std::stringstream ss;
+        std::string name;  
+        ss << str;
+        ss >> name;
+        if(atoi(name.c_str()) ==step){
+            std::cout << "!!!\nfnane : " << this->fname << "t step = " << name << "\n";
+            break;
+        }
+    }    
+    
 }
+

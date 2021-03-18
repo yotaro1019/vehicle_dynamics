@@ -5,19 +5,21 @@
 #include "chrono/core/ChQuaternion.h"
 #include"output.h"
 #include"outputlist.h"
+#define def_ntire 30
 
+//vehicle status
 Chassis_vel_fout chassis_log;
 Driver_fout dvr_log;
 Powertrain_fout ptr_log;
-std::vector<Tire_fout> tire_log;
+Tire_fout tire_log[def_ntire];
 std::vector<int> ntire_list; //number of tire (record each axis)
 int ntire_total;    //number of total tires
 
 //1way-info
 Vehicle2CFD_info mesh_vel_info;
 Vehicle2CFD_info chassis_vel_info;
-std::vector<Vehicle2CFD_info> str_vel_info;
-std::vector<Vehicle2CFD_info> wheel_vel_info;
+Vehicle2CFD_info str_vel_info[def_ntire];
+Vehicle2CFD_info wheel_vel_info[def_ntire];
 
 //ffoece_info
 FForce_info cfd_fforce_info;
@@ -51,7 +53,7 @@ void Output::initialize_veh_status(Input_data &inp, WheeledVehicle &veh){
     ntire_total += ntire;
     }
 
-    tire_log.resize(ntire_total);
+    
     GetLog() << ntire_list.size() << "\n";
     int ntire = 0;
     int naxle = 0;
@@ -60,49 +62,54 @@ void Output::initialize_veh_status(Input_data &inp, WheeledVehicle &veh){
        std::string fname;
 
 
-
+          
        if(ntire_list[naxle] == 2){
            //LEFT
-
-           fname = fname_base + "_LEFT.txt";
-           tire_log[ntire].initialize(init_step, inp.Get_tire_force_bool(), GetChronoOutputPath() + fname);
-           GetLog() << ntire << "\n";
-           ntire++;
+            {
+               fname = fname_base + "_LEFT.txt"; 
+               tire_log[ntire].initialize(init_step, inp.Get_tire_force_bool(), GetChronoOutputPath() + fname);
+               ntire++;  
+            }
+           
  
-           //RIGHT
-           fname = fname_base + "_RIGHT.txt";
-           GetLog() << fname << "\n";
-           tire_log[ntire].initialize(init_step, inp.Get_tire_force_bool(), GetChronoOutputPath() + fname);
-           GetLog() << ntire << "\n";
-           ntire++;
-        
-       }else if(ntire_list[naxle] == 4){
-           //LEFT inside          
-            fname = fname_base + "_LEFT_inside.txt";
-            tire_log[ntire].initialize(init_step, inp.Get_tire_force_bool(), GetChronoOutputPath() + fname);
-            GetLog() << ntire << "\n";
-            ntire++;
-           //LEFT outside
-            fname = fname_base + "_LEFT_outside.txt";
-            tire_log[ntire].initialize(init_step, inp.Get_tire_force_bool(), GetChronoOutputPath() + fname);
-            GetLog() << ntire << "\n";
-            ntire++;
-            //RIGHT inside          
-            fname = fname_base + "_RIGHT_inside.txt";
-            tire_log[ntire].initialize(init_step, inp.Get_tire_force_bool(), GetChronoOutputPath() + fname);
-            GetLog() << ntire << "\n";
-            ntire++;
+        //RIGHT
+            {
+               fname = fname_base + "_RIGHT.txt";
+               tire_log[ntire].initialize(init_step, inp.Get_tire_force_bool(), GetChronoOutputPath() + fname);
+               ntire++; 
+            }
 
-           //RIGHT outside
-            fname = fname_base + "_RIGHT_outside.txt";
-            tire_log[ntire].initialize(init_step, inp.Get_tire_force_bool(), GetChronoOutputPath() + fname);
-            GetLog() << ntire << "\n";
-            ntire++;
+       }else if(ntire_list[naxle] == 4){
+           //LEFT inside  
+            {
+                fname = fname_base + "_LEFT_inside.txt";
+                tire_log[ntire].initialize(init_step, inp.Get_tire_force_bool(), GetChronoOutputPath() + fname);    
+                ntire++;
+            }
+
+               //LEFT outside
+            {
+               fname = fname_base + "_LEFT_outside.txt";
+               tire_log[ntire].initialize(init_step, inp.Get_tire_force_bool(), GetChronoOutputPath() + fname);
+               ntire++;
+            }
+                //RIGHT inside
+            {
+               fname = fname_base + "_RIGHT_inside.txt";
+               tire_log[ntire].initialize(init_step, inp.Get_tire_force_bool(), GetChronoOutputPath() + fname);
+               ntire++;
+            }
+
+               //RIGHT outside
+            {
+               fname = fname_base + "_RIGHT_outside.txt";
+               tire_log[ntire].initialize(init_step, inp.Get_tire_force_bool(), GetChronoOutputPath() + fname);
+               ntire++;
+            }
         }        
         naxle++;    
     }
     GetLog() << "ntire = " << ntire << "\tnaxle = " << naxle << "\n";
-    GetLog() << tire_log.size() << "\n";
 }
 
 
@@ -176,37 +183,52 @@ void Output::initialize_1way_info(Input_data &inp, WheeledVehicle &veh){
     mesh_vel_info.initialize(init_step, inp.Get_coupling_info_bool(), out_dir+"/mesh_vel.txt");
     chassis_vel_info.initialize(init_step, inp.Get_coupling_info_bool(), out_dir+"/chassis_vel.txt");
 
-    str_vel_info.resize(ntire_total);
-    wheel_vel_info.resize(ntire_total);
     int axle_id = 0;
     int wheel_id = 0;
     for (std::shared_ptr< ChAxle > axle : veh.GetAxles()){
         if(ntire_list[axle_id] == 2){
+            {
 
-            str_vel_info[wheel_id].initialize(init_step, inp.Get_coupling_info_bool(), out_dir+"/str_vel_axle-"+std::to_string(axle_id)+"_L.txt");
-            wheel_vel_info[wheel_id].initialize(init_step, inp.Get_coupling_info_bool(), out_dir+"/wheel_vel_axle-"+std::to_string(axle_id)+"_L.txt");
-            wheel_id++;
+                str_vel_info[wheel_id].initialize(init_step, inp.Get_coupling_info_bool(), out_dir+"/str_vel_axle-"+std::to_string(axle_id)+"_L.txt");
+                wheel_vel_info[wheel_id].initialize(init_step, inp.Get_coupling_info_bool(), out_dir+"/wheel_vel_axle-"+std::to_string(axle_id)+"_L.txt");                
 
-            str_vel_info[wheel_id].initialize(init_step, inp.Get_coupling_info_bool(), out_dir+"/str_vel_axle-"+std::to_string(axle_id)+"_R.txt");
-            wheel_vel_info[wheel_id].initialize(init_step, inp.Get_coupling_info_bool(), out_dir+"/wheel_vel_axle-"+std::to_string(axle_id)+"_R.txt");
-            wheel_id++;
+                wheel_id++;
+            }
+
+            {
+                str_vel_info[wheel_id].initialize(init_step, inp.Get_coupling_info_bool(), out_dir+"/str_vel_axle-"+std::to_string(axle_id)+"_R.txt");
+                wheel_vel_info[wheel_id].initialize(init_step, inp.Get_coupling_info_bool(), out_dir+"/wheel_vel_axle-"+std::to_string(axle_id)+"_R.txt");                
+
+                wheel_id++;
+            }
+
 
         }else if(ntire_list[axle_id] == 4){
-            str_vel_info[wheel_id].initialize(init_step, inp.Get_coupling_info_bool(), out_dir+"/str_vel_axle-"+std::to_string(axle_id)+"_Lout.txt");
-            wheel_vel_info[wheel_id].initialize(init_step, inp.Get_coupling_info_bool(), out_dir+"/wheel_vel_axle-"+std::to_string(axle_id)+"_Lout.txt");
-            wheel_id++;
+            {
+                str_vel_info[wheel_id].initialize(init_step, inp.Get_coupling_info_bool(), out_dir+"/str_vel_axle-"+std::to_string(axle_id)+"_Lout.txt");
+                wheel_vel_info[wheel_id].initialize(init_step, inp.Get_coupling_info_bool(), out_dir+"/wheel_vel_axle-"+std::to_string(axle_id)+"_Lout.txt");                
 
-            str_vel_info[wheel_id].initialize(init_step, inp.Get_coupling_info_bool(), out_dir+"/str_vel_axle-"+std::to_string(axle_id)+"_Lin.txt");
-            wheel_vel_info[wheel_id].initialize(init_step, inp.Get_coupling_info_bool(), out_dir+"/wheel_vel_axle-"+std::to_string(axle_id)+"_Lin.txt");
-            wheel_id++;
+                wheel_id++;
+            }
 
-            str_vel_info[wheel_id].initialize(init_step, inp.Get_coupling_info_bool(), out_dir+"/str_vel_axle-"+std::to_string(axle_id)+"_Rin.txt");
-            wheel_vel_info[wheel_id].initialize(init_step, inp.Get_coupling_info_bool(), out_dir+"/wheel_vel_axle-"+std::to_string(axle_id)+"_Rin.txt");
-            wheel_id++;
+            {
+                str_vel_info[wheel_id].initialize(init_step, inp.Get_coupling_info_bool(), out_dir+"/str_vel_axle-"+std::to_string(axle_id)+"_Lin.txt");
+                wheel_vel_info[wheel_id].initialize(init_step, inp.Get_coupling_info_bool(), out_dir+"/wheel_vel_axle-"+std::to_string(axle_id)+"_Lin.txt");                
+                wheel_id++;
+            }
+    
+            {
+                str_vel_info[wheel_id].initialize(init_step, inp.Get_coupling_info_bool(), out_dir+"/str_vel_axle-"+std::to_string(axle_id)+"_Rin.txt");
+                wheel_vel_info[wheel_id].initialize(init_step, inp.Get_coupling_info_bool(), out_dir+"/wheel_vel_axle-"+std::to_string(axle_id)+"_Rin.txt");                
+                wheel_id++;
+            }
 
-            str_vel_info[wheel_id].initialize(init_step, inp.Get_coupling_info_bool(), out_dir+"/str_vel_axle-"+std::to_string(axle_id)+"_Rout.txt");
-            wheel_vel_info[wheel_id].initialize(init_step, inp.Get_coupling_info_bool(), out_dir+"/wheel_vel_axle-"+std::to_string(axle_id)+"_Rout.txt");
-            wheel_id++;
+            {
+                str_vel_info[wheel_id].initialize(init_step, inp.Get_coupling_info_bool(), out_dir+"/str_vel_axle-"+std::to_string(axle_id)+"_Rout.txt");
+                wheel_vel_info[wheel_id].initialize(init_step, inp.Get_coupling_info_bool(), out_dir+"/wheel_vel_axle-"+std::to_string(axle_id)+"_Rout.txt");             
+                wheel_id++;
+            }
+
         }
         axle_id++;
     }
@@ -257,7 +279,30 @@ void Output::write_fforce(int step, double time, Cfd2Vehicle &c2v){
 
 void Output::restart(int restart_step){
     
-    chassis_log.skip_line(restart_step);
+//vehicle status
+    chassis_log.restart(restart_step);
+    dvr_log.restart(restart_step);
+    ptr_log.restart(restart_step);
 
-    
+    for(int i = 0; i<def_ntire; i++){
+        tire_log[i].restart(restart_step);
+
+
+    }
+
+
+//1way-info
+    mesh_vel_info.restart(restart_step);
+    chassis_vel_info.restart(restart_step);
+
+    for(int i = 0; i<def_ntire; i++){
+        str_vel_info[i].restart(restart_step);
+        wheel_vel_info[i].restart(restart_step);
+        
+
+    }
+
+
+    //ffoece_info
+    cfd_fforce_info.restart(restart_step);
 }

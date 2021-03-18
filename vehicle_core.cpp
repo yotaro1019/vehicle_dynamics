@@ -321,12 +321,15 @@ void Vehicle_model::vehicle_initialize_stand_alone(){
     initialize();       //initialize vehicle system
     fmap.reset(new FForce_map(*inp) ); //initialize flow force sytem from aero-coef map
 
+    //initialize output
+    out.reset(new Output(*inp, *veh));
+
     //restart
     restart.reset(new Restart(*inp, current_step) );
     restart->rebuild_system(current_time, *veh, *driver_follower, *terrain, *out); //when restart, this function is use
     GetLog() << "Initialization of vehicle system and aerodynamic-coef map completed\n";
 
-    out.reset(new Output(*inp, *veh));
+    
     
     veh_viz.reset(new Veh_Visualization(calc_mode, *inp, *veh, *terrain, *driver_follower));
 }

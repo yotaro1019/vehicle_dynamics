@@ -19,7 +19,7 @@
 #include "chrono_vehicle/wheeled_vehicle/tire/PacejkaTire.h"
 #include "chrono_vehicle/wheeled_vehicle/tire/Pac89Tire.h"
 #include "chrono_thirdparty/filesystem/path.h"
-
+#include<memory>
 
 using namespace chrono;
 using namespace chrono::vehicle;
