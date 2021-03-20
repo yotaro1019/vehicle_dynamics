@@ -35,9 +35,10 @@ void Restart::rebuild_system(double &time, WheeledVehicle &veh, ChPathFollowerDr
     veh.Advance(0.000001);
 
     ChState state_pos;
-    ChStateDelta state_vel, state_acc;    
+    ChStateDelta state_vel, state_acc; 
+    ChVectorDynamic<> state_reactions;   
     double T;
-    this->read_from_file(state_pos, state_vel, state_acc, T);
+    this->read_from_file(state_pos, state_vel, state_acc, state_reactions, T);
     time = T;
     veh.GetSystem()->StateScatter(state_pos, state_vel, T, true);
     veh.GetSystem()->StateScatterAcceleration(state_acc);
@@ -51,11 +52,12 @@ void Restart::output(WheeledVehicle &veh,  int current_step, double time){
         double T;
         ChState state_pos;
         ChStateDelta state_vel, state_acc;
-        ChVector<> irr_cam_pos;
+        ChVectorDynamic<> state_reactions(veh.GetSystem()->GetNconstr());
 
         veh.GetSystem()->StateSetup(state_pos, state_vel, state_acc);
         veh.GetSystem()->StateGather(state_pos, state_vel, T);
         veh.GetSystem()->StateGatherAcceleration(state_acc);
+        veh.GetSystem()->StateGatherReactions(state_reactions);
 
         char rest_fout[500];
         sprintf(rest_fout, "restart_veh_%05d.txt",  current_step);
@@ -89,21 +91,26 @@ void Restart::output(WheeledVehicle &veh,  int current_step, double time){
         out << state_acc << "\n";
         out << "end_state_acc\n\n\n";
 
+        out << "begin_state_reactions\n";
+        out << state_reactions << "\n";
+        out << "end_state_reactions\n\n\n";  
+
         out.close();
     }
 
 }
 
 
-void Restart::read_from_file(ChState &state_pos, ChStateDelta &state_vel, ChStateDelta &state_acc, double &T){
+void Restart::read_from_file(ChState &state_pos, ChStateDelta &state_vel, ChStateDelta &state_acc, ChVectorDynamic<> &state_reactions, double &T){
     
-    std::vector<double> pos_vec, vel_vec, acc_vec;
+    std::vector<double> pos_vec, vel_vec, acc_vec, reaction_vec;
             
     GetLog() << "restart file \t" << this->out_dir  +  restart_fname << "\n";
     std::ifstream inp_param_file(this->out_dir  +  restart_fname);
     
     if(inp_param_file.fail()){
         std::cout << "ERROR unable to open " << restart_fname << "\n";
+        exit(1);
     }
         std::string str;
 
@@ -189,6 +196,23 @@ void Restart::read_from_file(ChState &state_pos, ChStateDelta &state_vel, ChStat
             }
         }
 
+        if(val == "begin_state_reactions"){
+            GetLog() << "\n===========\nbegin_state_acc\n";
+            while(getline(inp_param_file,str)){
+                std::stringstream ss;
+                std::string val;
+                ss << str;
+                ss >> val;                    
+                if(val == "end_state_reactions" ){
+                    GetLog() << "end_state_reactions\n===========\n\n";
+                    break;
+                }else{
+                    double dbl;
+                    dbl = std::stod(val);
+                    reaction_vec.push_back(dbl);
+                }
+            }
+        }
 
     }
 
@@ -196,6 +220,7 @@ void Restart::read_from_file(ChState &state_pos, ChStateDelta &state_vel, ChStat
     state_pos.conservativeResize(pos_vec.size());
     state_vel.conservativeResize(vel_vec.size());
     state_acc.conservativeResize(acc_vec.size());
+    state_reactions.conservativeResize(reaction_vec.size());
 
     for(int i=0; i<pos_vec.size(); i++){
         state_pos[i] = pos_vec[i];
@@ -205,6 +230,10 @@ void Restart::read_from_file(ChState &state_pos, ChStateDelta &state_vel, ChStat
     }
     for(int i=0; i<acc_vec.size(); i++){
         state_acc[i] = acc_vec[i];
+    }
+
+    for(int i=0; i<reaction_vec.size(); i++){
+        state_reactions[i] = reaction_vec[i];
     }
 
 
