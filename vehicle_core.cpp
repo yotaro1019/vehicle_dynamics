@@ -193,12 +193,12 @@ void Vehicle_model::initialize(){
      driver_follower->GetSteeringController().SetGains(0.8, 0, 0);
      driver_follower->GetSpeedController().SetGains(0.4, 0, 0);
      driver_follower->Initialize();
-     
-     //initialize povray
-     initialize_pov();
 
      //initialize coupling data structure
      exc_data.reset(new Exchange_data(*inp));
+
+    current_time = 0.0;
+    current_step = 0;
 
     }
 
@@ -235,113 +235,10 @@ void Vehicle_model::advance(double adv_step_size, Cfd2Vehicle *cfd2veh_data){
     if(inp->Get_use_trailer_model()){
         tlr->Advance(adv_step_size);
     }
+    
+    current_time += adv_step_size;
+    current_step ++;
 
-}
-
-//function of restart system
-void Vehicle_model::restart_chrono(){
-    //-------------------------------------------------------------
-    //Someone will implimant restart system
-
-    //暫定措置
-    //stabilizimg vehicle 
-    {
-        Cfd2Vehicle zero_fforce;
-        double log_itvl = floor(inp->Get_stabi_step()/5);
-        for(int i=0;i<=inp->Get_stabi_step();i++){
-            advance(inp->Get_stabi_dt(), &zero_fforce);
-            if(i%(int)log_itvl == 0 || i==inp->Get_stabi_step()){
-                std::cout << "stabilize\t" << i << "\n"; 
-            }
-               
-        }     
-    }
-    //-------------------------------------------------------------
-}
-
-//use realtime rendering (Irrlicht)
-//Must be called once before real-time visualization to initialize the Irrlicht system
-void Vehicle_model::irricht_initialize(double step_size){
-    if(!inp->Get_use_irricht())
-        return;
-
-     app.reset(new ChWheeledVehicleIrrApp(veh.get(), L"Steering PID Controller Demo", irr::core::dimension2d<irr::u32>(800, 640)) );
-     
-     app->SetHUDLocation(500, 20);
-     app->SetSkyBox();
-     app->AddTypicalLogo();
-     app->AddTypicalLights(irr::core::vector3df(-150.f, -150.f, 200.f), irr::core::vector3df(-150.f, 150.f, 200.f), 100,
-                         100);
-     app->AddTypicalLights(irr::core::vector3df(150.f, -150.f, 200.f), irr::core::vector3df(150.0f, 150.f, 200.f), 100,
-                         100);
-     //app->EnableGrid(false);
-     app->SetChaseCamera(inp->Get_cam_trackPoint(), inp->Get_chase_distance(), inp->Get_chase_height());
-
-     app->SetTimestep(step_size);
-
-     // Visualization of controller points (sentinel & target)
-     ballS = app->GetSceneManager()->addSphereSceneNode(0.1f);
-     ballT = app->GetSceneManager()->addSphereSceneNode(0.1f);
-     ballS->getMaterial(0).EmissiveColor = irr::video::SColor(0, 255, 0, 0);
-     ballT->getMaterial(0).EmissiveColor = irr::video::SColor(0, 0, 255, 0);
-         
-     // Finalize construction of visualization assets
-     app->AssetBindAll();
-     app->AssetUpdateAll();
-}
-
-
-//Calling this function once will update the visualization of Irricht by one step 
-void Vehicle_model::irricht_advance(double step_size){
-    if(!inp->Get_use_irricht())
-        return;
-
-    //irricht advance
-    // Update sentinel and target location markers for the path-follower controller.
-    const ChVector<>& pS = driver_follower->GetSteeringController().GetSentinelLocation();
-    const ChVector<>& pT = driver_follower->GetSteeringController().GetTargetLocation();
-    ballS->setPosition(irr::core::vector3df((irr::f32)pS.x(), (irr::f32)pS.y(), (irr::f32)pS.z()));
-    ballT->setPosition(irr::core::vector3df((irr::f32)pT.x(), (irr::f32)pT.y(), (irr::f32)pT.z()));
-    app->BeginScene(true, true, irr::video::SColor(255, 140, 161, 192));
-    app->DrawAll();
-    app->EndScene();
-    std::string msg = "Follower driver";
-    app->Synchronize(msg, driver_follower->GetInputs());
-    app->Advance(step_size);
-}
-
-
-//use Povray rendering(PovRay)
-void Vehicle_model::initialize_pov(){
-    if(!inp->Get_status_povray())
-        return;
-
-    pov_dir =  GetChronoOutputPath() + "/POVRAY";   
-    if (!filesystem::create_directory(filesystem::path(pov_dir))) {
-        std::cout << "Error creating directory " << pov_dir << std::endl;
-        return;
-    }
-
-    terrain->ExportMeshPovray(pov_dir);
-    driver_follower->ExportPathPovray(pov_dir);
-
-    pov_dir += "/data";   
-    if (!filesystem::create_directory(filesystem::path(pov_dir))) {
-        std::cout << "Error creating directory " << pov_dir << std::endl;
-        return;
-    }   
-
-}
-
-void Vehicle_model::output_pov(int render_frame){
-    if(!inp->Get_status_povray())
-        return;
-
-    char filename[100];
-    sprintf(filename, "data_%03d.dat",render_frame+1);
-    utils::WriteShapesPovray(veh->GetSystem(), pov_dir + "/" + filename);
-    GetLog() << pov_dir + "/" + filename << "\n";
-    //exit(1);
 }
 
 
@@ -349,7 +246,7 @@ void Vehicle_model::output_pov(int render_frame){
 //Display time and other current data as texts
 void Vehicle_model::disp_current_status(){
 
-    GetLog() << "time = " << current_time << "[s]" << "  vel = " << veh->GetVehicleSpeedCOM() << "\n";
+    GetLog() << "step : " << current_step <<  "\ttime : " << current_time << "[s]" << "\t vel = " << veh->GetVehicleSpeedCOM() << "\n";
 
 }
 
@@ -369,24 +266,31 @@ void  Vehicle_model::conv_axis(double array[6]){
         array[5] *= -1.0;
 }
 
+
+
+
+//======================================================================
 //public
+
 //coupling
 void Vehicle_model::vehicle_initialize(){
-    culc_mode = coupling;
-    culc_sec = preparation;
+    calc_mode = coupling;
+    calc_sec = preparation;
     setup_system();
     GetLog() << "system setup completed\n";
-
     initialize();
     GetLog() << "Initialization of vehicle system completed\n";
     
-    restart_chrono();
-
+    restart.reset(new Restart(*inp, current_step) );
     out.reset(new Output(*inp, *veh));
-    restart.reset(new Restart() );
+
     point_vel_acc.reset(new Point_vel_acc(inp->Get_cabin_pdata_bool(), inp->Get_cabin_pdata_fname(), *veh) );
-    current_time = 0.0;
-    current_step = 0.0;
+   
+    restart.reset(new Restart() );
+
+    //visualization
+    veh_viz.reset(new Veh_Visualization(calc_mode, *inp, *veh, *terrain, *driver_follower));
+
 }
 
 void Vehicle_model::vehicle_advance(Cfd2Vehicle *cfd2veh_data, Vehicle2Cfd *veh2cfd_data ){
@@ -406,36 +310,33 @@ void Vehicle_model::vehicle_advance(Cfd2Vehicle *cfd2veh_data, Vehicle2Cfd *veh2
  
     exc_data->data_packing(*veh, veh2cfd_data);
 
-    out->write(current_time, *veh, *driver_follower, *terrain, *cfd2veh_data, *veh2cfd_data); 
-    
-    
+    out->write(current_step, current_time, *veh, *driver_follower, *terrain, *cfd2veh_data, *veh2cfd_data); 
+
     //visualization
-    if(current_step%inp->Get_itvl_povray() == 0)
-        output_pov(current_step/inp->Get_itvl_povray());
-
-    current_time += adv_step_size;
-    current_step ++;
-
+    veh_viz->viz_advance(adv_step_size, current_time, current_step, *veh, *driver_follower);             //advance visualization step
 }
 
 //====================================================================
 //stand-alone
 void Vehicle_model::vehicle_initialize_stand_alone(){
-    culc_mode = stand_alone;
-    culc_sec = preparation;
+    calc_mode = stand_alone;
+    calc_sec = preparation;
     setup_system();
     GetLog() << "system setup completed\n";
 
     initialize();       //initialize vehicle system
     fmap.reset(new FForce_map(*inp) ); //initialize flow force sytem from aero-coef map
 
-    GetLog() << "Initialization of vehicle system and aerodynamic-coef map completed\n";
-    restart_chrono();
-    irricht_initialize(step_size);         //initialize irricht
+    //initialize output
     out.reset(new Output(*inp, *veh));
-    restart.reset(new Restart() );
+
     point_vel_acc.reset(new Point_vel_acc(inp->Get_cabin_pdata_bool(), inp->Get_cabin_pdata_fname(), *veh) );
-    current_time = 0.0;
+
+    restart.reset(new Restart(*inp, current_step) );
+    restart->rebuild_system(current_time, *veh, *driver_follower, *terrain, *out); //when restart, this function is use
+    GetLog() << "Initialization of vehicle system and aerodynamic-coef map completed\n";
+
+    veh_viz.reset(new Veh_Visualization(calc_mode, *inp, *veh, *terrain, *driver_follower));
 }
 
 void Vehicle_model::vehicle_advance_stand_alone(){
@@ -443,18 +344,21 @@ void Vehicle_model::vehicle_advance_stand_alone(){
     Vehicle2Cfd v2c;
     fmap->Get_fforce_from_map(*veh, current_time, &fmap2veh_data);
     double adv_step_size = this->step_size;
+
+    //advance vehicle system
     advance(adv_step_size, &fmap2veh_data);     //advance phisics step        
     disp_current_status();
+
     exc_data->data_packing(*veh, &v2c);
-    out->write(current_time, *veh, *driver_follower, *terrain, fmap2veh_data, v2c);
+
+    //output vehicle and driver status
+    out->write(current_step, current_time, *veh, *driver_follower, *terrain, fmap2veh_data, v2c);
+
+    //output restart file
+    restart->output(*veh, current_step, current_time);
 
     //visualization
-    if(current_step%inp->Get_itvl_povray() == 0)
-        output_pov(current_step/inp->Get_itvl_povray());
+    veh_viz->viz_advance(adv_step_size, current_time, current_step, *veh, *driver_follower);             //advance visualization step
 
-    irricht_advance(adv_step_size);             //advance visualization step
-    
-    current_time += adv_step_size;
-    current_step ++;
 }
 

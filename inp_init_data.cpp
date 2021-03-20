@@ -64,10 +64,7 @@ void Input_data::default_param(){
 
     
     //restart system (if restart bool = true, must check fname)
-    restart_bool = false;
-    restart_inp_fname = "NaN";
-    restart_cube_step = 0;
-    restart_output_fname = "restart.rst";
+    restart_step = 0;
     
     //output
     chassis_com_bool = false;
@@ -154,11 +151,6 @@ void Input_data::check_param(){
         GetLog() << "Not input target speed\n";
     }
 
-    if(restart_bool == true){
-        if(restart_inp_fname == "NaN"){
-            GetLog() << "Not input restart file name\n";
-        }
-    }
     if(fforce_map_bool){
        if(fforce_map_fname == "NaN"){
            GetLog() << "Not input fmap file\n";
@@ -295,14 +287,11 @@ void Input_data::read_param(std::string input_fname){
             if(name == "restart_step"){
                 this->restart_step = Set_int_value(ss);
             }
-            if(name == "restart_cube_step"){
-                this->restart_cube_step = Set_int_value(ss);
-            }
-            if(name == "restart"){
-                this->restart_bool =  Set_bool_value(ss);
-            }
-            if(name == "restart_inp_fname"){
-                this->restart_inp_fname =  Set_str_value(ss);
+
+
+            if(name == "restart_output_itvl"){
+                this->restart_output_itvl = Set_int_value(ss);
+                
             }
 
 
@@ -440,9 +429,7 @@ void Input_data::read_param(std::string input_fname){
                 this->coupling_info_bool = Set_bool_value(ss);;
             }
 
-            if(name == "restart_output_fname"){
-                this->restart_output_fname = Set_str_value(ss);
-            }
+
 
             //Get Point vel and acc in cabin
             if(name == "cabin_pdata_fname"){

@@ -5,14 +5,19 @@
 #include<fstream>
 #include<memory>
 
+
 class Baseout{
   protected:
     bool c_switch;
-    std::shared_ptr<std::ofstream> fout;
-
+    std::fstream fout;
+    std::string  fname;
+    void write_data(char data[]);
+    bool checkFileExistence(const std::string& str);
+ 
   public:
     Baseout();
     virtual ~Baseout();    
-    void check_file_status(std::shared_ptr<std::ofstream> fout, std::string fname);
+    void check_file_status(std::string fname, char header[]);
+    void restart(int step);
 };
-#endif
+

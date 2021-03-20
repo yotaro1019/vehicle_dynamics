@@ -29,29 +29,31 @@ using namespace chrono::vehicle;
 class Chassis_vel_fout : public Baseout{
   public:
     Chassis_vel_fout() { Baseout(); };
-    void initialize(bool c_switch, const std::string fname);
-    void write(double time, WheeledVehicle &veh);  
+    void initialize(int init_step, bool c_switch, const std::string fname);
+    void write(int step,double time, WheeledVehicle &veh);  
 };
 
 class Driver_fout : public Baseout{
   public:
     Driver_fout() { Baseout(); };
-    void initialize(bool c_switch, const std::string fname);
-    void write(double time, ChPathFollowerDriver &dvr);
+
+    void initialize(int init_step, bool c_switch, const std::string fname);
+    void write(int step, double time, ChPathFollowerDriver &dvr);
+
 };
 
 class Powertrain_fout : public Baseout{
   public:
     Powertrain_fout() { Baseout(); };
-    void initialize(bool c_switch, const std::string fname);
-    void write(double time, ChPowertrain &pt);
+    void initialize(int init_step, bool c_switch, const std::string fname);
+    void write(int step,double time, ChPowertrain &pt);
 };
 
 class Tire_fout : public Baseout{
   public:
     Tire_fout() { Baseout(); };
-    void initialize(bool c_switch, const std::string fname);
-    void write(double time, ChWheel &wheel , RigidTerrain &terrain);
+    void initialize(int init_step, bool c_switch, const std::string fname);
+    void write(int step, double time, ChWheel &wheel , RigidTerrain &terrain);
 };
 
 
@@ -59,16 +61,16 @@ class Tire_fout : public Baseout{
 class Vehicle2CFD_info : public Baseout{
   public:
     Vehicle2CFD_info() { Baseout(); };
-    void initialize(bool c_switch, const std::string fname);
-    void write(double time, double comp1[], double comp2[]);  
+    void initialize(int init_step, bool c_switch, const std::string fname);
+    void write(int step, double time, double comp1[], double comp2[]);  
 };
 
 //fforce-info
 class FForce_info : public Baseout{
   public:
     FForce_info() { Baseout(); };
-    void initialize(bool c_switch, const std::string fname);
-    void write(double time, double comp1[], double comp2[]);  
+    void initialize(int init_step, bool c_switch, const std::string fname);
+    void write(int step,double time, double comp1[], double comp2[]);  
 };
 
 #endif

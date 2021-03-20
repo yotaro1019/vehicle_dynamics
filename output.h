@@ -19,7 +19,7 @@
 #include "chrono_vehicle/wheeled_vehicle/tire/PacejkaTire.h"
 #include "chrono_vehicle/wheeled_vehicle/tire/Pac89Tire.h"
 #include "chrono_thirdparty/filesystem/path.h"
-
+#include<memory>
 
 using namespace chrono;
 using namespace chrono::vehicle;
@@ -32,10 +32,12 @@ class  CH_VEHICLE_API  Output{
     void initialize_veh_status(Input_data &inp, WheeledVehicle &veh);
     void initialize_1way_info(Input_data &inp, WheeledVehicle &veh);
     void initialize_fforce_info(Input_data &inp);
-    void write(double time, WheeledVehicle &veh, ChPathFollowerDriver &dvr, RigidTerrain &ter, Cfd2Vehicle &c2v, Vehicle2Cfd &v2c);  
-    void write_veh_status(double time, WheeledVehicle &veh, ChPathFollowerDriver &dvr, RigidTerrain &ter);
-    void write_1way_info(double time, WheeledVehicle &veh, Vehicle2Cfd &v2c);
-    void write_fforce(double time, Cfd2Vehicle &c2v);  
+    void write(int step, double time, WheeledVehicle &veh, ChPathFollowerDriver &dvr, RigidTerrain &ter, Cfd2Vehicle &c2v, Vehicle2Cfd &v2c);  
+    void write_veh_status(int step, double time, WheeledVehicle &veh, ChPathFollowerDriver &dvr, RigidTerrain &ter);
+    void write_1way_info(int step, double time, WheeledVehicle &veh, Vehicle2Cfd &v2c);
+    void write_fforce(int step, double time, Cfd2Vehicle &c2v);  
+
+    void restart(int restart_step);
 };
 
 #endif
