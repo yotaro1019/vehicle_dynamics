@@ -29,7 +29,7 @@ using namespace chrono::vehicle;
 class Chassis_vel_fout : public Baseout{
   public:
     Chassis_vel_fout() { Baseout(); };
-    void initialize(int init_step, bool c_switch, const std::string fname);
+    void initialize(bool c_switch, const std::string fname);
     void write(int step,double time, WheeledVehicle &veh);  
 };
 
@@ -37,7 +37,7 @@ class Driver_fout : public Baseout{
   public:
     Driver_fout() { Baseout(); };
 
-    void initialize(int init_step, bool c_switch, const std::string fname);
+    void initialize(bool c_switch, const std::string fname);
     void write(int step, double time, ChPathFollowerDriver &dvr);
 
 };
@@ -45,14 +45,14 @@ class Driver_fout : public Baseout{
 class Powertrain_fout : public Baseout{
   public:
     Powertrain_fout() { Baseout(); };
-    void initialize(int init_step, bool c_switch, const std::string fname);
+    void initialize(bool c_switch, const std::string fname);
     void write(int step,double time, ChPowertrain &pt);
 };
 
 class Tire_fout : public Baseout{
   public:
     Tire_fout() { Baseout(); };
-    void initialize(int init_step, bool c_switch, const std::string fname);
+    void initialize(bool c_switch, const std::string fname);
     void write(int step, double time, ChWheel &wheel , RigidTerrain &terrain);
 };
 
@@ -61,7 +61,7 @@ class Tire_fout : public Baseout{
 class Vehicle2CFD_info : public Baseout{
   public:
     Vehicle2CFD_info() { Baseout(); };
-    void initialize(int init_step, bool c_switch, const std::string fname);
+    void initialize(bool c_switch, const std::string fname);
     void write(int step, double time, double comp1[], double comp2[]);  
 };
 
@@ -69,8 +69,16 @@ class Vehicle2CFD_info : public Baseout{
 class FForce_info : public Baseout{
   public:
     FForce_info() { Baseout(); };
-    void initialize(int init_step, bool c_switch, const std::string fname);
+    void initialize(bool c_switch, const std::string fname);
     void write(int step,double time, double comp1[], double comp2[]);  
+};
+
+//Point_vel_acc_info
+class Point_vel_acc_info : public Baseout{
+  public:
+    Point_vel_acc_info() { Baseout(); };
+    void initialize(bool c_switch, const std::string fname);
+    void write(int step, double time, ChVector<> loc_pos, ChVector<> loc_vel, ChVector<> loc_acc, ChVector<> loc_Wrotvel, ChVector<> loc_Wrotacc);  
 };
 
 #endif

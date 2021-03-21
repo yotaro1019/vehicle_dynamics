@@ -25,7 +25,7 @@ Restart::Restart(Input_data &inp, int &step){
 }
 
 
-void Restart::rebuild_system(double &time, WheeledVehicle &veh, ChPathFollowerDriver &driver, RigidTerrain &terrain, Output &out){
+void Restart::rebuild_system(double &time, WheeledVehicle &veh, ChPathFollowerDriver &driver, RigidTerrain &terrain, Output &out, Point_vel_acc &point_vel_acc){
     if(!restart_switch)
         return;
         
@@ -44,6 +44,7 @@ void Restart::rebuild_system(double &time, WheeledVehicle &veh, ChPathFollowerDr
     veh.GetSystem()->StateScatterAcceleration(state_acc);
 
     out.restart(this->restart_step);
+    point_vel_acc.restart(this->restart_step);
 
 }
 

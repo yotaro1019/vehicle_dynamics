@@ -10,7 +10,7 @@
 using namespace chrono;
 using namespace chrono::vehicle;
 
-void Chassis_vel_fout::initialize(int init_step, bool c_switch, const std::string fname)
+void Chassis_vel_fout::initialize(bool c_switch, const std::string fname)
 {
     this->c_switch = c_switch;
     
@@ -19,7 +19,7 @@ void Chassis_vel_fout::initialize(int init_step, bool c_switch, const std::strin
 
     
     char header[500];
-    sprintf(header, "%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s", "step", "time", "x", "y", "z", "vel", "u", "v", "w", "roll", "pitch", "yaw", "yaw_2D");
+    sprintf(header, "%10s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s", "step", "time", "x", "y", "z", "vel", "u", "v", "w", "roll", "pitch", "yaw", "yaw_2D");
     this->check_file_status(fname, header);
 
 }
@@ -43,7 +43,7 @@ void Chassis_vel_fout::write(int step, double time, WheeledVehicle &veh){
     this->write_data(output_value);
 }
 
-void Driver_fout::initialize(int init_step, bool c_switch, const std::string fname)
+void Driver_fout::initialize(bool c_switch, const std::string fname)
 {
     this->c_switch = c_switch;
     
@@ -52,7 +52,7 @@ void Driver_fout::initialize(int init_step, bool c_switch, const std::string fna
     
 
     char header[500];
-    sprintf(header, "%12s%12s%12s%12s%12s", "time", "steering", "throttle", "brake", "tierod force");
+    sprintf(header, "%10s%12s%12s%12s%12s%12s", "step", "time", "steering", "throttle", "brake", "tierod force");
 
     this->check_file_status(fname, header);
 
@@ -71,7 +71,7 @@ void Driver_fout::write(int step, double time, ChPathFollowerDriver &dvr){
 
 }
 
-void Powertrain_fout::initialize(int init_step, bool c_switch, const std::string fname)
+void Powertrain_fout::initialize(bool c_switch, const std::string fname)
 {
     this->c_switch = c_switch;
     
@@ -79,7 +79,7 @@ void Powertrain_fout::initialize(int init_step, bool c_switch, const std::string
         return;
     
     char header[500];
-    sprintf(header, "%12s%12s%12s%12s%12s%12s%12s%12s%12s", "step", "time", "engine_spd", "engine_trq", "TC_slipage", "TC_in_trq", "TC_out_trq", "TM_gear", "out_trq");
+    sprintf(header, "%10s%12s%12s%12s%12s%12s%12s%12s%12s", "step", "time", "engine_spd", "engine_trq", "TC_slipage", "TC_in_trq", "TC_out_trq", "TM_gear", "out_trq");
     this->check_file_status(fname, header);
 
 }
@@ -94,14 +94,14 @@ void Powertrain_fout::write(int step, double time, ChPowertrain &pt){
     this->write_data(output_value);    
 }
 
-void Tire_fout::initialize(int init_step, bool c_switch, const std::string fname){
+void Tire_fout::initialize(bool c_switch, const std::string fname){
     this->c_switch = c_switch;
     
     if(!c_switch)
         return;
     
     char header[500];
-    sprintf(header, "%12s%12s%17s%17s%17s%17s%17s%17s%17s%17s%17s%17s%17s%17s%17s", "step", "time","fx","fy","fz","mx","my","mz","slip","Longslip","camber","posX", "posY", "posZ", "daflection");
+    sprintf(header, "%10s%12s%17s%17s%17s%17s%17s%17s%17s%17s%17s%17s%17s%17s%17s", "step", "time","fx","fy","fz","mx","my","mz","slip","Longslip","camber","posX", "posY", "posZ", "daflection");
     this->check_file_status(fname, header);
 
 }
@@ -147,14 +147,14 @@ void Tire_fout::write(int step, double time, ChWheel &wheel , RigidTerrain &terr
 
 
 //1WAY-info
-void Vehicle2CFD_info::initialize(int init_step, bool c_switch, const std::string fname){
+void Vehicle2CFD_info::initialize(bool c_switch, const std::string fname){
     this->c_switch = c_switch;
     
     if(!c_switch)
         return;
 
     char header[500];
-    sprintf(header, "%12s%12s%17s%17s%17s%17s%17s%17s", "step", "time","vel_x","vel_y","vel_z","om_x","om_y","om_z");
+    sprintf(header, "%10s%12s%17s%17s%17s%17s%17s%17s", "step", "time","vel_x","vel_y","vel_z","om_x","om_y","om_z");
     this->check_file_status(fname, header);
 }
 
@@ -170,14 +170,14 @@ void Vehicle2CFD_info::write(int step, double time, double comp1[], double comp2
 
 
 //fforce-info
-void FForce_info::initialize(int init_step, bool c_switch, const std::string fname){
+void FForce_info::initialize(bool c_switch, const std::string fname){
     this->c_switch = c_switch;
     
     if(!c_switch)
         return;
 
     char header[500];
-    sprintf(header, "%12s%12s%17s%17s%17s%17s%17s%17s", "step", "time","fx","fy","fz","mx","my","mz");
+    sprintf(header, "%10s%12s%17s%17s%17s%17s%17s%17s", "step", "time","fx","fy","fz","mx","my","mz");
     this->check_file_status(fname, header);
   
 }
@@ -190,4 +190,29 @@ void FForce_info::write(int step, double time, double comp1[], double comp2[]){
     sprintf(output_value,"%10d%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f", step, time, comp1[0], comp1[1], comp1[2],
     comp2[0], comp2[1], comp2[2]);
     this->write_data(output_value);
+}
+
+
+//Point_vel_acc_info
+void Point_vel_acc_info::initialize(bool c_switch, const std::string fname){
+    this->c_switch = c_switch;
+    
+    if(!c_switch)
+        return;
+
+    char header[500];
+    sprintf(header, "%10s%12s%17s%17s%17s%17s%17s%17s%17s%17s%17s%17s%17s%17s%17s%17s%17s", "step", "time","x","y","z","vel_x","vel_y","vel_z","acc_x","acc_y","acc_z","om_vel_x","om_vel_y","om_vel_z","om_acc_x","om_acc_y","om_acc_z" );
+    this->check_file_status(fname, header);
+  
+}
+
+void Point_vel_acc_info::write(int step, double time, ChVector<> loc_pos, ChVector<> loc_vel, ChVector<> loc_acc, ChVector<> loc_Wrotvel, ChVector<> loc_Wrotacc) {
+    if(!c_switch)
+        return; 
+
+    char output_value[500];
+    sprintf(output_value,"%10d%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f", step, time, loc_pos.x(), loc_pos.y(), loc_pos.z(),
+        loc_vel.x(), loc_vel.y(), loc_vel.z(), loc_acc.x(), loc_acc.y(), loc_acc.z(), loc_Wrotvel.x(), loc_Wrotvel.y(), loc_Wrotvel.z(), loc_Wrotacc.x(), loc_Wrotacc.y(), loc_Wrotacc.z() );;
+    this->write_data(output_value);
+
 }

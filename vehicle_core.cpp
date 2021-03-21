@@ -281,12 +281,13 @@ void Vehicle_model::vehicle_initialize(){
     initialize();
     GetLog() << "Initialization of vehicle system completed\n";
     
-    restart.reset(new Restart(*inp, current_step) );
+
     out.reset(new Output(*inp, *veh));
 
     point_vel_acc.reset(new Point_vel_acc(inp->Get_cabin_pdata_bool(), inp->Get_cabin_pdata_fname(), *veh) );
-   
-    restart.reset(new Restart() );
+    
+    restart.reset(new Restart(*inp, current_step) );   
+
 
     //visualization
     veh_viz.reset(new Veh_Visualization(calc_mode, *inp, *veh, *terrain, *driver_follower));
@@ -333,7 +334,7 @@ void Vehicle_model::vehicle_initialize_stand_alone(){
     point_vel_acc.reset(new Point_vel_acc(inp->Get_cabin_pdata_bool(), inp->Get_cabin_pdata_fname(), *veh) );
 
     restart.reset(new Restart(*inp, current_step) );
-    restart->rebuild_system(current_time, *veh, *driver_follower, *terrain, *out); //when restart, this function is use
+    restart->rebuild_system(current_time, *veh, *driver_follower, *terrain, *out, *point_vel_acc); //when restart, this function is use
     GetLog() << "Initialization of vehicle system and aerodynamic-coef map completed\n";
 
     veh_viz.reset(new Veh_Visualization(calc_mode, *inp, *veh, *terrain, *driver_follower));
@@ -353,6 +354,10 @@ void Vehicle_model::vehicle_advance_stand_alone(){
 
     //output vehicle and driver status
     out->write(current_step, current_time, *veh, *driver_follower, *terrain, fmap2veh_data, v2c);
+
+    //recort point vel acc
+    point_vel_acc->record_points_vel_acc(current_step, current_time, *veh);
+
 
     //output restart file
     restart->output(*veh, current_step, current_time);
