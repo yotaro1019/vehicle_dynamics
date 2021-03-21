@@ -149,7 +149,15 @@ void Point_vel_acc::record_points_vel_acc(int step, double time, WheeledVehicle 
             break;
         }
         ChMarker marker = *veh.GetChassis()->GetMarkers()[point_lists[i].marker_id].get();
- 	    point_lists[i].pout_file.write(step, time, marker.GetPos(), marker.GetPos_dt(), marker.GetPos_dtdt(), marker.GetWvel_loc(), marker.GetWacc_loc());
+        ChQuaternion<> rot_q = marker.GetRot();
+
+        ChVector<> vel_loc = rot_q.Rotate(marker.GetAbsCoord_dt().pos);
+        ChVector<> acc_loc = rot_q.Rotate(marker.GetAbsCoord_dtdt().pos);
+        ChVector<> om_vel_loc = rot_q.Rotate(marker.GetAbsWvel());
+        ChVector<> om_acc_loc = rot_q.Rotate(marker.GetAbsWacc());
+        GetLog() << marker.GetAbsCoord_dtdt().pos << "\n";
+
+ 	    point_lists[i].pout_file.write(step, time, marker.GetPos(), vel_loc, acc_loc, om_vel_loc, om_acc_loc);
     } 
 
 }

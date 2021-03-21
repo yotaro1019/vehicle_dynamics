@@ -101,7 +101,7 @@ void Tire_fout::initialize(bool c_switch, const std::string fname){
         return;
     
     char header[500];
-    sprintf(header, "%10s%12s%17s%17s%17s%17s%17s%17s%17s%17s%17s%17s%17s%17s%17s", "step", "time","fx","fy","fz","mx","my","mz","slip","Longslip","camber","posX", "posY", "posZ", "daflection");
+    sprintf(header, "%10s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s", "step", "time","fx","fy","fz","mx","my","mz","slip","Longslip","camber","posX", "posY", "posZ", "daflection");
     this->check_file_status(fname, header);
 
 }
@@ -154,7 +154,7 @@ void Vehicle2CFD_info::initialize(bool c_switch, const std::string fname){
         return;
 
     char header[500];
-    sprintf(header, "%10s%12s%17s%17s%17s%17s%17s%17s", "step", "time","vel_x","vel_y","vel_z","om_x","om_y","om_z");
+    sprintf(header, "%10s%12s%12s%12s%12s%12s%12s%12s", "step", "time","vel_x","vel_y","vel_z","om_x","om_y","om_z");
     this->check_file_status(fname, header);
 }
 
@@ -177,7 +177,7 @@ void FForce_info::initialize(bool c_switch, const std::string fname){
         return;
 
     char header[500];
-    sprintf(header, "%10s%12s%17s%17s%17s%17s%17s%17s", "step", "time","fx","fy","fz","mx","my","mz");
+    sprintf(header, "%10s%12s%12s%12s%12s%12s%12s%12s", "step", "time","fx","fy","fz","mx","my","mz");
     this->check_file_status(fname, header);
   
 }
@@ -201,7 +201,7 @@ void Point_vel_acc_info::initialize(bool c_switch, const std::string fname){
         return;
 
     char header[500];
-    sprintf(header, "%10s%12s%17s%17s%17s%17s%17s%17s%17s%17s%17s%17s%17s%17s%17s%17s%17s", "step", "time","x","y","z","vel_x","vel_y","vel_z","acc_x","acc_y","acc_z","om_vel_x","om_vel_y","om_vel_z","om_acc_x","om_acc_y","om_acc_z" );
+    sprintf(header, "%10s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s", "step", "time","x","y","z","vel_x","vel_y","vel_z","acc_x","acc_y","acc_z","om_vel_x","om_vel_y","om_vel_z","om_acc_x","om_acc_y","om_acc_z" );
     this->check_file_status(fname, header);
   
 }
