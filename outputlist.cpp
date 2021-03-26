@@ -19,7 +19,8 @@ void Chassis_vel_fout::initialize(bool c_switch, const std::string fname)
 
     
     char header[500];
-    sprintf(header, "%10s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s", "step", "time", "x", "y", "z", "vel", "u", "v", "w", "roll", "pitch", "yaw", "yaw_2D");
+    sprintf(header, "%10s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s", "step", "time", "x", "y", "z", "vel", "u", "v", "w","acc_x", "acc_y", "acc_z", "roll", "pitch", "yaw",
+    "roll_vel", "pitch_vel", "yaw_vel", "roll_acc", "pitch_acc", "yaw_acc", "yaw_2D");
     this->check_file_status(fname, header);
 
 }
@@ -31,15 +32,19 @@ void Chassis_vel_fout::write(int step, double time, WheeledVehicle &veh){
     ChVector<> com_pos = veh.GetVehicleCOMPos();
     double vel = veh.GetVehicleSpeedCOM();
     ChVector<> vel_global = veh.GetVehiclePointVelocity(veh.GetChassis()->GetLocalPosCOM());
+    ChVector<> acc_global = veh.GetVehiclePointAcceleration (veh.GetChassis()->GetLocalPosCOM());
     ChQuaternion<> angle_q = veh.GetVehicleRot();
-    ChVector<> angle_euler = angle_q.Q_to_Euler123();
+    ChVector<> rot = angle_q.Q_to_Euler123();
+    ChVector<> rot_vel = veh.GetChassis()->GetBody()->GetWvel_loc();
+    ChVector<> rot_acc = veh.GetChassis()->GetBody()->GetWacc_loc();
     ChVector<> angle_q_xaxis = angle_q.GetXaxis();
     double yaw_2D = atan( angle_q_xaxis.y() / angle_q_xaxis.x() );
     
 
     char output_value[500];
-    sprintf(output_value,"%10d%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f",  step, time, com_pos.x(), com_pos.y(), com_pos.z(),
-    vel, vel_global.x(), vel_global.y(), vel_global.z(), angle_euler.x(), angle_euler.y(), angle_euler.z(), yaw_2D );
+    sprintf(output_value,"%10d%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f",  step, time, com_pos.x(), com_pos.y(), com_pos.z(),
+    vel, vel_global.x(), vel_global.y(), vel_global.z(), acc_global.x(), acc_global.y(), acc_global.z(), rot.x(), rot.y(), rot.z(), rot_vel.x(), rot_vel.y(), rot_vel.z(), 
+    rot_acc.x(), rot_acc.y(), rot_acc.z(), yaw_2D );
     this->write_data(output_value);
 }
 
@@ -52,7 +57,7 @@ void Driver_fout::initialize(bool c_switch, const std::string fname)
     
 
     char header[500];
-    sprintf(header, "%10s%12s%12s%12s%12s%12s", "step", "time", "steering", "throttle", "brake", "tierod force");
+    sprintf(header, "%10s%12s%12s%12s%12s%15s", "step", "time", "steering", "throttle", "brake", "tierod_force");
 
     this->check_file_status(fname, header);
 
@@ -139,7 +144,7 @@ void Tire_fout::write(int step, double time, ChWheel &wheel , RigidTerrain &terr
 
     ChVector<> pos = wheel.GetPos();
     char output_value[500];
-    sprintf(output_value,"%10d%12.5f%17.5f%17.5f%17.5f%17.5f%17.5f%17.5f%17.5f%17.5f%17.5f%17.5f%17.5f%17.5f%17.5f", step, time, force_loc.x(), force_loc.y(), force_loc.z(),
+    sprintf(output_value,"%10d%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f", step, time, force_loc.x(), force_loc.y(), force_loc.z(),
     moment_loc.x(), moment_loc.y(), moment_loc.z(), slip, lng_slip, cmb_angle, pos.x(), pos.y(), pos.z(), deflection );    
     this->write_data(output_value);
     

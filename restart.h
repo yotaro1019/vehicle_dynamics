@@ -22,6 +22,7 @@ class Restart{
   int output_itvl;
   std::string out_dir;
   bool restart_switch;
+  bool restart_initialization;
   int restart_step;
   char restart_fname[500];
   

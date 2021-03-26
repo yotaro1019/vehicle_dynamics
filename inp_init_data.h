@@ -60,7 +60,7 @@ private:
     ChVector<> vehicle_init_loc;
     ChQuaternion<> vehicle_init_rot;
     int restart_output_itvl;
-
+    bool restart_initialization = false;
     
 
     //visualization
@@ -163,7 +163,8 @@ public:
     int Get_restart_step(){ return this->restart_step; }
     std::string Get_restart_inp_fname(){  return this->restart_inp_fname; }    
     int Get_restart_output_itvl(){ return this->restart_output_itvl; }
-
+    bool Get_restart_initialization(){ return this->restart_initialization; }
+    
     //visualization  
     VisualizationType Get_chassis_viz_type(){ return this->chassis_viz_type; }
     VisualizationType Get_wheel_viz_type(){ return this->wheel_viz_type; }

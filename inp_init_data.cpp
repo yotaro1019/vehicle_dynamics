@@ -64,8 +64,10 @@ void Input_data::default_param(){
 
     
     //restart system (if restart bool = true, must check fname)
-    restart_step = 0;
-    
+    restart_step = -1000000;
+    restart_initialization = false;
+
+
     //output
     chassis_com_bool = false;
     chassis_COM_fname = "chssiss_COM.out";
@@ -293,6 +295,11 @@ void Input_data::read_param(std::string input_fname){
                 this->restart_output_itvl = Set_int_value(ss);
                 
             }
+
+            if(name == "restart_initialization"){
+                this->restart_initialization = Set_bool_value(ss);
+                
+            }           
 
 
             if(name == "parts_viz_type"){

@@ -1,6 +1,7 @@
 //restart system
 #include "restart.h"
 #include "chrono_vehicle/wheeled_vehicle/vehicle/WheeledVehicle.h"
+#include<iomanip>
 
 
 
@@ -14,12 +15,17 @@ Restart::Restart(Input_data &inp, int &step){
     }
 
     this->restart_step = inp.Get_restart_step();
-    if(this->restart_step == 0){
+    this->restart_initialization = inp.Get_restart_initialization();
+    if(this->restart_step < 0){
         restart_switch = false;
     }else{
         restart_switch = true;
         step = this->restart_step;
         sprintf(restart_fname, "restart_veh_%05d.txt",  this->restart_step);
+    }
+    
+    if(this->restart_initialization == true){
+        step = 0;
     }
 
 }
@@ -32,20 +38,28 @@ void Restart::rebuild_system(double &time, WheeledVehicle &veh, ChPathFollowerDr
     GetLog() << "start restart system\n";
     ChDriver::Inputs driver_inputs = driver.GetInputs();
     veh.Synchronize(time, driver_inputs, terrain);
-    veh.Advance(0.000001);
+    veh.Advance(0.00000);
 
     ChState state_pos;
     ChStateDelta state_vel, state_acc; 
     ChVectorDynamic<> state_reactions;   
     double T;
     this->read_from_file(state_pos, state_vel, state_acc, state_reactions, T);
+    
+    if (this->restart_initialization == true){
+        T =0.0;
+    }
     time = T;
+
     veh.GetSystem()->StateScatter(state_pos, state_vel, T, true);
     veh.GetSystem()->StateScatterAcceleration(state_acc);
+    veh.GetSystem()->StateScatterReactions(state_reactions);
 
-    out.restart(this->restart_step);
-    point_vel_acc.restart(this->restart_step);
-
+    //prepare restart @ output files
+    if (this->restart_initialization == false){
+        out.restart(this->restart_step);
+        point_vel_acc.restart(this->restart_step);
+    }
 }
 
 void Restart::output(WheeledVehicle &veh,  int current_step, double time){
@@ -81,22 +95,31 @@ void Restart::output(WheeledVehicle &veh,  int current_step, double time){
         out << "end_informations\n\n\n"; 
 
         out << "begin_state_pos\n";
-        out << state_pos << "\n";
+        for(int i = 0; i<state_pos.size(); i++){
+            out << state_pos[i] << "\n";
+        }
         out << "end_state_pos\n\n\n";
-
+        GetLog() << std::setprecision(10) << "state_pos\t"<< state_pos[1] << "\ttype_id : " << typeid(state_pos[1]) << "\n";
         out << "begin_state_vel\n";
-        out << state_vel << "\n";
+        for(int i = 0; i<state_vel.size(); i++){
+            out << state_vel[i] << "\n";
+        }        
         out << "end_state_vel\n\n\n";
 
         out << "begin_state_acc\n";
-        out << state_acc << "\n";
+        for(int i = 0; i<state_acc.size(); i++){
+            out << state_acc[i] << "\n";
+        }             
         out << "end_state_acc\n\n\n";
 
         out << "begin_state_reactions\n";
-        out << state_reactions << "\n";
+        for(int i = 0; i<state_reactions.size(); i++){
+            out << state_reactions[i] << "\n";
+        }       
         out << "end_state_reactions\n\n\n";  
 
         out.close();
+
     }
 
 }
@@ -198,7 +221,7 @@ void Restart::read_from_file(ChState &state_pos, ChStateDelta &state_vel, ChStat
         }
 
         if(val == "begin_state_reactions"){
-            GetLog() << "\n===========\nbegin_state_acc\n";
+            GetLog() << "\n===========\nbegin_state_reactions\n";
             while(getline(inp_param_file,str)){
                 std::stringstream ss;
                 std::string val;

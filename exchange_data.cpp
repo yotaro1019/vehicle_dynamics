@@ -124,17 +124,25 @@ void Exchange_data::data_packing(WheeledVehicle &veh,  Vehicle2Cfd *output_data)
     int id = 0;
     for (std::shared_ptr< ChAxle > axle : veh.GetAxles()) {
         for (std::shared_ptr< ChWheel > wheel : axle->GetWheels()){
-            ChVector<> str_rot_vel_gl = wheel->GetSpindle()->GetFrame_COG_to_abs().GetWvel_loc();
+
             //ステアリング角の回転中心はchassisに固定
             output_data->str_vel[id].translation[0] = 0.0;
             output_data->str_vel[id].translation[1] = 0.0;
             output_data->str_vel[id].translation[2] = 0.0;
  
             //step3
-            //ボデーから見たwheelの相対的な運動を計算
+            //絶対座標から見たwheelの運動を計算
+            ChQuaternion<> wheel_rot_q = wheel->GetSpindle()->GetRot();            
+            ChVector<> rot_wheel_vel_loc = wheel->GetSpindle()->GetWvel_loc();
+            ChVector<> rot_wheel_vel_Abs = wheel_rot_q.RotateBack(rot_wheel_vel_loc);
+
+            //絶対座標から見たchassisの運動を計算
+            ChQuaternion<> chassis_rot_q = veh.GetChassisBody()->GetRot();  
+            ChVector<> rot_chassis_vel_loc = veh.GetChassisBody()->GetWvel_loc();
+            ChVector<> rot_chassis_vel_Abs = chassis_rot_q.RotateBack(rot_chassis_vel_loc);
             output_data->str_vel[id].rotation[0] = 0.0;
             output_data->str_vel[id].rotation[1] = 0.0;
-            output_data->str_vel[id].rotation[2] = 0.0; //-1.0 * (str_rot_vel_gl.z() - chassis_rot_vel_gl.z() );
+            output_data->str_vel[id].rotation[2] = -1.0 * (rot_wheel_vel_Abs.z() - rot_chassis_vel_Abs.z() );
             conv_direction(output_data->str_vel[id]);
 
             //step4　タイヤの回転角速度を取得

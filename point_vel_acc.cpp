@@ -155,7 +155,6 @@ void Point_vel_acc::record_points_vel_acc(int step, double time, WheeledVehicle 
         ChVector<> acc_loc = rot_q.Rotate(marker.GetAbsCoord_dtdt().pos);
         ChVector<> om_vel_loc = rot_q.Rotate(marker.GetAbsWvel());
         ChVector<> om_acc_loc = rot_q.Rotate(marker.GetAbsWacc());
-        GetLog() << marker.GetAbsCoord_dtdt().pos << "\n";
 
  	    point_lists[i].pout_file.write(step, time, marker.GetPos(), vel_loc, acc_loc, om_vel_loc, om_acc_loc);
     } 

@@ -337,6 +337,11 @@ void Vehicle_model::vehicle_initialize_stand_alone(){
     restart->rebuild_system(current_time, *veh, *driver_follower, *terrain, *out, *point_vel_acc); //when restart, this function is use
     GetLog() << "Initialization of vehicle system and aerodynamic-coef map completed\n";
 
+    //memo
+    Cfd2Vehicle fmap2veh_data;
+    Vehicle2Cfd v2c;    
+    out->write(current_step, current_time, *veh, *driver_follower, *terrain, fmap2veh_data, v2c);
+
     veh_viz.reset(new Veh_Visualization(calc_mode, *inp, *veh, *terrain, *driver_follower));
 }
 
