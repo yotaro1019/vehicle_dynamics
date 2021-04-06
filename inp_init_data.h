@@ -100,8 +100,7 @@ private:
     bool cabin_pdata_bool;
 
     //parameters for stand-alone
-    double calc_t_begin, calc_t_end;
-    int calc_begin_step;
+    int end_step;
 
     //irricht
     ChVector<> cam_trackPoint;
@@ -182,9 +181,7 @@ public:
     double Get_chase_height(){ return this->chase_height; }
 
     //parameters for vehicle motion analysis alone
-    double Get_calc_t_begin(){ return this->calc_t_begin; }
-    double Get_calc_t_end(){ return this->calc_t_end; }
-    int Get_calc_begin_step(){ return this->calc_begin_step;}
+    int Get_end_step(){ return this->end_step;}
     
     //output data
     bool Get_chassis_ref_bool();

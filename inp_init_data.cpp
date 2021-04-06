@@ -66,6 +66,7 @@ void Input_data::default_param(){
     //restart system (if restart bool = true, must check fname)
     restart_step = -1000000;
     restart_initialization = false;
+    restart_output_itvl = 100;
 
 
     //output
@@ -91,9 +92,7 @@ void Input_data::default_param(){
     cabin_pdata_bool = false;
 
     //parameters for vehicle motion analysis alone
-    calc_t_begin = 0.0;
-    calc_t_end = 0.0;
-    calc_begin_step = 0;
+    end_step = 0;
     //irrlicht
     cam_trackPoint = 0.0, 0.0, 1.75;
     chase_distance = 6.0;
@@ -445,14 +444,8 @@ void Input_data::read_param(std::string input_fname){
             }          
 
             //parameters for vehicle motion analysis alone
-            if(name == "culc_time_begin"){
-                this->calc_t_begin = Set_double_value(ss);
-            }
-            if(name == "culc_time_end"){
-                this->calc_t_end = Set_double_value(ss);
-            }
-            if(name == "culc_begin_step"){
-                this->calc_begin_step = Set_int_value(ss);
+            if(name == "end_step"){
+                this->end_step = Set_int_value(ss);
             }
 
 

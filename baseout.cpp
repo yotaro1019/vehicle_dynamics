@@ -65,7 +65,6 @@ void Baseout::restart(int step){
         ss << str;
         ss >> name;
         if(atoi(name.c_str()) ==step){
-            std::cout << "!!!\nfnane : " << this->fname << "t step = " << name << "\n";
             break;
         }
     }    

@@ -18,7 +18,7 @@
 // Y pointing to the left.
 //
 // =============================================================================
-
+#include <unistd.h>
 #include "inp_init_data.h"
 #include "vehicle_core.h"
 #include"exchange_data.h"
@@ -319,7 +319,7 @@ void Vehicle_model::vehicle_advance(Cfd2Vehicle *cfd2veh_data, Vehicle2Cfd *veh2
 
 //====================================================================
 //stand-alone
-void Vehicle_model::vehicle_initialize_stand_alone(){
+void Vehicle_model::vehicle_initialize_stand_alone(int &begin_step, int &end_step){
     calc_mode = stand_alone;
     calc_sec = preparation;
     setup_system();
@@ -343,6 +343,8 @@ void Vehicle_model::vehicle_initialize_stand_alone(){
     out->write(current_step, current_time, *veh, *driver_follower, *terrain, fmap2veh_data, v2c);
 
     veh_viz.reset(new Veh_Visualization(calc_mode, *inp, *veh, *terrain, *driver_follower));
+    begin_step = current_step;
+    end_step = inp->Get_end_step();
 }
 
 void Vehicle_model::vehicle_advance_stand_alone(){

@@ -64,8 +64,8 @@ void vehicle_advance_array(double time, double fforce[6], double mesh_vel_acc[6]
 }
 
 
-void vehicle_initialize_stand_alone(){
-    veh.vehicle_initialize_stand_alone();
+void vehicle_initialize_stand_alone(int &begin_step, int &end_step){
+    veh.vehicle_initialize_stand_alone(begin_step, end_step);
 }
 
 void vehicle_advance_stand_alone(){

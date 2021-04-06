@@ -3,10 +3,16 @@
 
 
 int main(){
-    vehicle_initialize_stand_alone();
+    int begin_step;
+    int end_step;
+
+
+
+    vehicle_initialize_stand_alone(begin_step, end_step);
+
 
     std::cout << "START\n";
-    for(int i=0; i<10000; i++){
+    for(int i=begin_step; i<end_step; i++){
         std::cout << " \n";
         vehicle_advance_stand_alone();
     }

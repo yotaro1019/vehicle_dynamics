@@ -27,7 +27,7 @@ class Restart{
   char restart_fname[500];
   
   private:
-  void read_from_file(ChState &state_pos, ChStateDelta &state_vel, ChStateDelta &state_acc, ChVectorDynamic<> &state_reactions, double &T);
+  void read_from_file(ChState &state_pos, ChStateDelta &state_vel, ChStateDelta &state_acc, ChVectorDynamic<> &state_reactions, ChStateDelta &dydt, double &T);
 
 
   public:

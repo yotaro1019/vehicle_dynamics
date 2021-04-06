@@ -83,7 +83,7 @@ void vehicle_initialize();
 void vehicle_advance(Cfd2Vehicle *cfd2veh_data, Vehicle2Cfd *veh2cfd_data); 
 
 //stand_alone
-void vehicle_initialize_stand_alone();
+void vehicle_initialize_stand_alone(int &begin_step, int &end_step);
 void vehicle_advance_stand_alone();
 };
 
