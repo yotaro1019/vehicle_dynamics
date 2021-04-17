@@ -286,8 +286,9 @@ void Vehicle_model::vehicle_initialize(){
 
     point_vel_acc.reset(new Point_vel_acc(inp->Get_cabin_pdata_bool(), inp->Get_cabin_pdata_fname(), *veh) );
     
-    restart.reset(new Restart(*inp, current_step) );   
-
+    restart.reset(new Restart(*inp, current_step) );
+    restart->rebuild_system(current_time, *veh, *driver_follower, *terrain, *out, *point_vel_acc); //when restart, this function is use
+    GetLog() << "Initialization of vehicle system and aerodynamic-coef map completed\n";
 
     //visualization
     veh_viz.reset(new Veh_Visualization(calc_mode, *inp, *veh, *terrain, *driver_follower));
