@@ -106,7 +106,7 @@ void Tire_fout::initialize(bool c_switch, const std::string fname){
         return;
     
     char header[500];
-    sprintf(header, "%10s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s", "step", "time","fx","fy","fz","mx","my","mz","slip","Longslip","camber","posX", "posY", "posZ", "daflection");
+    sprintf(header, "%10s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s", "step", "time","fx","fy","fz","mx","my","mz","slip","Longslip","camber","omega", "posX", "posY", "posZ", "daflection");
     this->check_file_status(fname, header);
 
 }
@@ -141,11 +141,11 @@ void Tire_fout::write(int step, double time, ChWheel &wheel , RigidTerrain &terr
     double lng_slip = tire->GetLongitudinalSlip();
     double cmb_angle = tire->GetCamberAngle();
     double deflection = tire->GetDeflection();
-
+    double omega = wheel.GetState().omega;
     ChVector<> pos = wheel.GetPos();
     char output_value[500];
-    sprintf(output_value,"%10d%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f", step, time, force_loc.x(), force_loc.y(), force_loc.z(),
-    moment_loc.x(), moment_loc.y(), moment_loc.z(), slip, lng_slip, cmb_angle, pos.x(), pos.y(), pos.z(), deflection );    
+    sprintf(output_value,"%10d%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f", step, time, force_loc.x(), force_loc.y(), force_loc.z(),
+    moment_loc.x(), moment_loc.y(), moment_loc.z(), slip, lng_slip, cmb_angle, omega, pos.x(), pos.y(), pos.z(), deflection );    
     this->write_data(output_value);
     
 }
