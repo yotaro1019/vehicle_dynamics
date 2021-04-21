@@ -4,7 +4,7 @@
 #include "chrono/core/ChQuaternion.h"
 #include "chrono/core/ChFrameMoving.h"
 
-Exchange_data::Exchange_data(Input_data &inp){
+Exchange_data::Exchange_data(Input_data &inp, WheeledVehicle &veh){
     if(inp.Get_direc_Xaxis() == false)
         direction_axis[0] = -1.0;
     if(inp.Get_direc_Yaxis() == false)
@@ -18,9 +18,14 @@ Exchange_data::Exchange_data(Input_data &inp){
         direction_rot[1] = -1.0;
     if(inp.Get_rot_Zaxis() == false)
         direction_rot[2] = -1.0;  
+    
+    this->steer_angles = Get_str_angles(veh);
 }
 
-
+void Exchange_data::conv_direction(Components &cmp){
+    conv_translation(cmp.translation);
+    conv_rotation(cmp.rotation);   
+}
 
 void Exchange_data::conv_translation(double data[3]){
     for(int i=0; i<3; i++){
@@ -34,10 +39,43 @@ void Exchange_data::conv_rotation(double data[3]){
     }
 }
 
-void Exchange_data::conv_direction(Components &cmp){
-    conv_translation(cmp.translation);
-    conv_rotation(cmp.rotation);   
+std::vector<double> Exchange_data::Get_str_angles(WheeledVehicle &veh){
+    int id = 0;
+    std::vector<double> steer_angles;
+
+    //cucl chassis yaw angle
+    ChQuaternion<> chassis_rot;
+    ChVector<> chassis_Yaxis;
+    double chassis_glb_angle;
+    
+    chassis_rot = veh.GetVehicleRot();
+    chassis_Yaxis = chassis_rot.GetYaxis();
+    chassis_glb_angle = -atan(chassis_Yaxis.x() / chassis_Yaxis.y());
+
+    for (std::shared_ptr< ChAxle > axle : veh.GetAxles()) {
+        for (std::shared_ptr< ChWheel > wheel : axle->GetWheels()){
+
+            //culc wheel yaw angle
+            ChQuaternion<> wheel_rot;
+            ChVector<> wheel_Yaxis;
+            double wheel_glb_angle_glb;
+
+            wheel_rot = wheel->GetState().rot;
+            wheel_Yaxis = wheel_rot.GetYaxis();
+            wheel_glb_angle_glb = -atan(wheel_Yaxis.x() / wheel_Yaxis.y());  //wheel angle express by global cordniate
+
+            double str_angle = wheel_glb_angle_glb - chassis_glb_angle;
+
+            steer_angles.push_back(str_angle);
+        }
+    }
+
+    return steer_angles;
+
 }
+
+
+
 
 void Exchange_data::data_unpacking(Cfd2Vehicle *input_data){
     //convert direction
@@ -81,7 +119,7 @@ void Exchange_data::comp_get3rotarray(Components &cmp, double array[3]){
 
 
 //packing datas from vehicle instance to Vehicle2Cfd
-void Exchange_data::data_packing(WheeledVehicle &veh,  Vehicle2Cfd *output_data){
+void Exchange_data::data_packing(WheeledVehicle &veh,  Vehicle2Cfd *output_data, double adv_step_size){
 
     ChVector<> com_loc_poc = veh.GetChassis()->GetLocalPosCOM();
     ChVector<> vel_axis = veh.GetVehiclePointVelocity(com_loc_poc);
@@ -117,11 +155,21 @@ void Exchange_data::data_packing(WheeledVehicle &veh,  Vehicle2Cfd *output_data)
     output_data->chassis_vel.rotation[2] = -1.0 * chassis_rot_vel_Euler.z(); 
     conv_direction(output_data->chassis_vel);
 
-//--------------culc steering angle-----------------------------------------------    
-    ChVector<> chassis_rot_vel_gl = veh.GetChassisBody()->GetFrame_COG_to_abs().GetWvel_loc();
+//--------------culc steering angle velocity-----------------------------------------------    
+    std::vector<double> steer_angles_current = Get_str_angles(veh);
+    std::vector<double> steer_angle_vel;
+    
+    for(int i=0; i<steer_angles_current.size(); i++){
+         double str_ang_vel_tmp = (steer_angles_current[i] - steer_angles[i]) / adv_step_size;
+         steer_angle_vel.push_back(str_ang_vel_tmp);
+    }
+    
+    this->steer_angles = steer_angles_current;
 
     //-------------------------------------------------
+
     int id = 0;
+
     for (std::shared_ptr< ChAxle > axle : veh.GetAxles()) {
         for (std::shared_ptr< ChWheel > wheel : axle->GetWheels()){
 
@@ -129,20 +177,10 @@ void Exchange_data::data_packing(WheeledVehicle &veh,  Vehicle2Cfd *output_data)
             output_data->str_vel[id].translation[0] = 0.0;
             output_data->str_vel[id].translation[1] = 0.0;
             output_data->str_vel[id].translation[2] = 0.0;
- 
-            //step3
-            //絶対座標から見たwheelの運動を計算
-            ChQuaternion<> wheel_rot_q = wheel->GetSpindle()->GetRot();            
-            ChVector<> rot_wheel_vel_loc = wheel->GetSpindle()->GetWvel_loc();
-            ChVector<> rot_wheel_vel_Abs = wheel_rot_q.RotateBack(rot_wheel_vel_loc);
 
-            //絶対座標から見たchassisの運動を計算
-            ChQuaternion<> chassis_rot_q = veh.GetChassisBody()->GetRot();  
-            ChVector<> rot_chassis_vel_loc = veh.GetChassisBody()->GetWvel_loc();
-            ChVector<> rot_chassis_vel_Abs = chassis_rot_q.RotateBack(rot_chassis_vel_loc);
             output_data->str_vel[id].rotation[0] = 0.0;
             output_data->str_vel[id].rotation[1] = 0.0;
-            output_data->str_vel[id].rotation[2] = -1.0 * (rot_wheel_vel_Abs.z() - rot_chassis_vel_Abs.z() );
+            output_data->str_vel[id].rotation[2] = -1.0 * steer_angle_vel[id];
             conv_direction(output_data->str_vel[id]);
 
             //step4　タイヤの回転角速度を取得

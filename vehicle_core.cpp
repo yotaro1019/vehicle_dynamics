@@ -195,7 +195,7 @@ void Vehicle_model::initialize(){
      driver_follower->Initialize();
 
      //initialize coupling data structure
-     exc_data.reset(new Exchange_data(*inp));
+     exc_data.reset(new Exchange_data(*inp,*veh));
 
     current_time = 0.0;
     current_step = 0;
@@ -310,7 +310,7 @@ void Vehicle_model::vehicle_advance(Cfd2Vehicle *cfd2veh_data, Vehicle2Cfd *veh2
     advance(adv_step_size, cfd2veh_data);
     disp_current_status();
  
-    exc_data->data_packing(*veh, veh2cfd_data);
+    exc_data->data_packing(*veh, veh2cfd_data, adv_step_size);
 
     out->write(current_step, current_time, *veh, *driver_follower, *terrain, *cfd2veh_data, *veh2cfd_data); 
 
@@ -358,7 +358,7 @@ void Vehicle_model::vehicle_advance_stand_alone(){
     advance(adv_step_size, &fmap2veh_data);     //advance phisics step        
     disp_current_status();
 
-    exc_data->data_packing(*veh, &v2c);
+    exc_data->data_packing(*veh, &v2c, adv_step_size);
 
     //output vehicle and driver status
     out->write(current_step, current_time, *veh, *driver_follower, *terrain, fmap2veh_data, v2c);

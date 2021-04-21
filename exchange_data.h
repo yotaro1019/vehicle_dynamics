@@ -38,22 +38,26 @@ class Exchange_data{
 private:
     double direction_axis[3] = {1.0, 1.0, 1.0}; //convert direction of each axis0
     double direction_rot[3] = {1.0, 1.0, 1.0};  //convert direction of each rotation
+    std::vector<double> steer_angles;      //list of quaternion which represent the rotation of wheel
+
 
     void conv_direction(Components &cmp);
     void conv_translation(double data[3]);
     void conv_rotation(double data[3]);
 
+    std::vector<double> Get_str_angles(WheeledVehicle &veh);
+    
 
 public:
     //Vehicle2Cfd veh2cfd;    //exchange data structure from chrono to cube
-    Exchange_data(Input_data &inp);
+    Exchange_data(Input_data &inp, WheeledVehicle &veh);
     void comp_zeros(Components &cmp);
     void comp_set6array(Components &cmp, double array[6]);  
     void comp_get6array(Components &cmp, double array[6]);
     void comp_get3transarray(Components &cmp, double array[3]); 
     void comp_get3rotarray(Components &cmp, double array[3]);  
     void data_unpacking(Cfd2Vehicle *input_data);    
-    void data_packing(WheeledVehicle &veh,  Vehicle2Cfd *output_data);
+    void data_packing(WheeledVehicle &veh,  Vehicle2Cfd *output_data, double adv_step_size);
 };
 
 #endif
