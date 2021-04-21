@@ -131,8 +131,8 @@ void Restart::read_from_file(ChState &state_pos, ChStateDelta &state_vel, ChStat
     
     std::vector<double> pos_vec, vel_vec, acc_vec, reaction_vec, dydt_vec;
             
-    GetLog() << "restart file \t" << this->out_dir  +  restart_fname << "\n";
-    std::ifstream inp_param_file(this->out_dir  +  restart_fname);
+    GetLog() << "restart file \t" << restart_fname << "\n";
+    std::ifstream inp_param_file(restart_fname);
     
     if(inp_param_file.fail()){
         std::cout << "ERROR unable to open " << restart_fname << "\n";

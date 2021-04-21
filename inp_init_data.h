@@ -54,7 +54,7 @@ private:
     
 
     //vehicle situation    
-    double target_speed, stabi_dt, coupling_dt, tire_step_size, begin_step;
+    double target_speed, step_dt, tire_step_size, begin_step;
     int stabi_step, restart_step;
     std::string restart_inp_fname;
     ChVector<> vehicle_init_loc;
@@ -151,8 +151,7 @@ public:
     ChVector<> Get_vehicle_init_loc(){ return this->vehicle_init_loc; }
     ChQuaternion<> Get_vehicle_init_rot(){ return this->vehicle_init_rot; }
     double Get_target_speed(){ return this->target_speed; }
-    double Get_stabi_dt(){ return this->stabi_dt; };
-    double Get_coupling_dt(){ return this->coupling_dt; }
+    double Get_step_dt(){ return this->step_dt; }
     double Get_tire_step_size() { return tire_step_size; }
     int Get_begin_step();
     int Get_stabi_step(){  return this->stabi_step; }

@@ -61,7 +61,7 @@ void Vehicle_model::setup_system(){
 void Vehicle_model::initialize(){
      //==========================================
      //setup params
-     step_size = inp->Get_coupling_dt();
+     step_size = inp->Get_step_dt();
      // ------------------------------
      // Create the vehicle and terrain
      // ------------------------------
