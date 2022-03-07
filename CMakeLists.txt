@@ -126,7 +126,7 @@ endif()
 set(LIB_NAME "vehicle_system")
 set(LIB_TYPE "STATIC")
 
-set(LIB_SRC "baseout.cpp" "outputlist.cpp" "output.cpp" "set_value.cpp" "inp_init_data.cpp" "point_vel_acc.cpp" "veh_visualization.cpp" "restart.cpp" "fforce_map.cpp" "exchange_data.cpp" "vehicle_core.cpp" "c_vehicle_core.cpp" "vehicle_operation.f90" )
+set(LIB_SRC "baseout.cpp" "outputlist.cpp" "output.cpp" "set_value.cpp" "inp_init_data.cpp" "point_vel_acc.cpp" "veh_visualization.cpp" "restart.cpp" "fforce_map.cpp" "exchange_data.cpp" "vehicle_core.cpp" "c_vehicle_core.cpp")# "vehicle_operation.f90" )
 
 
 add_library(${LIB_NAME} ${LIB_TYPE} ${LIB_SRC})
@@ -137,32 +137,32 @@ set_target_properties(${LIB_NAME} PROPERTIES
 target_link_libraries(${LIB_NAME}  ${CHRONO_LIBRARIES})
 
 
-#--------------------------------------------------------------
-#create executable file (example for coupling simulation)
-#--------------------------------------------------------------
-set(SAMPLE_EXE "example_coupling.f90")
-add_executable(example_coupling.exe   example_coupling.f90)
-
-#--------------------------------------------------------------
-# Set properties for your executable target
-# 
-# Note that here we define a macro CHRONO_DATA_DIR which will
-# contain the path to the Chrono data directory, either in its
-# source tree (if using a build version of Chrono), or in its
-# install tree (if using an installed version of Chrono).
-#--------------------------------------------------------------
-
-set_target_properties(example_coupling.exe PROPERTIES 
-        COMPILE_FLAGS "${CHRONO_CXX_FLAGS} ${EXTRA_COMPILE_FLAGS}"
-        COMPILE_DEFINITIONS "CHRONO_DATA_DIR=\"${CHRONO_DATA_DIR}\";CHRONO_VEHICLE_DATA_DIR=\"${CHRONO_VEHICLE_DATA_DIR}\""
-        LINK_FLAGS "${CHRONO_LINKER_FLAGS}")
-
-#--------------------------------------------------------------
-# Link to Chrono libraries and dependency libraries
-#--------------------------------------------------------------
-
-target_link_libraries(example_coupling.exe ${CHRONO_LIBRARIES} ${LIB_NAME})
-
+##--------------------------------------------------------------
+##create executable file (example for coupling simulation)
+##--------------------------------------------------------------
+#set(SAMPLE_EXE "example_coupling.f90")
+#add_executable(example_coupling.exe   example_coupling.f90)
+#
+##--------------------------------------------------------------
+## Set properties for your executable target
+## 
+## Note that here we define a macro CHRONO_DATA_DIR which will
+## contain the path to the Chrono data directory, either in its
+## source tree (if using a build version of Chrono), or in its
+## install tree (if using an installed version of Chrono).
+##--------------------------------------------------------------
+#
+#set_target_properties(example_coupling.exe PROPERTIES 
+#        COMPILE_FLAGS "${CHRONO_CXX_FLAGS} ${EXTRA_COMPILE_FLAGS}"
+#        COMPILE_DEFINITIONS "CHRONO_DATA_DIR=\"${CHRONO_DATA_DIR}\";CHRONO_VEHICLE_DATA_DIR=\"${CHRONO_VEHICLE_DATA_DIR}\""
+#        LINK_FLAGS "${CHRONO_LINKER_FLAGS}")
+#
+##--------------------------------------------------------------
+## Link to Chrono libraries and dependency libraries
+##--------------------------------------------------------------
+#
+#target_link_libraries(example_coupling.exe ${CHRONO_LIBRARIES} ${LIB_NAME})
+#
 
 
 #--------------------------------------------------------------
