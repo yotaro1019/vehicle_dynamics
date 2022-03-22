@@ -365,7 +365,7 @@ void Vehicle_model::vehicle_advance_stand_alone(){
 
 
     //output restart file
-    restart->output(*veh, current_step, current_time);
+    restart->output(*veh, *driver_follower, current_step, current_time);
 
     //visualization
     veh_viz->viz_advance(adv_step_size, current_time, current_step, *veh, *driver_follower);             //advance visualization step

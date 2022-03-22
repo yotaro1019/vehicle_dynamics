@@ -17,7 +17,7 @@ using namespace chrono;
 using namespace chrono::geometry;
 using namespace chrono::vehicle;
 
-class Restart{
+class Restart : public Set_value{
   private:
   int output_itvl;
   std::string out_dir;
@@ -27,13 +27,13 @@ class Restart{
   char restart_fname[500];
   
   private:
-  void read_from_file(ChState &state_pos, ChStateDelta &state_vel, ChStateDelta &state_acc, ChVectorDynamic<> &state_reactions, double &T);
+  void read_from_file(ChState &state_pos, ChStateDelta &state_vel, ChStateDelta &state_acc, ChVectorDynamic<> &state_reactions, ChDriver::Inputs &driver_inputs, double &T);
 
 
   public:
     Restart(Input_data &inp, int &step);
     void rebuild_system(double &time, WheeledVehicle &veh, ChPathFollowerDriver &driver, RigidTerrain &terrain, Output &out, Point_vel_acc &point_vel_acc);
-    void output(WheeledVehicle &veh, int step, double time);
+    void output(WheeledVehicle &veh, ChDriver &driver, int step, double time);
 
 };
 

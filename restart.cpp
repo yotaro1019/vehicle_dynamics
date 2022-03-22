@@ -38,13 +38,13 @@ void Restart::rebuild_system(double &time, WheeledVehicle &veh, ChPathFollowerDr
     GetLog() << "start restart system\n";
     ChDriver::Inputs driver_inputs = driver.GetInputs();
     veh.Synchronize(time, driver_inputs, terrain);
-    veh.Advance(0.00000);
+    veh.Advance(0.001);
 
     ChState state_pos;
     ChStateDelta state_vel, state_acc; 
     ChVectorDynamic<> state_reactions;   
     double T;
-    this->read_from_file(state_pos, state_vel, state_acc, state_reactions, T);
+    this->read_from_file(state_pos, state_vel, state_acc, state_reactions, driver_inputs, T);
     
     if (this->restart_initialization == true){
         T =0.0;
@@ -55,6 +55,11 @@ void Restart::rebuild_system(double &time, WheeledVehicle &veh, ChPathFollowerDr
     veh.GetSystem()->StateScatterAcceleration(state_acc);
     veh.GetSystem()->StateScatterReactions(state_reactions);
 
+    //rebuild driver model
+    driver.SetSteering(driver_inputs.m_steering, -1.0, 1.0);
+    driver.SetThrottle(driver_inputs.m_throttle, 0.0, 1.0);
+    driver.SetBraking(driver_inputs.m_braking, 0.0, 1.0);
+
     //prepare restart @ output files
     if (this->restart_initialization == false){
         out.restart(this->restart_step);
@@ -62,7 +67,9 @@ void Restart::rebuild_system(double &time, WheeledVehicle &veh, ChPathFollowerDr
     }
 }
 
-void Restart::output(WheeledVehicle &veh,  int current_step, double time){
+
+
+void Restart::output(WheeledVehicle &veh, ChDriver &driver,  int current_step, double time){
     if(current_step%output_itvl == 0){
         double T;
         ChState state_pos;
@@ -98,25 +105,36 @@ void Restart::output(WheeledVehicle &veh,  int current_step, double time){
         for(int i = 0; i<state_pos.size(); i++){
             out << state_pos[i] << "\n";
         }
-        out << "end_state_pos\n\n\n";
+        out << "end_state_pos\n";
+        out << "\n\n";
+
         GetLog() << std::setprecision(10) << "state_pos\t"<< state_pos[1] << "\ttype_id : " << typeid(state_pos[1]) << "\n";
         out << "begin_state_vel\n";
         for(int i = 0; i<state_vel.size(); i++){
             out << state_vel[i] << "\n";
         }        
-        out << "end_state_vel\n\n\n";
+        out << "end_state_vel\n";
+        out << "\n\n";
 
         out << "begin_state_acc\n";
         for(int i = 0; i<state_acc.size(); i++){
             out << state_acc[i] << "\n";
         }             
-        out << "end_state_acc\n\n\n";
+        out << "end_state_acc\n";
+        out << "\n\n";
 
         out << "begin_state_reactions\n";
         for(int i = 0; i<state_reactions.size(); i++){
             out << state_reactions[i] << "\n";
         }       
-        out << "end_state_reactions\n\n\n";  
+        out << "end_state_reactions\n";
+        out << "\n\n"; 
+
+        out << "begin_driver_input\n";
+        out << "throttle\t" << driver.GetThrottle() << "\n"; 
+        out << "steering\t" << driver.GetSteering() << "\n";
+        out << "braking \t" << driver.GetBraking() << "\n";
+        out << "end_driver_input\n";
 
         out.close();
 
@@ -125,7 +143,7 @@ void Restart::output(WheeledVehicle &veh,  int current_step, double time){
 }
 
 
-void Restart::read_from_file(ChState &state_pos, ChStateDelta &state_vel, ChStateDelta &state_acc, ChVectorDynamic<> &state_reactions, double &T){
+void Restart::read_from_file(ChState &state_pos, ChStateDelta &state_vel, ChStateDelta &state_acc, ChVectorDynamic<> &state_reactions, ChDriver::Inputs &driver_inputs, double &T){
     
     std::vector<double> pos_vec, vel_vec, acc_vec, reaction_vec;
             
@@ -236,6 +254,31 @@ void Restart::read_from_file(ChState &state_pos, ChStateDelta &state_vel, ChStat
                     reaction_vec.push_back(dbl);
                 }
             }
+        }
+
+        if(val == "begin_driver_input"){
+            GetLog() << "\n===========\nbegin_driver_input\n";
+            while(getline(inp_param_file,str)){
+                std::stringstream ss;
+                std::string val;
+                ss << str;
+                ss >> val;                    
+                if(val == "end_driver_input" ){
+                    GetLog() << "end_driver_input\n===========\n\n";
+                    break;
+                }else{
+                    if(val == "throttle"){
+                        driver_inputs.m_throttle = Set_double_value(ss);
+                    }
+                    if(val == "steering"){
+                        driver_inputs.m_steering = Set_double_value(ss);
+                    }
+                    if(val == "braking"){
+                        driver_inputs.m_braking = Set_double_value(ss);
+                    }
+                }
+            }
+
         }
 
     }
