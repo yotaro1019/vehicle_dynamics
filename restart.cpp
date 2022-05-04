@@ -32,19 +32,23 @@ Restart::Restart(Input_data &inp, int &step){
 
 
 void Restart::rebuild_system(double &time, WheeledVehicle &veh, ChPathFollowerDriver &driver, RigidTerrain &terrain, Output &out, Point_vel_acc &point_vel_acc){
+    double tmp_step = 1e-20;
+    
     if(!restart_switch)
         return;
-        
+    
+    GetLog() << "\n\n=======================================================================\n";
     GetLog() << "start restart system\n";
     ChDriver::Inputs driver_inputs = driver.GetInputs();
     veh.Synchronize(time, driver_inputs, terrain);
-    veh.Advance(0.001);
+    veh.Advance(tmp_step);
 
     ChState state_pos;
     ChStateDelta state_vel, state_acc; 
     ChVectorDynamic<> state_reactions;   
+    Powertrain_info pt_info;
     double T;
-    this->read_from_file(state_pos, state_vel, state_acc, state_reactions, driver_inputs, T);
+    this->read_from_file(state_pos, state_vel, state_acc, state_reactions, driver_inputs, T, pt_info);
     
     if (this->restart_initialization == true){
         T =0.0;
@@ -54,17 +58,76 @@ void Restart::rebuild_system(double &time, WheeledVehicle &veh, ChPathFollowerDr
     veh.GetSystem()->StateScatter(state_pos, state_vel, T, true);
     veh.GetSystem()->StateScatterAcceleration(state_acc);
     veh.GetSystem()->StateScatterReactions(state_reactions);
+    veh.GetSystem()->Update();
 
     //rebuild driver model
     driver.SetSteering(driver_inputs.m_steering, -1.0, 1.0);
     driver.SetThrottle(driver_inputs.m_throttle, 0.0, 1.0);
     driver.SetBraking(driver_inputs.m_braking, 0.0, 1.0);
 
+    //reset tergrt culclation points
+    driver.GetSteeringController().Reset(veh);
+    driver.GetSteeringController().CalcTargetLocation();
+    driver.GetSteeringController().SetLookAheadDistance(5);
+    driver.GetSteeringController().SetGains(0.8, 0, 0);
+    driver.GetSpeedController().SetGains(0.4, 0, 0);
+
+    
+    //rebuild powertrain model
+    this->rebuild_powertrain(pt_info, veh);
+
+
+
+    //rebuild tire system
+    for (std::shared_ptr< ChAxle > axle : veh.GetAxles()){
+        int ntire =  axle->GetWheels().size();
+        if(ntire == 2){
+            //LEFT
+            std::shared_ptr<ChTire> tire_L = axle->GetWheel(LEFT, SINGLE)->GetTire();    //ChWheel
+            tire_L->Synchronize(time, terrain);
+            //tire_L->Advance(tmp_step);
+            
+            //RIGHT
+            std::shared_ptr<ChTire> tire_R = axle->GetWheel(RIGHT, SINGLE)->GetTire();    //ChWheel
+            tire_R->Synchronize(time, terrain);
+            //tire_R->Advance(tmp_step);
+
+        }else if(ntire == 4){
+            //LEFT inside
+            std::shared_ptr<ChTire> tire_LIN = axle->GetWheel(LEFT, INNER)->GetTire();    //ChWheel
+            tire_LIN->Synchronize(time, terrain);
+            //tire_LIN->Advance(tmp_step);
+
+            //LEFT outside
+            std::shared_ptr<ChTire> tire_LOUT = axle->GetWheel(LEFT, OUTER)->GetTire();    //ChWheel
+            tire_LOUT->Synchronize(time, terrain);
+            //tire_LOUT->Advance(tmp_step);
+
+            //RIGHT inside
+            std::shared_ptr<ChTire> tire_RIN = axle->GetWheel(RIGHT, INNER)->GetTire();    //ChWheel
+            tire_RIN->Synchronize(time, terrain);
+            //tire_RIN->Advance(tmp_step);
+
+            //RIGHT outside
+            std::shared_ptr<ChTire> tire_ROUT = axle->GetWheel(RIGHT, OUTER)->GetTire();    //ChWheel
+            tire_ROUT->Synchronize(time, terrain);
+            //tire_ROUT->Advance(tmp_step);
+        }
+    }
+    GetLog() << "\n\n=======================================================================\n";
+    
+
     //prepare restart @ output files
     if (this->restart_initialization == false){
         out.restart(this->restart_step);
         point_vel_acc.restart(this->restart_step);
     }
+
+    //veh.GetSystem()->Update();
+    //veh.GetSystem()->ForceUpdate();
+    //veh.GetSystem()->DoFullAssembly();
+    //for Debug
+    this->output(veh, driver, output_itvl*100, output_itvl*100.0 );
 }
 
 
@@ -73,7 +136,7 @@ void Restart::output(WheeledVehicle &veh, ChDriver &driver,  int current_step, d
     if(current_step%output_itvl == 0){
         double T;
         ChState state_pos;
-        ChStateDelta state_vel, state_acc;
+        ChStateDelta state_vel, state_acc, dydt;
         ChVectorDynamic<> state_reactions(veh.GetSystem()->GetNconstr());
 
         veh.GetSystem()->StateSetup(state_pos, state_vel, state_acc);
@@ -90,7 +153,7 @@ void Restart::output(WheeledVehicle &veh, ChDriver &driver,  int current_step, d
         } 
 
   
-
+        int output_precision = 10;
         //write in output file
         out << "begin_informations\n";
         out << "T\t" << T << "\n";
@@ -103,38 +166,41 @@ void Restart::output(WheeledVehicle &veh, ChDriver &driver,  int current_step, d
 
         out << "begin_state_pos\n";
         for(int i = 0; i<state_pos.size(); i++){
-            out << state_pos[i] << "\n";
+            out << std::setprecision(output_precision) <<  state_pos[i] << "\n";
         }
         out << "end_state_pos\n";
         out << "\n\n";
 
-        GetLog() << std::setprecision(10) << "state_pos\t"<< state_pos[1] << "\ttype_id : " << typeid(state_pos[1]) << "\n";
+        GetLog() << std::setprecision(output_precision) << "state_pos\t"<< state_pos[1] << "\ttype_id : " << typeid(state_pos[1]) << "\n";
         out << "begin_state_vel\n";
         for(int i = 0; i<state_vel.size(); i++){
-            out << state_vel[i] << "\n";
+            out << std::setprecision(output_precision) <<  state_vel[i] << "\n";
         }        
         out << "end_state_vel\n";
         out << "\n\n";
 
         out << "begin_state_acc\n";
         for(int i = 0; i<state_acc.size(); i++){
-            out << state_acc[i] << "\n";
+            out << std::setprecision(output_precision) <<  state_acc[i] << "\n";
         }             
         out << "end_state_acc\n";
         out << "\n\n";
 
+
         out << "begin_state_reactions\n";
         for(int i = 0; i<state_reactions.size(); i++){
-            out << state_reactions[i] << "\n";
+            out << std::setprecision(output_precision) <<  state_reactions[i] << "\n";
         }       
         out << "end_state_reactions\n";
         out << "\n\n"; 
 
         out << "begin_driver_input\n";
-        out << "throttle\t" << driver.GetThrottle() << "\n"; 
-        out << "steering\t" << driver.GetSteering() << "\n";
-        out << "braking \t" << driver.GetBraking() << "\n";
-        out << "end_driver_input\n";
+        out <<  std::setprecision(output_precision) << "throttle\t" << driver.GetThrottle() << "\n"; 
+        out << std::setprecision(output_precision) <<  "steering\t" << driver.GetSteering() << "\n";
+        out << std::setprecision(output_precision) <<  "braking \t" << driver.GetBraking() << "\n";
+        out << std::setprecision(output_precision) <<  "end_driver_input\n\n";
+
+        this->output_powertrain(out, veh);
 
         out.close();
 
@@ -143,7 +209,37 @@ void Restart::output(WheeledVehicle &veh, ChDriver &driver,  int current_step, d
 }
 
 
-void Restart::read_from_file(ChState &state_pos, ChStateDelta &state_vel, ChStateDelta &state_acc, ChVectorDynamic<> &state_reactions, ChDriver::Inputs &driver_inputs, double &T){
+void Restart::rebuild_powertrain(Powertrain_info &pt_info, WheeledVehicle &veh){
+
+    if(pt_info.TemplateName == "SimplePowertrain" ){
+        GetLog() << "pt_info.TemplateName : " << pt_info.TemplateName << "\tDriveMode : " << pt_info.DriveMode << "\n";
+        //veh.GetPowertrain()->restart_powertrain();
+    }else{
+        GetLog() << "Unimplemantation rebuild powertrain @ restart.cpp\n";
+        exit(1);
+    }
+}
+
+void Restart::output_powertrain(std::ofstream &out, WheeledVehicle &veh){
+    std::string pt_TemplateName = veh.GetPowertrain()->GetTemplateName();
+    
+    out << "begin_powertrain\n";
+    out << "TemplateName\t" << pt_TemplateName << "\n"; 
+
+    if(pt_TemplateName == "SimplePowertrain"){
+        out << "DriveMode\t" << veh.GetPowertrain()->GetDriveMode() << "\n";
+    }
+    else{
+        GetLog() << "Unimplementation output powertrain\n";
+    }
+
+
+    out << "end_powertrain\n\n";
+
+}
+
+
+void Restart::read_from_file(ChState &state_pos, ChStateDelta &state_vel, ChStateDelta &state_acc, ChVectorDynamic<> &state_reactions, ChDriver::Inputs &driver_inputs, double &T, Powertrain_info &pt_info){
     
     std::vector<double> pos_vec, vel_vec, acc_vec, reaction_vec;
             
@@ -281,6 +377,30 @@ void Restart::read_from_file(ChState &state_pos, ChStateDelta &state_vel, ChStat
 
         }
 
+        if(val == "begin_powertrain"){
+            GetLog() << "\n===========\nbegin_powertrain\n";
+            while(getline(inp_param_file,str)){
+                std::stringstream ss;
+                std::string val;
+                ss << str;
+                ss >> val;                    
+                if(val == "end_powertrain" ){
+                    GetLog() << "end_powertrain\n===========\n\n";
+                    break;
+                }else{
+                    if(val == "TemplateName"){
+                        pt_info.TemplateName = Set_str_value(ss);
+                    }
+                    if(val == "DriveMode"){
+                        int dvm_int = Set_int_value(ss);
+                        pt_info.DriveMode = static_cast<ChPowertrain::DriveMode>(dvm_int);
+                    }
+                }
+            }
+
+        }
+
+
     }
 
 
@@ -302,7 +422,4 @@ void Restart::read_from_file(ChState &state_pos, ChStateDelta &state_vel, ChStat
     for(int i=0; i<reaction_vec.size(); i++){
         state_reactions[i] = reaction_vec[i];
     }
-
-
-
 }

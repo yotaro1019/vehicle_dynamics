@@ -10,6 +10,7 @@
 #include "chrono_vehicle/wheeled_vehicle/utils/ChWheeledVehicleIrrApp.h"
 #include "chrono_vehicle/terrain/RigidTerrain.h"
 #include "chrono_vehicle/driver/ChPathFollowerDriver.h"
+#include "chrono_vehicle/ChPowertrain.h"
 #include "output.h"
 #include "point_vel_acc.h"
 
@@ -25,10 +26,16 @@ class Restart : public Set_value{
   bool restart_initialization;
   int restart_step;
   char restart_fname[500];
+
+  struct Powertrain_info{
+    std::string TemplateName;
+    ChPowertrain::DriveMode DriveMode;
+  };
   
   private:
-  void read_from_file(ChState &state_pos, ChStateDelta &state_vel, ChStateDelta &state_acc, ChVectorDynamic<> &state_reactions, ChDriver::Inputs &driver_inputs, double &T);
-
+  void read_from_file(ChState &state_pos, ChStateDelta &state_vel, ChStateDelta &state_acc, ChVectorDynamic<> &state_reactions, ChDriver::Inputs &driver_inputs, double &T, Powertrain_info &pt_info);
+  void rebuild_powertrain(Powertrain_info &pt_info, WheeledVehicle &veh);
+  void output_powertrain(std::ofstream &out, WheeledVehicle &veh);
 
   public:
     Restart(Input_data &inp, int &step);
