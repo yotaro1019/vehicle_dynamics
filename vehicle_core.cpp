@@ -200,7 +200,7 @@ void Vehicle_model::initialize(){
     current_time = 0.0;
     current_step = 0;
 
-    }
+   }
 
 void Vehicle_model::advance(double adv_step_size, Cfd2Vehicle *cfd2veh_data){
 
