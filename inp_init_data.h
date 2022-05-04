@@ -78,6 +78,9 @@ private:
     bool chassis_com_bool;    
     std::string chassis_COM_fname;
 
+    bool driveline_status_bool;    
+    std::string driveline_status_fname;
+
     bool driver_inp_bool;
     std::string driver_inp_fname;
 
@@ -192,6 +195,9 @@ public:
 
     bool Get_chassis_com_bool(){ return this->chassis_com_bool; }
     std::string Get_chassis_COM_fname(){ return this->chassis_COM_fname; }
+
+    bool Get_driveline_status_bool(){ return this->driveline_status_bool; }
+    std::string Get_driveline_status_fname(){ return this->driveline_status_fname; }
 
     bool Get_driver_input_bool(){ return this->driver_inp_bool; }
     std::string Get_driver_input_fname(){ return this->driver_inp_fname; }

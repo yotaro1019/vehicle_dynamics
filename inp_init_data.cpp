@@ -9,7 +9,9 @@ namespace chrono{
 namespace vehicle{
 Input_data::Input_data(const std::string input_fname){
 
+        GetLog() << "Reading input file\n";
         this->default_param();  //デフォルトのパラメータをよみこみ
+        GetLog() << "input file : " << input_fname << "\n";
         this->read_param(input_fname); //パラメーターファイルからの読み込み
         this->refine_tire_fname();
         this->check_param(); //パラメータミスの確認
@@ -71,6 +73,8 @@ void Input_data::default_param(){
     //output
     chassis_com_bool = false;
     chassis_COM_fname = "chssiss_COM.out";
+    driveline_status_bool = false;
+    driveline_status_fname = "driveline_status.out";
     driver_inp_bool = false;
     driver_inp_fname = "driver_input.out";
     powertrain_status_bool = false;
