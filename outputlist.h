@@ -33,6 +33,14 @@ class Chassis_vel_fout : public Baseout{
     void write(int step,double time, WheeledVehicle &veh);  
 };
 
+class Driveline_fout : public Baseout{
+  public:
+    Driveline_fout() { Baseout(); };
+    void initialize(bool c_switch, const std::string fname, WheeledVehicle &veh);
+    void write(int step, double time, WheeledVehicle &veh);
+};
+
+
 class Driver_fout : public Baseout{
   public:
     Driver_fout() { Baseout(); };

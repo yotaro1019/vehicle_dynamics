@@ -48,6 +48,42 @@ void Chassis_vel_fout::write(int step, double time, WheeledVehicle &veh){
     this->write_data(output_value);
 }
 
+
+void Driveline_fout::initialize(bool c_switch, const std::string fname, WheeledVehicle &veh)
+{
+    this->c_switch = c_switch;
+    
+    if(!c_switch)
+        return;
+
+    int n_drivenAxle = veh.GetDriveline()->GetNumDrivenAxles();
+    std::vector<int> drivenAxleindex = veh.GetDriveline()->GetDrivenAxleIndexes();
+    
+    for(int i =0; i<n_drivenAxle; i++){
+        GetLog() << "driveline-index : " << drivenAxleindex[i] << "\n";
+    }
+
+    
+    char header[500];
+    sprintf(header, "%10s%12s%12s", "step", "time", "shaft-spd");
+    this->check_file_status(fname, header);
+    //GetLog() << "GetDrivenAxleIndexes" <<  	GetDrivenAxleIndexes() << "\n";
+    //exit(1);
+
+}
+
+void Driveline_fout::write(int step, double time, WheeledVehicle &veh){
+    if(!c_switch)
+        return;
+    
+    double shaft_spd = veh.GetDriveline()->GetDriveshaftSpeed();    
+
+    char output_value[500];
+    sprintf(output_value,"%10d%12.5f%12.5f",  step, time, shaft_spd);
+    this->write_data(output_value);
+}
+
+
 void Driver_fout::initialize(bool c_switch, const std::string fname)
 {
     this->c_switch = c_switch;
@@ -106,7 +142,7 @@ void Tire_fout::initialize(bool c_switch, const std::string fname){
         return;
     
     char header[500];
-    sprintf(header, "%10s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s", "step", "time","fx","fy","fz","mx","my","mz","slip","Longslip","camber","posX", "posY", "posZ", "daflection");
+    sprintf(header, "%10s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s%12s", "step", "time","fx","fy","fz","mx","my","mz","slip","Longslip","camber","posX", "posY", "posZ", "lin_vel_x", "lin_vel_y", "lin_vel_z",  "daflection", "omega");
     this->check_file_status(fname, header);
 
 }
@@ -121,9 +157,13 @@ void Tire_fout::write(int step, double time, ChWheel &wheel , RigidTerrain &terr
     ChVector<> moment_global = terrain_force.moment;//moment @global frame
 
     //convert force and moment (form grobal to wheel local)
-    ChQuaternion<> rot_q = wheel.GetState().rot;
+    ChVector<> pos_global = wheel.GetState().pos; //global position
+    ChVector<> lin_vel_global = wheel.GetState().lin_vel; //global position
+    ChQuaternion<> rot_global = wheel.GetState().rot; // orientation with respect to global frame
+    double omega = wheel.GetState().omega;  //wheel angular speed about its rotation axis
+    
     ChVector<> force_loc, moment_loc;
-    ChVector<> yaxis = rot_q.GetYaxis();
+    ChVector<> yaxis = rot_global.GetYaxis();
     double theta = atan( yaxis.y() / yaxis.x() );
 
     //convert force
@@ -144,8 +184,8 @@ void Tire_fout::write(int step, double time, ChWheel &wheel , RigidTerrain &terr
 
     ChVector<> pos = wheel.GetPos();
     char output_value[500];
-    sprintf(output_value,"%10d%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f", step, time, force_loc.x(), force_loc.y(), force_loc.z(),
-    moment_loc.x(), moment_loc.y(), moment_loc.z(), slip, lng_slip, cmb_angle, pos.x(), pos.y(), pos.z(), deflection );    
+    sprintf(output_value,"%10d%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f%12.5f", step, time, force_loc.x(), force_loc.y(), force_loc.z(),
+    moment_loc.x(), moment_loc.y(), moment_loc.z(), slip, lng_slip, cmb_angle, pos.x(), pos.y(), pos.z(), lin_vel_global.x(), lin_vel_global.y(), lin_vel_global.z(), deflection, omega );    
     this->write_data(output_value);
     
 }

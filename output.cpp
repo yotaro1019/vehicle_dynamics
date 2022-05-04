@@ -9,6 +9,7 @@
 
 //vehicle status
 Chassis_vel_fout chassis_log;
+Driveline_fout driveline_log;
 Driver_fout dvr_log;
 Powertrain_fout ptr_log;
 Tire_fout tire_log[def_ntire];
@@ -41,6 +42,7 @@ void Output::write(int step, double time, WheeledVehicle &veh, ChPathFollowerDri
 void Output::initialize_veh_status(Input_data &inp, WheeledVehicle &veh){
 
     chassis_log.initialize(inp.Get_chassis_com_bool(), GetChronoOutputPath() + inp.Get_chassis_COM_fname());
+    driveline_log.initialize(inp.Get_driveline_status_bool(), GetChronoOutputPath() + inp.Get_driveline_status_fname(), veh);
     dvr_log.initialize(inp.Get_driver_input_bool(), GetChronoOutputPath() + inp.Get_driver_input_fname());
     ptr_log.initialize(inp.Get_powertrain_status_bool(), GetChronoOutputPath() + inp.Get_powertrain_status_fname());
 
@@ -66,7 +68,7 @@ void Output::initialize_veh_status(Input_data &inp, WheeledVehicle &veh){
        if(ntire_list[naxle] == 2){
            //LEFT
             {
-               fname = fname_base + "_LEFT.txt"; 
+               fname = fname_base + "_LEFT.out"; 
                tire_log[ntire].initialize(inp.Get_tire_force_bool(), GetChronoOutputPath() + fname);
                ntire++;  
             }
@@ -74,7 +76,7 @@ void Output::initialize_veh_status(Input_data &inp, WheeledVehicle &veh){
  
         //RIGHT
             {
-               fname = fname_base + "_RIGHT.txt";
+               fname = fname_base + "_RIGHT.out";
                tire_log[ntire].initialize(inp.Get_tire_force_bool(), GetChronoOutputPath() + fname);
                ntire++; 
             }
@@ -82,27 +84,27 @@ void Output::initialize_veh_status(Input_data &inp, WheeledVehicle &veh){
        }else if(ntire_list[naxle] == 4){
            //LEFT inside  
             {
-                fname = fname_base + "_LEFT_inside.txt";
+                fname = fname_base + "_LEFT_inside.out";
                 tire_log[ntire].initialize(inp.Get_tire_force_bool(), GetChronoOutputPath() + fname);    
                 ntire++;
             }
 
                //LEFT outside
             {
-               fname = fname_base + "_LEFT_outside.txt";
+               fname = fname_base + "_LEFT_outside.out";
                tire_log[ntire].initialize(inp.Get_tire_force_bool(), GetChronoOutputPath() + fname);
                ntire++;
             }
                 //RIGHT inside
             {
-               fname = fname_base + "_RIGHT_inside.txt";
+               fname = fname_base + "_RIGHT_inside.out";
                tire_log[ntire].initialize(inp.Get_tire_force_bool(), GetChronoOutputPath() + fname);
                ntire++;
             }
 
                //RIGHT outside
             {
-               fname = fname_base + "_RIGHT_outside.txt";
+               fname = fname_base + "_RIGHT_outside.out";
                tire_log[ntire].initialize(inp.Get_tire_force_bool(), GetChronoOutputPath() + fname);
                ntire++;
             }
@@ -117,6 +119,7 @@ void Output::initialize_veh_status(Input_data &inp, WheeledVehicle &veh){
 
 void Output::write_veh_status(int step, double time, WheeledVehicle &veh, ChPathFollowerDriver &dvr, RigidTerrain &ter){
     chassis_log.write(step, time, veh);
+    driveline_log.write(step, time, veh);
     dvr_log.write(step, time, dvr);
     ptr_log.write(step, time, *veh.GetPowertrain() );
 
@@ -281,6 +284,7 @@ void Output::restart(int restart_step){
     
 //vehicle status
     chassis_log.restart(restart_step);
+    driveline_log.restart(restart_step);
     dvr_log.restart(restart_step);
     ptr_log.restart(restart_step);
 
