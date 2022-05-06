@@ -42,6 +42,8 @@ private:
 bool activate_path_follower_driver = true;
 ChDriver::Inputs final_driver_input;
 
+void Advance_all_driver_model(double adv_step_size);
+ChDriver::Inputs mediation();
 };
 
 #endif
