@@ -31,7 +31,7 @@ Restart::Restart(Input_data &inp, int &step){
 }
 
 
-void Restart::rebuild_system(double &time, WheeledVehicle &veh, ChPathFollowerDriver &driver, RigidTerrain &terrain, Output &out, Point_vel_acc &point_vel_acc){
+void Restart::rebuild_system(double &time, WheeledVehicle &veh, Driver_model_controller &driver, RigidTerrain &terrain, Output &out, Point_vel_acc &point_vel_acc){
     double tmp_step = 1e-20;
     
     if(!restart_switch)
@@ -61,16 +61,18 @@ void Restart::rebuild_system(double &time, WheeledVehicle &veh, ChPathFollowerDr
     veh.GetSystem()->Update();
 
     //rebuild driver model
-    driver.SetSteering(driver_inputs.m_steering, -1.0, 1.0);
-    driver.SetThrottle(driver_inputs.m_throttle, 0.0, 1.0);
-    driver.SetBraking(driver_inputs.m_braking, 0.0, 1.0);
+    driver.SetInputs(driver_inputs.m_steering, driver_inputs.m_throttle, driver_inputs.m_braking);
+    //driver.SetSteering(driver_inputs.m_steering, -1.0, 1.0);
+    //driver.SetThrottle(driver_inputs.m_throttle, 0.0, 1.0);
+    //driver.SetBraking(driver_inputs.m_braking, 0.0, 1.0);
 
     //reset tergrt culclation points
-    driver.GetSteeringController().Reset(veh);
-    driver.GetSteeringController().CalcTargetLocation();
-    driver.GetSteeringController().SetLookAheadDistance(5);
-    driver.GetSteeringController().SetGains(0.8, 0, 0);
-    driver.GetSpeedController().SetGains(0.4, 0, 0);
+    driver.reset(veh);
+    //driver.GetSteeringController().Reset(veh);
+    //driver.GetSteeringController().CalcTargetLocation();
+    //driver.GetSteeringController().SetLookAheadDistance(5);
+    //driver.GetSteeringController().SetGains(0.8, 0, 0);
+    //driver.GetSpeedController().SetGains(0.4, 0, 0);
 
     
     //rebuild powertrain model

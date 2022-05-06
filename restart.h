@@ -3,6 +3,7 @@
 
 #include "calculation_mode.h"
 #include"inp_init_data.h"
+#include "driver_model_controller.h"
 #include "chrono/core/ChVector.h"
 #include "chrono/core/ChQuaternion.h"
 #include "chrono_vehicle/wheeled_vehicle/vehicle/WheeledVehicle.h"
@@ -39,7 +40,7 @@ class Restart : public Set_value{
 
   public:
     Restart(Input_data &inp, int &step);
-    void rebuild_system(double &time, WheeledVehicle &veh, ChPathFollowerDriver &driver, RigidTerrain &terrain, Output &out, Point_vel_acc &point_vel_acc);
+    void rebuild_system(double &time, WheeledVehicle &veh, Driver_model_controller &driver, RigidTerrain &terrain, Output &out, Point_vel_acc &point_vel_acc);
     void output(WheeledVehicle &veh, ChDriver::Inputs driver_inputs, int step, double time);
 
 };

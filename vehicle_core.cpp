@@ -306,7 +306,7 @@ void Vehicle_model::vehicle_initialize_stand_alone(){
     point_vel_acc.reset(new Point_vel_acc(inp->Get_cabin_pdata_bool(), inp->Get_cabin_pdata_fname(), *veh) );
 
     restart.reset(new Restart(*inp, current_step) );
-    restart->rebuild_system(current_time, *veh, *driver_controller->Get_path_follower_driver(), *terrain, *out, *point_vel_acc); //when restart, this function is use
+    restart->rebuild_system(current_time, *veh, *driver_controller, *terrain, *out, *point_vel_acc); //when restart, this function is use
     GetLog() << "Initialization of vehicle system and aerodynamic-coef map completed\n";
 
     //memo

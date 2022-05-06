@@ -8,7 +8,11 @@
 
 
 Driver_model_controller::Driver_model_controller(){
-    GetLog() << "Call constructor @Driver model controller\n";
+    //initialize final_driver_input
+    final_driver_input.m_steering = 0.0;
+    final_driver_input.m_throttle = 0.0;
+    final_driver_input.m_braking = 0.0;
+
 }
 
 void Driver_model_controller::setup_path_follower_driver(Input_data &inp, WheeledVehicle &veh){
@@ -24,8 +28,14 @@ void Driver_model_controller::setup_path_follower_driver(Input_data &inp, Wheele
 ChDriver::Inputs Driver_model_controller::GetInputs(){
     ChDriver::Inputs path_follower_inputs = path_follower_driver->GetInputs();
     
-    ChDriver::Inputs inputs = path_follower_inputs;
-    return inputs;
+    this->final_driver_input = path_follower_inputs;
+    return this->final_driver_input;
+}
+
+void Driver_model_controller::SetInputs(double steering, double throttle, double braking){
+    this->final_driver_input.m_steering = ChClamp(steering, -1.0, 1.0);
+    this->final_driver_input.m_throttle = ChClamp(throttle, -1.0, 1.0);
+    this->final_driver_input.m_braking = ChClamp(braking, 0.0, 1.0);
 }
 
 void Driver_model_controller::Synchronize(double time){
@@ -42,6 +52,17 @@ void Driver_model_controller::ExportPathPovray(std::string pov_dir){
     }
 }
 
+void Driver_model_controller::reset(WheeledVehicle &veh){
+    if(activate_path_follower_driver){
+        path_follower_driver->GetSteeringController().Reset(veh);
+        path_follower_driver->GetSteeringController().CalcTargetLocation();
+        path_follower_driver->GetSteeringController().SetLookAheadDistance(5);
+        path_follower_driver->GetSteeringController().SetGains(0.8, 0, 0);
+        path_follower_driver->GetSpeedController().SetGains(0.4, 0, 0);  
+    }  
+}
+
+
 ChVector<> Driver_model_controller::GetSentinelLocation(){
     ChVector<>pS = path_follower_driver->GetSteeringController().GetSentinelLocation();
     return pS;
@@ -51,3 +72,4 @@ ChVector<> Driver_model_controller::GetTargetLocation(){
     ChVector<>pT = path_follower_driver->GetSteeringController().GetTargetLocation();    
     return pT;
 }
+
