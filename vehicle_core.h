@@ -23,6 +23,7 @@
 #include"exchange_data.h"
 #include"point_vel_acc.h"
 #include"veh_visualization.h"
+#include"driver_model_controller.h"
 
 
 using namespace chrono;
@@ -40,7 +41,7 @@ std::shared_ptr<chrono::ChLinkLockSpherical> m_puller;  ///< joint between trail
 
 std::shared_ptr<RigidTerrain> terrain;  //object of RigidTerrain
 
-std::shared_ptr<ChPathFollowerDriver> driver_follower;  //object of PathFollower
+std::shared_ptr<Driver_model_controller> driver_controller;
 ChVector<> driver_pos;
 
 std::shared_ptr<Exchange_data> exc_data;

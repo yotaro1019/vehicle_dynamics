@@ -188,11 +188,8 @@ void Vehicle_model::initialize(){
      // -------------------------
      // Create the driver systems
      // -------------------------
-     driver_follower.reset(new ChPathFollowerDriver (*veh, path, "follow_path", inp->Get_target_speed()) );
-     driver_follower->GetSteeringController().SetLookAheadDistance(5);
-     driver_follower->GetSteeringController().SetGains(0.8, 0, 0);
-     driver_follower->GetSpeedController().SetGains(0.4, 0, 0);
-     driver_follower->Initialize();
+     driver_controller.reset(new Driver_model_controller() );
+     driver_controller->setup_path_follower_driver(*inp, *veh);
 
      //initialize coupling data structure
      exc_data.reset(new Exchange_data(*inp));
@@ -219,17 +216,17 @@ void Vehicle_model::advance(double adv_step_size, Cfd2Vehicle *cfd2veh_data){
     ChVector<> acc_CG = veh->GetChassisBody()->GetPos_dtdt();
     ChVector<> acc_driver = veh->GetVehiclePointAcceleration(driver_pos);
     // Driver inputs
-    ChDriver::Inputs driver_inputs = driver_follower->GetInputs();
+    ChDriver::Inputs driver_inputs = driver_controller->GetInputs();
 
     // Update modules (process inputs from other modules)
-    driver_follower->Synchronize(time);
+    driver_controller->Synchronize(time);
     terrain->Synchronize(time);
     veh->Synchronize(time, driver_inputs, *terrain, act_fforce, act_fmoment);
     if(inp->Get_use_trailer_model()){
         tlr->Synchronize(time, driver_inputs, *terrain);;
     }
     // Advance simulation for one timestep for all modules
-    driver_follower->Advance(adv_step_size);
+    driver_controller->Advance(adv_step_size);
     terrain->Advance(adv_step_size);
     veh->Advance(adv_step_size);
     if(inp->Get_use_trailer_model()){
@@ -290,7 +287,7 @@ void Vehicle_model::vehicle_initialize(){
 
 
     //visualization
-    veh_viz.reset(new Veh_Visualization(calc_mode, *inp, *veh, *terrain, *driver_follower));
+    veh_viz.reset(new Veh_Visualization(calc_mode, *inp, *veh, *terrain, *driver_controller->Get_path_follower_driver()));
 
 }
 
@@ -311,10 +308,10 @@ void Vehicle_model::vehicle_advance(Cfd2Vehicle *cfd2veh_data, Vehicle2Cfd *veh2
  
     exc_data->data_packing(*veh, veh2cfd_data);
 
-    out->write(current_step, current_time, *veh, *driver_follower, *terrain, *cfd2veh_data, *veh2cfd_data); 
+    out->write(current_step, current_time, *veh, driver_controller->GetInputs(), *terrain, *cfd2veh_data, *veh2cfd_data); 
 
     //visualization
-    veh_viz->viz_advance(adv_step_size, current_time, current_step, *veh, *driver_follower);             //advance visualization step
+    veh_viz->viz_advance(adv_step_size, current_time, current_step, *veh, *driver_controller->Get_path_follower_driver());      
 }
 
 //====================================================================
@@ -334,15 +331,16 @@ void Vehicle_model::vehicle_initialize_stand_alone(){
     point_vel_acc.reset(new Point_vel_acc(inp->Get_cabin_pdata_bool(), inp->Get_cabin_pdata_fname(), *veh) );
 
     restart.reset(new Restart(*inp, current_step) );
-    restart->rebuild_system(current_time, *veh, *driver_follower, *terrain, *out, *point_vel_acc); //when restart, this function is use
+    restart->rebuild_system(current_time, *veh, *driver_controller->Get_path_follower_driver(), *terrain, *out, *point_vel_acc); //when restart, this function is use
     GetLog() << "Initialization of vehicle system and aerodynamic-coef map completed\n";
 
     //memo
     Cfd2Vehicle fmap2veh_data;
     Vehicle2Cfd v2c;    
-    out->write(current_step, current_time, *veh, *driver_follower, *terrain, fmap2veh_data, v2c);
+    out->write(current_step, current_time, *veh, driver_controller->GetInputs(), *terrain, fmap2veh_data, v2c);
 
-    veh_viz.reset(new Veh_Visualization(calc_mode, *inp, *veh, *terrain, *driver_follower));
+    veh_viz.reset(new Veh_Visualization(calc_mode, *inp, *veh, *terrain, *driver_controller->Get_path_follower_driver()));
+
 }
 
 void Vehicle_model::vehicle_advance_stand_alone(){
@@ -358,17 +356,17 @@ void Vehicle_model::vehicle_advance_stand_alone(){
     exc_data->data_packing(*veh, &v2c);
 
     //output vehicle and driver status
-    out->write(current_step, current_time, *veh, *driver_follower, *terrain, fmap2veh_data, v2c);
+    out->write(current_step, current_time, *veh, driver_controller->GetInputs(), *terrain, fmap2veh_data, v2c);
 
     //recort point vel acc
     point_vel_acc->record_points_vel_acc(current_step, current_time, *veh);
 
 
     //output restart file
-    restart->output(*veh, *driver_follower, current_step, current_time);
+    restart->output(*veh, driver_controller->GetInputs(), current_step, current_time);
 
     //visualization
-    veh_viz->viz_advance(adv_step_size, current_time, current_step, *veh, *driver_follower);             //advance visualization step
+    veh_viz->viz_advance(adv_step_size, current_time, current_step, *veh, *driver_controller->Get_path_follower_driver());             //advance visualization step
 
 }
 
