@@ -262,7 +262,7 @@ void Vehicle_model::vehicle_initialize(){
 
 
     //visualization
-    veh_viz.reset(new Veh_Visualization(calc_mode, *inp, *veh, *terrain, *driver_controller->Get_path_follower_driver()));
+    veh_viz.reset(new Veh_Visualization(calc_mode, *inp, *veh, *terrain, *driver_controller));
 
 }
 
@@ -286,7 +286,7 @@ void Vehicle_model::vehicle_advance(Cfd2Vehicle *cfd2veh_data, Vehicle2Cfd *veh2
     out->write(current_step, current_time, *veh, driver_controller->GetInputs(), *terrain, *cfd2veh_data, *veh2cfd_data); 
 
     //visualization
-    veh_viz->viz_advance(adv_step_size, current_time, current_step, *veh, *driver_controller->Get_path_follower_driver());      
+    veh_viz->viz_advance(adv_step_size, current_time, current_step, *veh, *driver_controller);      
 }
 
 //====================================================================
@@ -314,7 +314,7 @@ void Vehicle_model::vehicle_initialize_stand_alone(){
     Vehicle2Cfd v2c;    
     out->write(current_step, current_time, *veh, driver_controller->GetInputs(), *terrain, fmap2veh_data, v2c);
 
-    veh_viz.reset(new Veh_Visualization(calc_mode, *inp, *veh, *terrain, *driver_controller->Get_path_follower_driver()));
+    veh_viz.reset(new Veh_Visualization(calc_mode, *inp, *veh, *terrain, *driver_controller));
 
 }
 
@@ -341,7 +341,7 @@ void Vehicle_model::vehicle_advance_stand_alone(){
     restart->output(*veh, driver_controller->GetInputs(), current_step, current_time);
 
     //visualization
-    veh_viz->viz_advance(adv_step_size, current_time, current_step, *veh, *driver_controller->Get_path_follower_driver());             //advance visualization step
+    veh_viz->viz_advance(adv_step_size, current_time, current_step, *veh, *driver_controller);             //advance visualization step
 
 }
 

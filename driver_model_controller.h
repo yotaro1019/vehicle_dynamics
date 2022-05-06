@@ -30,6 +30,13 @@ void Advance(double adv_step_size);
 
 std::shared_ptr<ChPathFollowerDriver> Get_path_follower_driver(){ return this->path_follower_driver; }; 
 
+void ExportPathPovray(std::string pov_dir);
+
+ChVector<> GetSentinelLocation();
+ChVector<> GetTargetLocation();
+
+private:
+bool activate_path_follower_driver = true;
 
 };
 

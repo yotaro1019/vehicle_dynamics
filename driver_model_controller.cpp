@@ -36,4 +36,18 @@ void Driver_model_controller::Advance(double adv_step_size){
     path_follower_driver->Advance(adv_step_size);    
 }
 
+void Driver_model_controller::ExportPathPovray(std::string pov_dir){
+    if(activate_path_follower_driver){
+        path_follower_driver->ExportPathPovray(pov_dir);
+    }
+}
 
+ChVector<> Driver_model_controller::GetSentinelLocation(){
+    ChVector<>pS = path_follower_driver->GetSteeringController().GetSentinelLocation();
+    return pS;
+
+}
+ChVector<> Driver_model_controller::GetTargetLocation(){
+    ChVector<>pT = path_follower_driver->GetSteeringController().GetTargetLocation();    
+    return pT;
+}

@@ -1,7 +1,7 @@
 #include "Veh_Visualization.h"
 
 
-Veh_Visualization::Veh_Visualization(enum Calculation_mode calc_mode, Input_data &inp, WheeledVehicle &veh, RigidTerrain &terrain, ChPathFollowerDriver &driver_follower){
+Veh_Visualization::Veh_Visualization(enum Calculation_mode calc_mode, Input_data &inp, WheeledVehicle &veh, RigidTerrain &terrain, Driver_model_controller &driver){
     if(calc_mode == stand_alone && inp.Get_use_irricht() == true){
         irricht_switch = true;
     }else{
@@ -17,15 +17,15 @@ Veh_Visualization::Veh_Visualization(enum Calculation_mode calc_mode, Input_data
     this->step_dt = inp.Get_coupling_dt();
     this->irricht_initialize(inp, veh);
     pov_out_itvl = inp.Get_itvl_povray();
-    this->povray_initialize( terrain, driver_follower);
+    this->povray_initialize( terrain, driver);
 
 
 }
 
 
-void Veh_Visualization::viz_advance(double step_dt, double time, int step, WheeledVehicle &veh,  ChPathFollowerDriver &driver_follower){
+void Veh_Visualization::viz_advance(double step_dt, double time, int step, WheeledVehicle &veh, Driver_model_controller &driver){
 
-    this->irricht_advance(step_dt, driver_follower);
+    this->irricht_advance(step_dt, driver);
     this->output_pov(step, veh);
 }
 
@@ -61,26 +61,26 @@ void Veh_Visualization::irricht_initialize(Input_data &inp, WheeledVehicle &veh)
 }
 
 
-void Veh_Visualization::irricht_advance(double step_dt, ChPathFollowerDriver &driver_follower){
+void Veh_Visualization::irricht_advance(double step_dt, Driver_model_controller &driver){
     if(!irricht_switch)
         return;
 
     //irricht advance
     // Update sentinel and target location markers for the path-follower controller.
-    const ChVector<>& pS = driver_follower.GetSteeringController().GetSentinelLocation();
-    const ChVector<>& pT = driver_follower.GetSteeringController().GetTargetLocation();
+    const ChVector<>& pS = driver.GetSentinelLocation();
+    const ChVector<>& pT = driver.GetTargetLocation();
     ballS->setPosition(irr::core::vector3df((irr::f32)pS.x(), (irr::f32)pS.y(), (irr::f32)pS.z()));
     ballT->setPosition(irr::core::vector3df((irr::f32)pT.x(), (irr::f32)pT.y(), (irr::f32)pT.z()));
     app->BeginScene(true, true, irr::video::SColor(255, 140, 161, 192));
     app->DrawAll();
     app->EndScene();
     std::string msg = "Follower driver";
-    app->Synchronize(msg, driver_follower.GetInputs());
+    app->Synchronize(msg, driver.GetInputs());
     app->Advance(step_dt);
 
 }
 
-void Veh_Visualization::povray_initialize(RigidTerrain &terrain, ChPathFollowerDriver &driver_follower){
+void Veh_Visualization::povray_initialize(RigidTerrain &terrain, Driver_model_controller &driver){
 
     if(!pov_switch)
         return;
@@ -92,7 +92,7 @@ void Veh_Visualization::povray_initialize(RigidTerrain &terrain, ChPathFollowerD
     }
 
     terrain.ExportMeshPovray(pov_dir);
-    driver_follower.ExportPathPovray(pov_dir);
+    driver.ExportPathPovray(pov_dir);
 
     pov_dir += "/data";   
     if (!filesystem::create_directory(filesystem::path(pov_dir))) {
