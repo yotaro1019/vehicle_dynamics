@@ -123,16 +123,12 @@ void Restart::rebuild_system(double &time, WheeledVehicle &veh, ChPathFollowerDr
         point_vel_acc.restart(this->restart_step);
     }
 
-    //veh.GetSystem()->Update();
-    //veh.GetSystem()->ForceUpdate();
-    //veh.GetSystem()->DoFullAssembly();
-    //for Debug
-    this->output(veh, driver, output_itvl*100, output_itvl*100.0 );
+
 }
 
 
 
-void Restart::output(WheeledVehicle &veh, ChDriver &driver,  int current_step, double time){
+void Restart::output(WheeledVehicle &veh, ChDriver::Inputs driver,  int current_step, double time){
     if(current_step%output_itvl == 0){
         double T;
         ChState state_pos;
@@ -195,9 +191,9 @@ void Restart::output(WheeledVehicle &veh, ChDriver &driver,  int current_step, d
         out << "\n\n"; 
 
         out << "begin_driver_input\n";
-        out <<  std::setprecision(output_precision) << "throttle\t" << driver.GetThrottle() << "\n"; 
-        out << std::setprecision(output_precision) <<  "steering\t" << driver.GetSteering() << "\n";
-        out << std::setprecision(output_precision) <<  "braking \t" << driver.GetBraking() << "\n";
+        out <<  std::setprecision(output_precision) << "throttle\t" << driver.m_throttle << "\n"; 
+        out << std::setprecision(output_precision) <<  "steering\t" << driver.m_steering << "\n";
+        out << std::setprecision(output_precision) <<  "braking \t" << driver.m_braking << "\n";
         out << std::setprecision(output_precision) <<  "end_driver_input\n\n";
 
         this->output_powertrain(out, veh);

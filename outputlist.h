@@ -46,7 +46,7 @@ class Driver_fout : public Baseout{
     Driver_fout() { Baseout(); };
 
     void initialize(bool c_switch, const std::string fname);
-    void write(int step, double time, ChPathFollowerDriver &dvr);
+    void write(int step, double time, ChDriver::Inputs dvr_inp);
 
 };
 

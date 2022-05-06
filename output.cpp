@@ -31,8 +31,8 @@ Output::Output(Input_data &inp, WheeledVehicle &veh){
     this->initialize_fforce_info(inp);
 }
 
-void Output::write(int step, double time, WheeledVehicle &veh, ChPathFollowerDriver &dvr, RigidTerrain &ter, Cfd2Vehicle &c2v, Vehicle2Cfd &v2c){
-    this->write_veh_status(step, time, veh, dvr, ter);
+void Output::write(int step, double time, WheeledVehicle &veh, ChDriver::Inputs dvr_inp, RigidTerrain &ter, Cfd2Vehicle &c2v, Vehicle2Cfd &v2c){
+    this->write_veh_status(step, time, veh, dvr_inp, ter);
     this->write_1way_info(step, time, veh, v2c);
     this->write_fforce(step, time, c2v);
 }
@@ -117,10 +117,10 @@ void Output::initialize_veh_status(Input_data &inp, WheeledVehicle &veh){
 
 
 
-void Output::write_veh_status(int step, double time, WheeledVehicle &veh, ChPathFollowerDriver &dvr, RigidTerrain &ter){
+void Output::write_veh_status(int step, double time, WheeledVehicle &veh, ChDriver::Inputs dvr_inp, RigidTerrain &ter){
     chassis_log.write(step, time, veh);
     driveline_log.write(step, time, veh);
-    dvr_log.write(step, time, dvr);
+    dvr_log.write(step, time, dvr_inp);
     ptr_log.write(step, time, *veh.GetPowertrain() );
 
     

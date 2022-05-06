@@ -100,14 +100,14 @@ void Driver_fout::initialize(bool c_switch, const std::string fname)
 }
 
 
-void Driver_fout::write(int step, double time, ChPathFollowerDriver &dvr){
+void Driver_fout::write(int step, double time, ChDriver::Inputs dvr_inp){
 
     if(!c_switch)
         return;
 
 
     char output_value[500];
-    sprintf(output_value,"%10d%12.5f%12.5f%12.5f%12.5f",  step, time, dvr.GetSteering(), dvr.GetThrottle(), dvr.GetBraking() );
+    sprintf(output_value,"%10d%12.5f%12.5f%12.5f%12.5f",  step, time, dvr_inp.m_steering, dvr_inp.m_throttle, dvr_inp.m_braking );
     this->write_data(output_value);
 
 }

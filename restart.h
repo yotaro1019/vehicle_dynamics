@@ -40,7 +40,7 @@ class Restart : public Set_value{
   public:
     Restart(Input_data &inp, int &step);
     void rebuild_system(double &time, WheeledVehicle &veh, ChPathFollowerDriver &driver, RigidTerrain &terrain, Output &out, Point_vel_acc &point_vel_acc);
-    void output(WheeledVehicle &veh, ChDriver &driver, int step, double time);
+    void output(WheeledVehicle &veh, ChDriver::Inputs driver_inputs, int step, double time);
 
 };
 
