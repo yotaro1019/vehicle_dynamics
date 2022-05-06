@@ -1,24 +1,3 @@
-// =============================================================================
-// PROJECT CHRONO - http://projectchrono.org
-//
-// Copyright (c) 2014 projectchrono.org
-// All rights reserved.
-//
-// Use of this source code is governed by a BSD-style license that can be found
-// in the LICENSE file at the top level of the distribution and at
-// http://projectchrono.org/license-chrono.txt.
-//
-// =============================================================================
-// Authors: Radu Serban, Rainer Gericke, Yotaro Nomoto
-// =============================================================================
-//
-// Demonstration of a steering path-follower PID controller with two alternatives.
-//
-// The vehicle reference frame has Z up, X towards the front of the vehicle, and
-// Y pointing to the left.
-//
-// =============================================================================
-
 #include "inp_init_data.h"
 #include "vehicle_core.h"
 #include"exchange_data.h"
@@ -178,10 +157,6 @@ void Vehicle_model::initialize(){
      // ----------------------
      // Create the Bezier path
      // ----------------------
-
-     // From data file
-     std::shared_ptr<ChBezierCurve> path = ChBezierCurve::read(vehicle::GetDataFile(inp->Get_path_txt_fname()));
-
      driver_pos = veh->GetChassis()->GetLocalDriverCoordsys().pos;
 
 
