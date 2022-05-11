@@ -41,6 +41,8 @@ void Input_data::default_param(){
     //driver path (must check)
     path_txt_fname = "NaN";
     driver_lookah = 5.0;
+    steering_JSON_fname = "NaN";
+    speed_JSON_fname = "NaN";
 
     //target speed (must check)
     target_speed = -123456789.0;
@@ -261,6 +263,16 @@ void Input_data::read_param(std::string input_fname){
             if(name == "driver_LookAhead_Distance"){
                 this->driver_lookah = Set_double_value(ss);
             }
+            if(name == "steering_JSON_fname"){
+                this->steering_JSON_fname =  Set_str_value(ss);
+            }
+            if(name == "speed_JSON_fname"){
+                this->speed_JSON_fname =  Set_str_value(ss);
+            }
+
+
+
+
 
             if(name == "vehicle_init_loc"){
                 this->vehicle_init_loc = Set_ChVector(ss);

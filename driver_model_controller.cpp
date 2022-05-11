@@ -18,11 +18,12 @@ Driver_model_controller::Driver_model_controller(){
 void Driver_model_controller::setup_path_follower_driver(Input_data &inp, WheeledVehicle &veh){
     this->path = ChBezierCurve::read(vehicle::GetDataFile(inp.Get_path_txt_fname()));
 
-    path_follower_driver.reset(new ChPathFollowerDriver (veh, path, "follow_path", inp.Get_target_speed()) );
-    path_follower_driver->GetSteeringController().SetLookAheadDistance(5);
-    path_follower_driver->GetSteeringController().SetGains(0.8, 0, 0);
-    path_follower_driver->GetSpeedController().SetGains(0.4, 0, 0);
+    GetLog() << "STR\t" <<  vehicle::GetDataFile(inp.Get_steering_JSON_fname()) << "\n";
+    GetLog() << "SPD\t" << vehicle::GetDataFile(inp.Get_speed_JSON_fname()) << "\n";
+    path_follower_driver.reset(new ChPathFollowerDriver (veh, vehicle::GetDataFile(inp.Get_steering_JSON_fname()), 
+        vehicle::GetDataFile(inp.Get_speed_JSON_fname()), path, "follow_path", inp.Get_target_speed()) );
     path_follower_driver->Initialize();
+    //exit(1);
 }
 
 ChDriver::Inputs Driver_model_controller::GetInputs(){
