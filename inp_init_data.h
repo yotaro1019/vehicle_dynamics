@@ -45,7 +45,6 @@ private:
     std::string path_txt_fname;
     std::string steering_JSON_fname;
     std::string speed_JSON_fname;
-    double driver_lookah;
 
     //-------------------------------------------
     //trailer
@@ -149,7 +148,6 @@ public:
 
     //driver model
     std::string Get_path_txt_fname(){ return path_txt_fname; }
-    double Get_driver_lookah(){ return this->driver_lookah; }
     std::string Get_steering_JSON_fname(){ return this->steering_JSON_fname; };
     std::string Get_speed_JSON_fname(){ return this->speed_JSON_fname;  };
 
