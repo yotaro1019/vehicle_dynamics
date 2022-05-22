@@ -14,7 +14,7 @@ Veh_Visualization::Veh_Visualization(enum Calculation_mode calc_mode, Input_data
         pov_switch = false;
     }
 
-    this->step_dt = inp.Get_coupling_dt();
+    this->step_dt = inp.Get_dt();
     this->irricht_initialize(inp, veh);
     pov_out_itvl = inp.Get_itvl_povray();
     this->povray_initialize( terrain, driver);

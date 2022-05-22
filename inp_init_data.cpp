@@ -60,10 +60,8 @@ void Input_data::default_param(){
 
 
     //coupling simulation param
-    stabi_dt = 0.002;
-    coupling_dt = 0.002;
+    dt = 0.002;
     tire_step_size = 0.002;
-    stabi_step = 0;
 
     
     //restart system (if restart bool = true, must check fname)
@@ -282,21 +280,14 @@ void Input_data::read_param(std::string input_fname){
                 this->target_speed = Set_double_value(ss);
             }
 
-            if(name == "stabilize_step_size"){
-                this->stabi_dt = Set_double_value(ss);
-            }
-            if(name == "coupling_step_size"){
-                this->coupling_dt = Set_double_value(ss);
+            if(name == "step_size"){
+                this->dt = Set_double_value(ss);
             }
 
             if(name == "tire_step_size"){
                 this->tire_step_size = Set_double_value(ss);
             }
 
-
-            if(name == "stabilization_step"){
-                this->stabi_step = Set_double_value(ss);
-            }
 
             if(name == "restart_step"){
                 this->restart_step = Set_int_value(ss);

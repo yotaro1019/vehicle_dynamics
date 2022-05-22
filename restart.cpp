@@ -74,10 +74,6 @@ void Restart::rebuild_system(double &time, WheeledVehicle &veh, Driver_model_con
     //driver.GetSteeringController().SetGains(0.8, 0, 0);
     //driver.GetSpeedController().SetGains(0.4, 0, 0);
 
-    
-    //rebuild powertrain model
-    this->rebuild_powertrain(pt_info, veh);
-
 
 
     //rebuild tire system
@@ -206,17 +202,6 @@ void Restart::output(WheeledVehicle &veh, ChDriver::Inputs driver,  int current_
 
 }
 
-
-void Restart::rebuild_powertrain(Powertrain_info &pt_info, WheeledVehicle &veh){
-
-    if(pt_info.TemplateName == "SimplePowertrain" ){
-        GetLog() << "pt_info.TemplateName : " << pt_info.TemplateName << "\tDriveMode : " << pt_info.DriveMode << "\n";
-        //veh.GetPowertrain()->restart_powertrain();
-    }else{
-        GetLog() << "Unimplemantation rebuild powertrain @ restart.cpp\n";
-        exit(1);
-    }
-}
 
 void Restart::output_powertrain(std::ofstream &out, WheeledVehicle &veh){
     std::string pt_TemplateName = veh.GetPowertrain()->GetTemplateName();

@@ -35,7 +35,6 @@ class Restart : public Set_value{
   
   private:
   void read_from_file(ChState &state_pos, ChStateDelta &state_vel, ChStateDelta &state_acc, ChVectorDynamic<> &state_reactions, ChDriver::Inputs &driver_inputs, double &T, Powertrain_info &pt_info);
-  void rebuild_powertrain(Powertrain_info &pt_info, WheeledVehicle &veh);
   void output_powertrain(std::ofstream &out, WheeledVehicle &veh);
 
   public:
