@@ -93,21 +93,29 @@ void Driver_fout::initialize(bool c_switch, const std::string fname)
     
 
     char header[500];
-    sprintf(header, "%10s%12s%12s%12s%12s%15s", "step", "time", "steering", "throttle", "brake", "tierod_force");
+    sprintf(header, "%10s%12s%12s%12s%12s%14s%14s%14s%14s%14s%14s", "step", "time", "steering", "throttle", "brake", "STL_loc_x", "STL_loc_y", "STL_loc_z", "Target_loc_x", "Target_loc_y", "Target_loc_z");
 
     this->check_file_status(fname, header);
 
 }
 
 
-void Driver_fout::write(int step, double time, ChDriver::Inputs dvr_inp){
+void Driver_fout::write(int step, double time, Driver_model_controller dvr){
 
     if(!c_switch)
         return;
 
+    ChDriver::Inputs dvr_inp;
+    ChVector<> sentinel_loc;
+    ChVector<> target_loc;
+
+    dvr_inp = dvr.GetInputs();
+    sentinel_loc = dvr.GetSentinelLocation();
+    target_loc = dvr.GetTargetLocation();
+
 
     char output_value[500];
-    sprintf(output_value,"%10d%12.5f%12.5f%12.5f%12.5f",  step, time, dvr_inp.m_steering, dvr_inp.m_throttle, dvr_inp.m_braking );
+    sprintf(output_value,"%10d%12.5f%12.5f%12.5f%12.5f%14.5f%14.5f%14.5f%14.5f%14.5f%14.5f",  step, time, dvr_inp.m_steering, dvr_inp.m_throttle, dvr_inp.m_braking, sentinel_loc.x(), sentinel_loc.y(), sentinel_loc.z(), target_loc.x(), target_loc.y(), target_loc.z() );
     this->write_data(output_value);
 
 }

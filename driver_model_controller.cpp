@@ -78,12 +78,25 @@ void Driver_model_controller::reset(WheeledVehicle &veh){
 
 
 ChVector<> Driver_model_controller::GetSentinelLocation(){
-    ChVector<>pS = path_follower_driver->GetSteeringController().GetSentinelLocation();
+    
+    ChVector<> pS;
+
+    if(activate_path_follower_driver){
+        pS = path_follower_driver->GetSteeringController().GetSentinelLocation();
+    }else{
+        pS.SetNull();
+    }
     return pS;
 
 }
 ChVector<> Driver_model_controller::GetTargetLocation(){
-    ChVector<>pT = path_follower_driver->GetSteeringController().GetTargetLocation();    
+    ChVector<> pT;
+
+    if(activate_path_follower_driver){    
+        pT = path_follower_driver->GetSteeringController().GetTargetLocation();    
+    }else{
+        pT.SetNull();
+    }
     return pT;
 }
 

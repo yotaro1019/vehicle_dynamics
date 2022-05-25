@@ -283,7 +283,7 @@ void Vehicle_model::vehicle_advance(Cfd2Vehicle *cfd2veh_data, Vehicle2Cfd *veh2
  
     exc_data->data_packing(*veh, veh2cfd_data);
 
-    out->write(current_step, current_time, *veh, driver_controller->GetInputs(), *terrain, *cfd2veh_data, *veh2cfd_data); 
+    out->write(current_step, current_time, *veh, *driver_controller, *terrain, *cfd2veh_data, *veh2cfd_data); 
 
     //visualization
     veh_viz->viz_advance(adv_step_size, current_time, current_step, *veh, *driver_controller);      
@@ -312,7 +312,7 @@ void Vehicle_model::vehicle_initialize_stand_alone(){
     //memo
     Cfd2Vehicle fmap2veh_data;
     Vehicle2Cfd v2c;    
-    out->write(current_step, current_time, *veh, driver_controller->GetInputs(), *terrain, fmap2veh_data, v2c);
+    out->write(current_step, current_time, *veh, *driver_controller, *terrain, fmap2veh_data, v2c);
 
     veh_viz.reset(new Veh_Visualization(calc_mode, *inp, *veh, *terrain, *driver_controller));
 
@@ -331,7 +331,7 @@ void Vehicle_model::vehicle_advance_stand_alone(){
     exc_data->data_packing(*veh, &v2c);
 
     //output vehicle and driver status
-    out->write(current_step, current_time, *veh, driver_controller->GetInputs(), *terrain, fmap2veh_data, v2c);
+    out->write(current_step, current_time, *veh, *driver_controller, *terrain, fmap2veh_data, v2c);
 
     //recort point vel acc
     point_vel_acc->record_points_vel_acc(current_step, current_time, *veh);

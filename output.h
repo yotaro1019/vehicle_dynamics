@@ -5,6 +5,8 @@
 #include<fstream>
 #include"inp_init_data.h"
 #include"exchange_data.h"
+#include"driver_model_controller.h"
+
 #include "chrono_vehicle/ChApiVehicle.h"
 #include "chrono_vehicle/ChVehicleModelData.h"
 #include "chrono_vehicle/ChDriver.h"
@@ -32,8 +34,8 @@ class  CH_VEHICLE_API  Output{
     void initialize_veh_status(Input_data &inp, WheeledVehicle &veh);
     void initialize_1way_info(Input_data &inp, WheeledVehicle &veh);
     void initialize_fforce_info(Input_data &inp);
-    void write(int step, double time, WheeledVehicle &veh, ChDriver::Inputs dvr_inp, RigidTerrain &ter, Cfd2Vehicle &c2v, Vehicle2Cfd &v2c);  
-    void write_veh_status(int step, double time, WheeledVehicle &veh, ChDriver::Inputs dvr_inp, RigidTerrain &ter);
+    void write(int step, double time, WheeledVehicle &veh, Driver_model_controller dvr, RigidTerrain &ter, Cfd2Vehicle &c2v, Vehicle2Cfd &v2c);  
+    void write_veh_status(int step, double time, WheeledVehicle &veh, Driver_model_controller dvr, RigidTerrain &ter);
     void write_1way_info(int step, double time, WheeledVehicle &veh, Vehicle2Cfd &v2c);
     void write_fforce(int step, double time, Cfd2Vehicle &c2v);  
 

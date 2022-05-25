@@ -22,6 +22,8 @@
 #include "chrono_vehicle/wheeled_vehicle/tire/Pac89Tire.h"
 #include "chrono_vehicle/wheeled_vehicle/ChTire.h"
 #include "chrono_vehicle/wheeled_vehicle/vehicle/WheeledVehicle.h"
+#include"driver_model_controller.h"
+
 using namespace chrono;
 using namespace chrono::vehicle;
 
@@ -46,7 +48,7 @@ class Driver_fout : public Baseout{
     Driver_fout() { Baseout(); };
 
     void initialize(bool c_switch, const std::string fname);
-    void write(int step, double time, ChDriver::Inputs dvr_inp);
+    void write(int step, double time, Driver_model_controller dvr);
 
 };
 
