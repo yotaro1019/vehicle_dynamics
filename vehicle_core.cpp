@@ -169,8 +169,8 @@ void Vehicle_model::initialize(){
      //initialize coupling data structure
      exc_data.reset(new Exchange_data(*inp));
 
-    current_time = 0.0;
-    current_step = 0;
+     current_time = 0.0;
+     current_step = 0;
 
    }
 

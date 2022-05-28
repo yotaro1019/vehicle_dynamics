@@ -60,21 +60,9 @@ void Restart::rebuild_system(double &time, WheeledVehicle &veh, Driver_model_con
     veh.GetSystem()->StateScatterReactions(state_reactions);
     veh.GetSystem()->Update();
 
-    //rebuild driver model
-    driver.SetInputs(driver_inputs.m_steering, driver_inputs.m_throttle, driver_inputs.m_braking);
-    //driver.SetSteering(driver_inputs.m_steering, -1.0, 1.0);
-    //driver.SetThrottle(driver_inputs.m_throttle, 0.0, 1.0);
-    //driver.SetBraking(driver_inputs.m_braking, 0.0, 1.0);
-
     //reset tergrt culclation points
     driver.reset(veh);
-    //driver.GetSteeringController().Reset(veh);
-    //driver.GetSteeringController().CalcTargetLocation();
-    //driver.GetSteeringController().SetLookAheadDistance(5);
-    //driver.GetSteeringController().SetGains(0.8, 0, 0);
-    //driver.GetSpeedController().SetGains(0.4, 0, 0);
-
-
+    driver.SetInputs(driver_inputs.m_steering, driver_inputs.m_throttle, driver_inputs.m_braking);
 
     //rebuild tire system
     for (std::shared_ptr< ChAxle > axle : veh.GetAxles()){
@@ -83,33 +71,33 @@ void Restart::rebuild_system(double &time, WheeledVehicle &veh, Driver_model_con
             //LEFT
             std::shared_ptr<ChTire> tire_L = axle->GetWheel(LEFT, SINGLE)->GetTire();    //ChWheel
             tire_L->Synchronize(time, terrain);
-            //tire_L->Advance(tmp_step);
+            tire_L->Advance(tmp_step);
             
             //RIGHT
             std::shared_ptr<ChTire> tire_R = axle->GetWheel(RIGHT, SINGLE)->GetTire();    //ChWheel
             tire_R->Synchronize(time, terrain);
-            //tire_R->Advance(tmp_step);
+            tire_R->Advance(tmp_step);
 
         }else if(ntire == 4){
             //LEFT inside
             std::shared_ptr<ChTire> tire_LIN = axle->GetWheel(LEFT, INNER)->GetTire();    //ChWheel
             tire_LIN->Synchronize(time, terrain);
-            //tire_LIN->Advance(tmp_step);
+            tire_LIN->Advance(tmp_step);
 
             //LEFT outside
             std::shared_ptr<ChTire> tire_LOUT = axle->GetWheel(LEFT, OUTER)->GetTire();    //ChWheel
             tire_LOUT->Synchronize(time, terrain);
-            //tire_LOUT->Advance(tmp_step);
+            tire_LOUT->Advance(tmp_step);
 
             //RIGHT inside
             std::shared_ptr<ChTire> tire_RIN = axle->GetWheel(RIGHT, INNER)->GetTire();    //ChWheel
             tire_RIN->Synchronize(time, terrain);
-            //tire_RIN->Advance(tmp_step);
+            tire_RIN->Advance(tmp_step);
 
             //RIGHT outside
             std::shared_ptr<ChTire> tire_ROUT = axle->GetWheel(RIGHT, OUTER)->GetTire();    //ChWheel
             tire_ROUT->Synchronize(time, terrain);
-            //tire_ROUT->Advance(tmp_step);
+            tire_ROUT->Advance(tmp_step);
         }
     }
     GetLog() << "\n\n=======================================================================\n";

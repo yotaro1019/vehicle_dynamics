@@ -27,15 +27,12 @@ void Driver_model_controller::setup_path_follower_driver(Input_data &inp, Wheele
 }
 
 ChDriver::Inputs Driver_model_controller::GetInputs(){
-    ChDriver::Inputs path_follower_inputs = path_follower_driver->GetInputs();
-    
-    this->final_driver_input = path_follower_inputs;
     return this->final_driver_input;
 }
 
 void Driver_model_controller::SetInputs(double steering, double throttle, double braking){
     this->final_driver_input.m_steering = ChClamp(steering, -1.0, 1.0);
-    this->final_driver_input.m_throttle = ChClamp(throttle, -1.0, 1.0);
+    this->final_driver_input.m_throttle = ChClamp(throttle, 0.0, 1.0);
     this->final_driver_input.m_braking = ChClamp(braking, 0.0, 1.0);
 }
 
@@ -56,6 +53,7 @@ void Driver_model_controller::Advance_all_driver_model(double adv_step_size){
     }
 }
 
+//調停
 ChDriver::Inputs Driver_model_controller::mediation(){
     return path_follower_driver->GetInputs();
 }
@@ -68,11 +66,14 @@ void Driver_model_controller::ExportPathPovray(std::string pov_dir){
 
 void Driver_model_controller::reset(WheeledVehicle &veh){
     if(activate_path_follower_driver){
-        path_follower_driver->GetSteeringController().Reset(veh);
-        path_follower_driver->GetSteeringController().SetLookAheadDistance(5);
-        path_follower_driver->GetSteeringController().SetGains(0.8, 0, 0);
-        path_follower_driver->GetSpeedController().SetGains(0.4, 0, 0); 
+        
+        path_follower_driver->Reset();
+        
+        //steering controller
         path_follower_driver->GetSteeringController().CalcTargetLocation(); 
+
+        //speed controler
+    
     }  
 }
 

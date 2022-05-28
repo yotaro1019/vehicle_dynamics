@@ -405,6 +405,14 @@ void Input_data::read_param(std::string input_fname){
                 this->powertrain_status_fname = Set_str_value(ss);
             }
 
+            if(name == "driveline_status_data"){
+                this->driveline_status_bool = Set_bool_value(ss);
+            }
+
+            if(name == "driveline_status_fname"){
+                this->driveline_status_fname = Set_str_value(ss);
+            }
+
             if(name == "tire_force_data"){
                 this->tire_force_bool = Set_bool_value(ss);
             }
